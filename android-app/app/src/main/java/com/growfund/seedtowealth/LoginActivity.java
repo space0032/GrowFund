@@ -93,20 +93,52 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         Log.d(TAG, "Firebase Auth Success: " + user.getUid());
+
+                        // Sync with Backend
                         user.getIdToken(false).addOnSuccessListener(result -> {
-                            Log.d(TAG, "ID Token: " + result.getToken());
+                            String token = result.getToken();
+                            syncUserWithBackend(token);
                         });
-                        Toast.makeText(LoginActivity.this, "Authentication Success.", Toast.LENGTH_SHORT).show();
-                        // Navigate to next screen (Dashboard/Home) - For now just finish
-                        // Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        // startActivity(intent);
-                        finish();
                     } else {
                         Log.w(TAG, "Firebase Auth Failed", task.getException());
                         Toast.makeText(LoginActivity.this, "Authentication Failed.", Toast.LENGTH_SHORT).show();
+                        showLoading(false);
                     }
-                    showLoading(false);
                 });
+    }
+
+    private void syncUserWithBackend(String token) {
+        com.growfund.seedtowealth.network.ApiService apiService = com.growfund.seedtowealth.network.NetworkClient
+                .getRetrofitClient().create(com.growfund.seedtowealth.network.ApiService.class);
+
+        retrofit2.Call<com.growfund.seedtowealth.model.User> call = apiService.syncUser("Bearer " + token);
+        call.enqueue(new retrofit2.Callback<com.growfund.seedtowealth.model.User>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.growfund.seedtowealth.model.User> call,
+                    retrofit2.Response<com.growfund.seedtowealth.model.User> response) {
+                showLoading(false);
+                if (response.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "Synced with Server! Coins: " + response.body().getCoins(),
+                            Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(LoginActivity.this, InvestmentActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Server Sync Failed: " + response.code(), Toast.LENGTH_LONG)
+                            .show();
+                    Log.e(TAG, "Sync Failed: " + response.message());
+                    // Allow to proceed anyway for now? Or block?
+                    // Let's block to ensure data consistency, or maybe allow guest-like access
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<com.growfund.seedtowealth.model.User> call, Throwable t) {
+                showLoading(false);
+                Toast.makeText(LoginActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Network Error", t);
+            }
+        });
     }
 
     private void showLoading(boolean isLoading) {

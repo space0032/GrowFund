@@ -46,6 +46,4 @@
     <string name="tutorial_step2">Save money for emergencies and future investments</string>
     <string name="tutorial_step3">Invest wisely to grow your wealth over time</string>
 
-    <!-- Placeholder for Firebase Auth (will be overridden by google-services plugin when properly configured) -->
-    <string name="default_web_client_id">PLACEHOLDER_CLIENT_ID</string>
 </resources>
