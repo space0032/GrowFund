@@ -1,0 +1,58 @@
+# Build artifacts
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Android
+*.apk
+*.aab
+*.dex
+local.properties
+.gradle/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Database
+*.db
+*.sqlite
+*.log
+
+# Secrets
+google-services.json
+firebase-config.json
+application-local.yml
+*.env
+service-account.json
+backend/service-account.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.swp
+*.swo
+*~
+.tmp/
+temp/
+
+# Node (if using any Node tools)
+node_modules/
+
+# Test reports
+test-output/
+coverage/

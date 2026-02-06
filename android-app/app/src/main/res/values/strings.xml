@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Seed to Wealth</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_title">Welcome to Seed to Wealth!</string>
+    <string name="welcome_subtitle">Learn financial planning through farming</string>
+    <string name="get_started">Get Started</string>
+    
+    <!-- Main Menu -->
+    <string name="menu_farm">My Farm</string>
+    <string name="menu_invest">Invest</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_learn">Learn</string>
+    <string name="menu_profile">Profile</string>
+    
+    <!-- Farm -->
+    <string name="farm_coins">Coins: %1$d</string>
+    <string name="farm_level">Level %1$d</string>
+    <string name="plant_crop">Plant Crop</string>
+    <string name="harvest">Harvest</string>
+    
+    <!-- Investment -->
+    <string name="investment_schemes">Investment Schemes</string>
+    <string name="mutual_funds">Mutual Funds</string>
+    <string name="fixed_deposit">Fixed Deposit</string>
+    <string name="kisan_vikas_patra">Kisan Vikas Patra</string>
+    <string name="pm_kisan">PM-Kisan Scheme</string>
+    <string name="invest_now">Invest Now</string>
+    <string name="calculate_returns">Calculate Returns</string>
+    
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="loading">Loading…</string>
+    <string name="error">Error</string>
+    <string name="success">Success!</string>
+    
+    <!-- Game Messages -->
+    <string name="good_harvest">Great harvest! You earned %1$d coins!</string>
+    <string name="bad_weather">Bad weather affected your crops.</string>
+    <string name="level_up">Level Up! You reached level %1$d</string>
+    
+    <!-- Tutorial -->
+    <string name="tutorial_step1">This is your farm. Start by planting crops!</string>
+    <string name="tutorial_step2">Save money for emergencies and future investments</string>
+    <string name="tutorial_step3">Invest wisely to grow your wealth over time</string>
+
+    <!-- Placeholder for Firebase Auth (will be overridden by google-services plugin when properly configured) -->
+    <string name="default_web_client_id">PLACEHOLDER_CLIENT_ID</string>
+</resources>
