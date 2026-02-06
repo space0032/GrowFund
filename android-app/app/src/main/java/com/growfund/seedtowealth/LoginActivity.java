@@ -93,19 +93,48 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         Log.d(TAG, "Firebase Auth Success: " + user.getUid());
-                        user.getIdToken(false).addOnSuccessListener(result -> {
-                            Log.d(TAG, "ID Token: " + result.getToken());
-                        });
-                        Toast.makeText(LoginActivity.this, "Authentication Success.", Toast.LENGTH_SHORT).show();
-                        // Navigate to Investment Dashboard
-                        Intent intent = new Intent(LoginActivity.this, InvestmentActivity.class);
-                        startActivity(intent);
-                        finish();
+                        syncUserWithBackend(user);
                     } else {
                         Log.w(TAG, "Firebase Auth Failed", task.getException());
                         Toast.makeText(LoginActivity.this, "Authentication Failed.", Toast.LENGTH_SHORT).show();
+                        showLoading(false);
                     }
-                    showLoading(false);
+                });
+    }
+
+    private void syncUserWithBackend(FirebaseUser firebaseUser) {
+        com.growfund.seedtowealth.model.User user = new com.growfund.seedtowealth.model.User(
+                firebaseUser.getEmail(),
+                firebaseUser.getDisplayName(),
+                firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : null,
+                firebaseUser.getUid());
+
+        com.growfund.seedtowealth.network.ApiClient.getApiService().syncUser(user)
+                .enqueue(new retrofit2.Callback<com.growfund.seedtowealth.model.User>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<com.growfund.seedtowealth.model.User> call,
+                            retrofit2.Response<com.growfund.seedtowealth.model.User> response) {
+                        showLoading(false);
+                        if (response.isSuccessful()) {
+                            Log.d(TAG, "User Sync Success: " + response.body());
+                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, InvestmentActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Log.e(TAG, "User Sync Failed: " + response.code());
+                            Toast.makeText(LoginActivity.this, "Login Failed (Backend Sync)", Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<com.growfund.seedtowealth.model.User> call, Throwable t) {
+                        showLoading(false);
+                        Log.e(TAG, "User Sync Error", t);
+                        Toast.makeText(LoginActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT)
+                                .show();
+                    }
                 });
     }
 
