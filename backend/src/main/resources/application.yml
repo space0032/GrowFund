@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: seedtowealth-backend
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/growfund
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  # Internationalization support
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# Firebase configuration
+firebase:
+  config-path: ${FIREBASE_CONFIG_PATH:firebase-config.json}
+
+# Application-specific configuration
+app:
+  # Supported languages for farmers
+  supported-languages:
+    - en
+    - hi
+    - ta
+    - te
+    - mr
+    - bn
+    - gu
+  
+  # Game configuration
+  game:
+    initial-coins: 10000
+    max-level: 50
+    daily-reward: 100

@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">बीज से धन</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_title">बीज से धन में आपका स्वागत है!</string>
+    <string name="welcome_subtitle">खेती के माध्यम से वित्तीय योजना सीखें</string>
+    <string name="get_started">शुरू करें</string>
+    
+    <!-- Main Menu -->
+    <string name="menu_farm">मेरा खेत</string>
+    <string name="menu_invest">निवेश करें</string>
+    <string name="menu_save">बचत करें</string>
+    <string name="menu_learn">सीखें</string>
+    <string name="menu_profile">प्रोफ़ाइल</string>
+    
+    <!-- Farm -->
+    <string name="farm_coins">सिक्के: %1$d</string>
+    <string name="farm_level">स्तर %1$d</string>
+    <string name="plant_crop">फसल लगाएं</string>
+    <string name="harvest">फसल काटें</string>
+    
+    <!-- Investment -->
+    <string name="investment_schemes">निवेश योजनाएं</string>
+    <string name="mutual_funds">म्यूचुअल फंड</string>
+    <string name="fixed_deposit">सावधि जमा</string>
+    <string name="kisan_vikas_patra">किसान विकास पत्र</string>
+    <string name="pm_kisan">पीएम-किसान योजना</string>
+    <string name="invest_now">अभी निवेश करें</string>
+    <string name="calculate_returns">रिटर्न की गणना करें</string>
+    
+    <!-- Common -->
+    <string name="save">सहेजें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="ok">ठीक है</string>
+    <string name="loading">लोड हो रहा है…</string>
+    <string name="error">त्रुटि</string>
+    <string name="success">सफलता!</string>
+    
+    <!-- Game Messages -->
+    <string name="good_harvest">बढ़िया फसल! आपने %1$d सिक्के कमाए!</string>
+    <string name="bad_weather">खराब मौसम ने आपकी फसलों को प्रभावित किया।</string>
+    <string name="level_up">स्तर बढ़ा! आप स्तर %1$d पर पहुंच गए</string>
+    
+    <!-- Tutorial -->
+    <string name="tutorial_step1">यह आपका खेत है। फसल लगाकर शुरुआत करें!</string>
+    <string name="tutorial_step2">आपातकालीन और भविष्य के निवेश के लिए पैसे बचाएं</string>
+    <string name="tutorial_step3">समय के साथ अपनी संपत्ति बढ़ाने के लिए समझदारी से निवेश करें</string>
+</resources>
