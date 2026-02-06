@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -23,13 +25,13 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LoginActivity";
 
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
     private Button btnGoogleSignIn;
+    private ActivityResultLauncher<Intent> mSignInLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,20 @@ public class LoginActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        mSignInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Intent data = result.getData();
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                    try {
+                        GoogleSignInAccount account = task.getResult(ApiException.class);
+                        firebaseAuthWithGoogle(account.getIdToken());
+                    } catch (ApiException e) {
+                        Log.w(TAG, "Google sign in failed", e);
+                        Toast.makeText(this, "Google Sign In Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         btnGoogleSignIn.setOnClickListener(v -> signIn());
 
         // Guest Login (Testing)
@@ -66,23 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                Log.w(TAG, "Google sign in failed", e);
-                Toast.makeText(this, "Google Sign In Failed", Toast.LENGTH_SHORT).show();
-            }
-        }
+        mSignInLauncher.launch(signInIntent);
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
