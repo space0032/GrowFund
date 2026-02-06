@@ -21,17 +21,17 @@ public class FirebaseConfig {
         try {
             List<FirebaseApp> apps = FirebaseApp.getApps();
             if (apps.isEmpty()) {
-                // Look for service-account.json in root or resources
+                // Look for firebase-config.json in root or resources
                 InputStream serviceAccount = null;
                 try {
-                    serviceAccount = new ClassPathResource("service-account.json").getInputStream();
+                    serviceAccount = new ClassPathResource("firebase-config.json").getInputStream();
                 } catch (IOException e) {
                     // Fallback to checking file system if not in classpath
                     try {
-                        serviceAccount = new FileInputStream("service-account.json");
+                        serviceAccount = new FileInputStream("firebase-config.json");
                     } catch (IOException ex) {
                         System.out
-                                .println("WARNING: service-account.json not found. Firebase will not work correctly.");
+                                .println("WARNING: firebase-config.json not found. Firebase will not work correctly.");
                         return;
                     }
                 }
