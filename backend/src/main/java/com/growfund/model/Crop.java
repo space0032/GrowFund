@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 /**
@@ -15,38 +16,39 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Crop {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "farm_id", nullable = false)
+    @JsonIgnore
     private Farm farm;
-    
+
     @Column(nullable = false)
     private String cropType; // WHEAT, RICE, COTTON, etc.
-    
+
     @Column(nullable = false)
     private Double areaPlanted; // in acres
-    
+
     @Column(nullable = false)
     private Long investmentAmount;
-    
+
     private Long expectedYield;
-    
+
     private Long actualYield;
-    
+
     @Column(nullable = false)
     private String season; // KHARIF, RABI, ZAID
-    
+
     @Column(nullable = false)
     private LocalDateTime plantedDate = LocalDateTime.now();
-    
+
     private LocalDateTime harvestDate;
-    
+
     @Column(nullable = false)
     private String status = "PLANTED"; // PLANTED, GROWING, HARVESTED, FAILED
-    
+
     private String weatherImpact; // NORMAL, DROUGHT, FLOOD, PEST
 }

@@ -42,6 +42,15 @@
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".FarmActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PlantCropActivity"
+            android:exported="false"
+            android:parentActivityName=".FarmActivity" />
     </application>
 
 </manifest>

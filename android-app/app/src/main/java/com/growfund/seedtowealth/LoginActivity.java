@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             Log.d(TAG, "User Sync Success: " + response.body());
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, InvestmentActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, FarmActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
