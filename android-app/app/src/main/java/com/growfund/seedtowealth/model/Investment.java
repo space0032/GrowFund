@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class Investment implements Serializable {
     private Long id;
     private Long userId; // Optional, handled efficiently by backend
-    private String name;
-    private String type; // "FD", "MUTUAL_FUND", "STOCK"
+    private String schemeName;
+    private String investmentType; // "FD", "MUTUAL_FUND", "STOCK"
     private Double principalAmount;
     private Double interestRate;
     private Integer durationMonths;
@@ -19,9 +19,10 @@ public class Investment implements Serializable {
     public Investment() {
     }
 
-    public Investment(String name, String type, Double principalAmount, Double interestRate, Integer durationMonths) {
-        this.name = name;
-        this.type = type;
+    public Investment(String schemeName, String investmentType, Double principalAmount, Double interestRate,
+            Integer durationMonths) {
+        this.schemeName = schemeName;
+        this.investmentType = investmentType;
         this.principalAmount = principalAmount;
         this.interestRate = interestRate;
         this.durationMonths = durationMonths;
@@ -36,20 +37,20 @@ public class Investment implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getSchemeName() {
+        return schemeName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSchemeName(String schemeName) {
+        this.schemeName = schemeName;
     }
 
-    public String getType() {
-        return type;
+    public String getInvestmentType() {
+        return investmentType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setInvestmentType(String investmentType) {
+        this.investmentType = investmentType;
     }
 
     public Double getPrincipalAmount() {

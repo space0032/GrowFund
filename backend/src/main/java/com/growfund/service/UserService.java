@@ -45,13 +45,26 @@ public class UserService {
                 })
                 .orElseGet(() -> {
                     User newUser = new User();
-                    newUser.setEmail(userDTO.getEmail());
                     newUser.setFirebaseUid(userDTO.getUid());
                     newUser.setFullName(userDTO.getName() != null ? userDTO.getName() : "Farmer");
-                    // Generate a username from email or uid if not provided.
-                    // Using email prefix for now, handling potential duplicates is a refinement.
-                    String username = userDTO.getEmail().split("@")[0];
-                    // Ensure username uniqueness logic could go here, keeping simple for MVP.
+
+                    String email = userDTO.getEmail();
+                    if (email == null || email.isEmpty()) {
+                        // Handle case where email is not provided (e.g. phone auth)
+                        email = userDTO.getUid() + "@growfund.com";
+                    }
+                    newUser.setEmail(email);
+
+                    // Generate a username
+                    String username;
+                    if (userDTO.getEmail() != null && !userDTO.getEmail().isEmpty()) {
+                        username = userDTO.getEmail().split("@")[0];
+                    } else {
+                        username = "user_" + userDTO.getUid().substring(0, 8);
+                    }
+
+                    // Ensure username uniqueness (simple append if needed, but for now rely on UID
+                    // part)
                     newUser.setUsername(username);
 
                     // Password is required by model but handled by Firebase. Setting a dummy value.

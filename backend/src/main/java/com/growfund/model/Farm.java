@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +27,8 @@ public class Farm {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @Column(nullable = false)
@@ -41,9 +45,13 @@ public class Farm {
 
     @OneToMany(mappedBy = "farm", cascade = CascadeType.ALL)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Crop> crops = new HashSet<>();
 
     @OneToMany(mappedBy = "farm", cascade = CascadeType.ALL)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Equipment> equipment = new HashSet<>();
 }

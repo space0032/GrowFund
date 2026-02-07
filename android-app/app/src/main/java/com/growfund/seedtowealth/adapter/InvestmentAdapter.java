@@ -56,8 +56,8 @@ public class InvestmentAdapter extends RecyclerView.Adapter<InvestmentAdapter.Vi
         }
 
         public void bind(Investment investment) {
-            investmentName.setText(investment.getName());
-            investmentType.setText(investment.getType());
+            investmentName.setText(investment.getSchemeName());
+            investmentType.setText(investment.getInvestmentType());
             principalAmount.setText("₹" + String.format("%,.0f", investment.getPrincipalAmount()));
 
             if (investment.getCurrentValue() != null) {

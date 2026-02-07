@@ -19,7 +19,7 @@ public class FarmService {
     private final FarmRepository farmRepository;
     private final UserRepository userRepository;
     private final CropRepository cropRepository;
-    // private final AchievementService achievementService;
+    private final AchievementService achievementService;
 
     @Transactional
     public FarmDTO createFarm(Long userId, String farmName) {
@@ -81,7 +81,7 @@ public class FarmService {
         Farm savedFarm = farmRepository.save(farm);
 
         // Check Achievements
-        // achievementService.checkAll(savedFarm.getUser(), savedFarm);
+        achievementService.checkAll(savedFarm.getUser(), savedFarm);
 
         return convertToDTO(savedFarm);
     }

@@ -21,7 +21,7 @@ public class CropService {
     private final CropRepository cropRepository;
     private final FarmRepository farmRepository;
     private final WeatherService weatherService;
-    // private final AchievementService achievementService;
+    private final AchievementService achievementService;
     private final Random random = new Random();
 
     @Transactional
@@ -55,6 +55,10 @@ public class CropService {
         crop.setWeatherImpact(weather.getDisplayName()); // Store weather at planting time
 
         Crop savedCrop = cropRepository.save(crop);
+
+        // Check Achievements (e.g., First Steps)
+        achievementService.checkAll(farm.getUser(), farm);
+
         return convertToDTO(savedCrop);
     }
 
@@ -107,7 +111,7 @@ public class CropService {
         farmRepository.save(farm);
 
         // Check Achievements
-        // achievementService.checkAll(crop.getFarm().getUser(), crop.getFarm());
+        achievementService.checkAll(crop.getFarm().getUser(), crop.getFarm());
 
         Crop savedCrop = cropRepository.save(crop);
         return convertToDTO(savedCrop);

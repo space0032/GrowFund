@@ -21,11 +21,16 @@ public class UserController {
     @PostMapping("/sync")
     public ResponseEntity<User> syncUser(@RequestBody UserDTO userDTO,
             @AuthenticationPrincipal String uid) {
-        // We could verify the UID here if needed, but the Filter already verified the
-        // token.
-        // Ideally we trust the token's claims.
-        userDTO.setUid(uid);
-        User user = userService.syncUser(userDTO);
-        return ResponseEntity.ok(user);
+        try {
+            // We could verify the UID here if needed, but the Filter already verified the
+            // token.
+            // Ideally we trust the token's claims.
+            userDTO.setUid(uid);
+            User user = userService.syncUser(userDTO);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log to console
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
