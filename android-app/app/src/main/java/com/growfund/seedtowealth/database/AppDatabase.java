@@ -13,7 +13,7 @@ import com.growfund.seedtowealth.model.Investment;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = { Farm.class, Crop.class, Investment.class }, version = 2, exportSchema = false)
+@Database(entities = { Farm.class, Crop.class, Investment.class }, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract FarmDao farmDao();

@@ -1,6 +1,8 @@
 package com.growfund.seedtowealth.repository;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.growfund.seedtowealth.database.AppDatabase;
@@ -20,11 +22,13 @@ public class InvestmentRepository {
 
     private InvestmentDao investmentDao;
     private ExecutorService executor;
+    private Handler mainHandler;
 
     public InvestmentRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
         investmentDao = db.investmentDao();
         executor = AppDatabase.databaseWriteExecutor;
+        mainHandler = new Handler(Looper.getMainLooper());
     }
 
     public void getActiveInvestments(final RepositoryCallback<List<Investment>> callback) {
@@ -32,7 +36,7 @@ public class InvestmentRepository {
         executor.execute(() -> {
             List<Investment> localInvestments = investmentDao.getActiveInvestments();
             if (localInvestments != null && !localInvestments.isEmpty()) {
-                callback.onLocalData(localInvestments);
+                mainHandler.post(() -> callback.onLocalData(localInvestments));
             }
 
             // 2. Fetch from API
@@ -44,16 +48,16 @@ public class InvestmentRepository {
                         // 3. Update Local DB
                         executor.execute(() -> {
                             investmentDao.insertInvestments(remoteInvestments);
-                            callback.onSuccess(remoteInvestments);
+                            mainHandler.post(() -> callback.onSuccess(remoteInvestments));
                         });
                     } else {
-                        callback.onError("Failed to fetch investments: " + response.code());
+                        mainHandler.post(() -> callback.onError("Failed to fetch investments: " + response.code()));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<Investment>> call, Throwable t) {
-                    callback.onError("Network error: " + t.getMessage());
+                    mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
                 }
             });
         });
@@ -69,16 +73,16 @@ public class InvestmentRepository {
                     // Save to local DB
                     executor.execute(() -> {
                         investmentDao.insertInvestment(createdInvestment);
-                        callback.onSuccess(createdInvestment);
+                        mainHandler.post(() -> callback.onSuccess(createdInvestment));
                     });
                 } else {
-                    callback.onError("Failed to create investment: " + response.code());
+                    mainHandler.post(() -> callback.onError("Failed to create investment: " + response.code()));
                 }
             }
 
             @Override
             public void onFailure(Call<Investment> call, Throwable t) {
-                callback.onError("Network error: " + t.getMessage());
+                mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
             }
         });
     }

@@ -3,10 +3,13 @@ package com.growfund.seedtowealth.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 
 import java.io.Serializable;
 
-@Entity(tableName = "investments")
+@Entity(tableName = "investments", indices = {
+        @Index(value = "status")
+})
 public class Investment implements Serializable {
     @PrimaryKey
     private Long id;

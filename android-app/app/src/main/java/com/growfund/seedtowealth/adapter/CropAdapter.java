@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.growfund.seedtowealth.R;
 import com.growfund.seedtowealth.model.Crop;
@@ -27,9 +28,15 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.CropViewHolder
         this.listener = listener;
     }
 
-    public void setCrops(List<Crop> crops) {
-        this.crops = crops;
-        notifyDataSetChanged();
+    public void setCrops(List<Crop> newCrops) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CropDiffCallback(this.crops, newCrops));
+        this.crops = newCrops;
+        diffResult.dispatchUpdatesTo(this);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return crops.get(position).getId() != null ? crops.get(position).getId() : RecyclerView.NO_ID;
     }
 
     @NonNull
@@ -132,6 +139,39 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.CropViewHolder
             if (str == null || str.isEmpty())
                 return str;
             return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+        }
+    }
+
+    private static class CropDiffCallback extends DiffUtil.Callback {
+        private final List<Crop> oldList;
+        private final List<Crop> newList;
+
+        CropDiffCallback(List<Crop> oldList, List<Crop> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldList.get(oldItemPosition).getId().equals(newList.get(newItemPosition).getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            Crop oldCrop = oldList.get(oldItemPosition);
+            Crop newCrop = newList.get(newItemPosition);
+            return oldCrop.getStatus().equals(newCrop.getStatus()) &&
+                    oldCrop.getTimeRemainingInMillis() == newCrop.getTimeRemainingInMillis();
         }
     }
 }

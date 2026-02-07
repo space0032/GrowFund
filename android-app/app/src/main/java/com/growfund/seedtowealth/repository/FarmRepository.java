@@ -3,15 +3,18 @@ package com.growfund.seedtowealth.repository;
 import android.app.Application;
 import android.util.Log;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.growfund.seedtowealth.network.ApiClient;
 import com.growfund.seedtowealth.database.AppDatabase;
 import com.growfund.seedtowealth.database.CropDao;
 import com.growfund.seedtowealth.database.FarmDao;
 import com.growfund.seedtowealth.model.Crop;
 import com.growfund.seedtowealth.model.Farm;
-import com.growfund.seedtowealth.network.ApiClient;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -26,12 +29,14 @@ public class FarmRepository {
     private FarmDao farmDao;
     private CropDao cropDao;
     private ExecutorService executor;
+    private Handler mainHandler;
 
     public FarmRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
         farmDao = db.farmDao();
         cropDao = db.cropDao();
         executor = AppDatabase.databaseWriteExecutor;
+        mainHandler = new Handler(Looper.getMainLooper());
     }
 
     public void getFarm(final RepositoryCallback<Farm> callback) {
@@ -39,7 +44,7 @@ public class FarmRepository {
         executor.execute(() -> {
             Farm localFarm = farmDao.getMyFarm();
             if (localFarm != null) {
-                callback.onLocalData(localFarm);
+                mainHandler.post(() -> callback.onLocalData(localFarm));
             }
 
             // 2. Fetch from API
@@ -51,16 +56,16 @@ public class FarmRepository {
                         // 3. Update Local DB
                         executor.execute(() -> {
                             farmDao.insertFarm(remoteFarm);
-                            callback.onSuccess(remoteFarm);
+                            mainHandler.post(() -> callback.onSuccess(remoteFarm));
                         });
                     } else {
-                        callback.onError("Failed to fetch farm: " + response.code());
+                        mainHandler.post(() -> callback.onError("Failed to fetch farm: " + response.code()));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Farm> call, Throwable t) {
-                    callback.onError("Network error: " + t.getMessage());
+                    mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
                 }
             });
         });
@@ -71,7 +76,7 @@ public class FarmRepository {
         executor.execute(() -> {
             List<Crop> localCrops = cropDao.getCropsByFarmId(farmId);
             if (localCrops != null && !localCrops.isEmpty()) {
-                callback.onLocalData(localCrops);
+                mainHandler.post(() -> callback.onLocalData(localCrops));
             }
 
             // 2. Fetch from API
@@ -83,16 +88,16 @@ public class FarmRepository {
                         // 3. Update Local DB
                         executor.execute(() -> {
                             cropDao.updateCropsForFarm(farmId, remoteCrops);
-                            callback.onSuccess(remoteCrops);
+                            mainHandler.post(() -> callback.onSuccess(remoteCrops));
                         });
                     } else {
-                        callback.onError("Failed to fetch crops: " + response.code());
+                        mainHandler.post(() -> callback.onError("Failed to fetch crops: " + response.code()));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<Crop>> call, Throwable t) {
-                    callback.onError("Network error: " + t.getMessage());
+                    mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
                 }
             });
         });
@@ -103,7 +108,7 @@ public class FarmRepository {
         executor.execute(() -> {
             Crop localCrop = cropDao.getCropById(cropId);
             if (localCrop != null) {
-                callback.onLocalData(localCrop);
+                mainHandler.post(() -> callback.onLocalData(localCrop));
             }
 
             // 2. Fetch from API
@@ -114,16 +119,16 @@ public class FarmRepository {
                         Crop remoteCrop = response.body();
                         executor.execute(() -> {
                             cropDao.insertCrop(remoteCrop);
-                            callback.onSuccess(remoteCrop);
+                            mainHandler.post(() -> callback.onSuccess(remoteCrop));
                         });
                     } else {
-                        callback.onError("Failed to fetch crop: " + response.code());
+                        mainHandler.post(() -> callback.onError("Failed to fetch crop: " + response.code()));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Crop> call, Throwable t) {
-                    callback.onError("Network error: " + t.getMessage());
+                    mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
                 }
             });
         });
@@ -138,16 +143,16 @@ public class FarmRepository {
                     Crop harvestedCrop = response.body();
                     executor.execute(() -> {
                         cropDao.insertCrop(harvestedCrop);
-                        callback.onSuccess(harvestedCrop);
+                        mainHandler.post(() -> callback.onSuccess(harvestedCrop));
                     });
                 } else {
-                    callback.onError("Failed to harvest crop: " + response.code());
+                    mainHandler.post(() -> callback.onError("Failed to harvest crop: " + response.code()));
                 }
             }
 
             @Override
             public void onFailure(Call<Crop> call, Throwable t) {
-                callback.onError("Network error: " + t.getMessage());
+                mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
             }
         });
     }
@@ -161,16 +166,16 @@ public class FarmRepository {
                     Crop plantedCrop = response.body();
                     executor.execute(() -> {
                         cropDao.insertCrop(plantedCrop);
-                        callback.onSuccess(plantedCrop);
+                        mainHandler.post(() -> callback.onSuccess(plantedCrop));
                     });
                 } else {
-                    callback.onError("Failed to plant crop: " + response.code());
+                    mainHandler.post(() -> callback.onError("Failed to plant crop: " + response.code()));
                 }
             }
 
             @Override
             public void onFailure(Call<Crop> call, Throwable t) {
-                callback.onError("Network error: " + t.getMessage());
+                mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
             }
         });
     }

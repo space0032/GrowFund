@@ -3,8 +3,12 @@ package com.growfund.seedtowealth.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
+import androidx.room.Index;
 
-@Entity(tableName = "crops")
+@Entity(tableName = "crops", indices = {
+        @Index(value = "farm_id"),
+        @Index(value = "status")
+})
 public class Crop {
     @PrimaryKey
     private Long id;
