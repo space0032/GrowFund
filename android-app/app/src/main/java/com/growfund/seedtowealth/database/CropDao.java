@@ -36,4 +36,7 @@ public interface CropDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCrop(Crop crop);
+
+    @Query("DELETE FROM crops WHERE id IN (:cropIds)")
+    void deleteCropsByIds(List<Long> cropIds);
 }

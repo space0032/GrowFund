@@ -54,6 +54,9 @@ public class FarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farm);
 
+        // Enable StrictMode for development builds
+        com.growfund.seedtowealth.utils.StrictModeConfig.enableStrictMode(this);
+
         // Initialize Repository
         farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
 

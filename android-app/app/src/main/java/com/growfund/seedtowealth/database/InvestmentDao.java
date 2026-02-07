@@ -29,4 +29,10 @@ public interface InvestmentDao {
 
     @Query("DELETE FROM investments")
     void deleteAll();
+
+    @Query("DELETE FROM investments WHERE id IN (:investmentIds)")
+    void deleteInvestmentsByIds(List<Long> investmentIds);
+
+    @Query("UPDATE investments SET status = :newStatus WHERE id IN (:investmentIds)")
+    void updateInvestmentStatus(List<Long> investmentIds, String newStatus);
 }
