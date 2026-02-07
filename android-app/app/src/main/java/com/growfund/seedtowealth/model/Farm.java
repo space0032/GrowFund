@@ -1,6 +1,12 @@
 package com.growfund.seedtowealth.model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.Ignore;
+
+@Entity(tableName = "farms")
 public class Farm {
+    @PrimaryKey
     private Long id;
     private String farmName;
     private Double landSize;
@@ -12,6 +18,7 @@ public class Farm {
     public Farm() {
     }
 
+    @Ignore
     public Farm(Long id, String farmName, Double landSize, Long savings, Long emergencyFund, Integer cropCount) {
         this.id = id;
         this.farmName = farmName;

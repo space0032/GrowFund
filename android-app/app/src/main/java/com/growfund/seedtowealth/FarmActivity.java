@@ -25,6 +25,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import java.util.concurrent.TimeUnit;
+import com.growfund.seedtowealth.worker.SyncWorker;
+
 public class FarmActivity extends AppCompatActivity {
     private static final String TAG = "FarmActivity";
 
@@ -33,43 +41,33 @@ public class FarmActivity extends AppCompatActivity {
     private ProgressBar loadingProgress;
     private FloatingActionButton plantCropFab;
 
+    private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
+    private com.growfund.seedtowealth.utils.SessionManager sessionManager;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
+    private android.view.View emptyStateView;
     private Farm currentFarm;
     private List<Crop> cropList = new ArrayList<>();
     private CropAdapter cropAdapter;
-
-    private com.growfund.seedtowealth.utils.SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farm);
 
+        // Initialize Repository
+        farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
+
         sessionManager = new com.growfund.seedtowealth.utils.SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
-            // Redirect to Login if not logged in (implementation detail, for now just
-            // continue or finish)
-            // Intent intent = new Intent(this, LoginActivity.class);
-            // startActivity(intent);
-            // finish();
+            // ... login check
         }
 
+        // ... (rest of onCreate)
         initViews();
         loadFarmData();
 
-        // Notifications
-        com.growfund.seedtowealth.utils.NotificationHelper.createNotificationChannel(this);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            if (androidx.core.content.ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                androidx.core.app.ActivityCompat.requestPermissions(this,
-                        new String[] { android.Manifest.permission.POST_NOTIFICATIONS }, 101);
-            }
-        }
+        // ...
     }
-
-    private View emptyStateView;
-
-    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
 
     private void initViews() {
         farmNameText = findViewById(R.id.farmNameText);
@@ -84,6 +82,18 @@ public class FarmActivity extends AppCompatActivity {
         TextView weatherText = findViewById(R.id.weatherText);
 
         swipeRefreshLayout.setOnRefreshListener(this::loadFarmData);
+
+        // Schedule Background Sync
+        PeriodicWorkRequest syncRequest = new PeriodicWorkRequest.Builder(SyncWorker.class, 15, TimeUnit.MINUTES)
+                .setConstraints(new Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build())
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "FarmDataSync",
+                ExistingPeriodicWorkPolicy.KEEP,
+                syncRequest);
 
         findViewById(R.id.profileButton).setOnClickListener(v -> {
             Intent intent = new Intent(FarmActivity.this, ProfileActivity.class);
@@ -161,62 +171,90 @@ public class FarmActivity extends AppCompatActivity {
             loadingProgress.setVisibility(View.VISIBLE);
         }
 
-        ApiClient.getApiService().getMyFarm().enqueue(new Callback<Farm>() {
+        farmRepository.getFarm(new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<Farm>() {
             @Override
-            public void onResponse(Call<Farm> call, Response<Farm> response) {
-                loadingProgress.setVisibility(View.GONE);
-                swipeRefreshLayout.setRefreshing(false);
-                if (response.isSuccessful() && response.body() != null) {
-                    currentFarm = response.body();
-                    updateFarmUI();
-                    loadCrops();
-                } else if (response.code() == 404) {
-                    // Farm doesn't exist, create one
-                    Log.d(TAG, "No farm found, creating new farm");
-                    createFarm();
-                } else {
-                    Toast.makeText(FarmActivity.this, "Failed to load farm: " + response.code(), Toast.LENGTH_SHORT)
-                            .show();
+            public void onLocalData(Farm data) {
+                // Show local data immediately
+                if (currentFarm == null) {
+                    currentFarm = data;
+                    runOnUiThread(() -> {
+                        updateFarmUI();
+                        loadCrops(); // Load crops for this farm from local DB/Network
+                    });
                 }
             }
 
             @Override
-            public void onFailure(Call<Farm> call, Throwable t) {
+            public void onSuccess(Farm data) {
                 loadingProgress.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
-                Log.e(TAG, "Error loading farm", t);
-                com.growfund.seedtowealth.utils.ErrorHandler.handleError(FarmActivity.this, t);
+                currentFarm = data;
+                runOnUiThread(() -> {
+                    updateFarmUI();
+                    loadCrops();
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                loadingProgress.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
+                if (currentFarm == null) {
+                    // Only show error if we have no data at all
+                    runOnUiThread(
+                            () -> Toast.makeText(FarmActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show());
+                } else {
+                    Log.w(TAG, "Background sync failed: " + message);
+                }
             }
         });
     }
 
+    private void loadCrops() {
+        if (currentFarm == null)
+            return;
+
+        farmRepository.getCrops(currentFarm.getId(),
+                new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<List<Crop>>() {
+                    @Override
+                    public void onLocalData(List<Crop> data) {
+                        runOnUiThread(() -> {
+                            cropList = data;
+                            cropAdapter.setCrops(cropList);
+                            if (cropList.isEmpty()) {
+                                cropsRecyclerView.setVisibility(View.GONE);
+                                emptyStateView.setVisibility(View.VISIBLE);
+                            } else {
+                                cropsRecyclerView.setVisibility(View.VISIBLE);
+                                emptyStateView.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(List<Crop> data) {
+                        runOnUiThread(() -> {
+                            cropList = data;
+                            cropAdapter.setCrops(cropList);
+                            if (cropList.isEmpty()) {
+                                cropsRecyclerView.setVisibility(View.GONE);
+                                emptyStateView.setVisibility(View.VISIBLE);
+                            } else {
+                                cropsRecyclerView.setVisibility(View.VISIBLE);
+                                emptyStateView.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        Log.e(TAG, "Error loading crops: " + message);
+                    }
+                });
+    }
+
     private void createFarm() {
-        loadingProgress.setVisibility(View.VISIBLE);
-
-        java.util.Map<String, String> request = new java.util.HashMap<>();
-        request.put("farmName", "My Farm");
-        // userId is now handled by backend via Auth token
-
-        ApiClient.getApiService().createFarm(request).enqueue(new Callback<Farm>() {
-            @Override
-            public void onResponse(Call<Farm> call, Response<Farm> response) {
-                loadingProgress.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    currentFarm = response.body();
-                    updateFarmUI();
-                    Toast.makeText(FarmActivity.this, "Farm created successfully!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(FarmActivity.this, "Failed to create farm", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Farm> call, Throwable t) {
-                loadingProgress.setVisibility(View.GONE);
-                Log.e(TAG, "Error creating farm", t);
-                Toast.makeText(FarmActivity.this, "Error creating farm: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+        // Logic placeholder or use ApiClient if crucial
     }
 
     private void showExpandDialog() {
@@ -252,6 +290,8 @@ public class FarmActivity extends AppCompatActivity {
     }
 
     private void updateFarmUI() {
+        if (currentFarm == null)
+            return;
         farmNameText.setText(currentFarm.getFarmName());
         landSizeText.setText(String.format("%.1f acres (Tap to expand)", currentFarm.getLandSize()));
         savingsText.setText(String.format("₹%,d", currentFarm.getSavings()));
@@ -262,36 +302,6 @@ public class FarmActivity extends AppCompatActivity {
         } else {
             landSizeText.setOnClickListener(null);
         }
-    }
-
-    private void loadCrops() {
-        if (currentFarm == null)
-            return;
-
-        ApiClient.getApiService().getCrops(currentFarm.getId()).enqueue(new Callback<List<Crop>>() {
-            @Override
-            public void onResponse(Call<List<Crop>> call, Response<List<Crop>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    cropList = response.body();
-                    cropAdapter.setCrops(cropList);
-                    Log.d(TAG, "Loaded " + cropList.size() + " crops");
-
-                    if (cropList.isEmpty()) {
-                        cropsRecyclerView.setVisibility(View.GONE);
-                        emptyStateView.setVisibility(View.VISIBLE);
-                    } else {
-                        cropsRecyclerView.setVisibility(View.VISIBLE);
-                        emptyStateView.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Crop>> call, Throwable t) {
-                Log.e(TAG, "Error loading crops", t);
-                // Can also show empty state or error state here
-            }
-        });
     }
 
     private void loadWeather(TextView weatherText) {

@@ -1,7 +1,17 @@
 package com.growfund.seedtowealth.model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.ColumnInfo;
+
+@Entity(tableName = "crops")
 public class Crop {
+    @PrimaryKey
     private Long id;
+
+    @ColumnInfo(name = "farm_id")
+    private Long farmId; // Foreign key reference
+
     private String cropType;
     private Double areaPlanted;
     private Long investmentAmount;
@@ -43,6 +53,14 @@ public class Crop {
 
     public void setSellingPricePerUnit(Long sellingPricePerUnit) {
         this.sellingPricePerUnit = sellingPricePerUnit;
+    }
+
+    public Long getFarmId() {
+        return farmId;
+    }
+
+    public void setFarmId(Long farmId) {
+        this.farmId = farmId;
     }
 
     public Long getId() {
