@@ -39,6 +39,83 @@ public class FarmRepository {
         mainHandler = new Handler(Looper.getMainLooper());
     }
 
+    // ===== LiveData Methods (Reactive) =====
+
+    /**
+     * Get farm data as LiveData for reactive updates.
+     * Automatically updates UI when data changes.
+     */
+    public LiveData<Farm> getFarmLiveData() {
+        MutableLiveData<Farm> liveData = new MutableLiveData<>();
+
+        executor.execute(() -> {
+            // Load from local DB first
+            Farm localFarm = farmDao.getMyFarm();
+            if (localFarm != null) {
+                liveData.postValue(localFarm);
+            }
+
+            // Fetch from API and update
+            ApiClient.getApiService().getMyFarm().enqueue(new Callback<Farm>() {
+                @Override
+                public void onResponse(Call<Farm> call, Response<Farm> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Farm remoteFarm = response.body();
+                        executor.execute(() -> {
+                            farmDao.insertFarm(remoteFarm);
+                            liveData.postValue(remoteFarm);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Farm> call, Throwable t) {
+                    Log.e(TAG, "Failed to fetch farm: " + t.getMessage());
+                }
+            });
+        });
+
+        return liveData;
+    }
+
+    /**
+     * Get crops as LiveData for reactive updates.
+     */
+    public LiveData<List<Crop>> getCropsLiveData(Long farmId) {
+        MutableLiveData<List<Crop>> liveData = new MutableLiveData<>();
+
+        executor.execute(() -> {
+            // Load from local DB first
+            List<Crop> localCrops = cropDao.getCropsByFarmId(farmId);
+            if (localCrops != null && !localCrops.isEmpty()) {
+                liveData.postValue(localCrops);
+            }
+
+            // Fetch from API and update
+            ApiClient.getApiService().getCrops(farmId).enqueue(new Callback<List<Crop>>() {
+                @Override
+                public void onResponse(Call<List<Crop>> call, Response<List<Crop>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Crop> remoteCrops = response.body();
+                        executor.execute(() -> {
+                            cropDao.updateCropsForFarm(farmId, remoteCrops);
+                            liveData.postValue(remoteCrops);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Crop>> call, Throwable t) {
+                    Log.e(TAG, "Failed to fetch crops: " + t.getMessage());
+                }
+            });
+        });
+
+        return liveData;
+    }
+
+    // ===== Callback Methods (Legacy) =====
+
     public void getFarm(final RepositoryCallback<Farm> callback) {
         // 1. Fetch from Local DB First
         executor.execute(() -> {

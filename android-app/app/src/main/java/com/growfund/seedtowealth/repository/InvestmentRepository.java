@@ -5,6 +5,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.growfund.seedtowealth.database.AppDatabase;
 import com.growfund.seedtowealth.database.InvestmentDao;
 import com.growfund.seedtowealth.model.Investment;
@@ -30,6 +33,46 @@ public class InvestmentRepository {
         executor = AppDatabase.databaseWriteExecutor;
         mainHandler = new Handler(Looper.getMainLooper());
     }
+
+    // ===== LiveData Methods (Reactive) =====
+
+    /**
+     * Get active investments as LiveData for reactive updates.
+     */
+    public LiveData<List<Investment>> getActiveInvestmentsLiveData() {
+        MutableLiveData<List<Investment>> liveData = new MutableLiveData<>();
+
+        executor.execute(() -> {
+            // Load from local DB first
+            List<Investment> localInvestments = investmentDao.getActiveInvestments();
+            if (localInvestments != null && !localInvestments.isEmpty()) {
+                liveData.postValue(localInvestments);
+            }
+
+            // Fetch from API and update
+            ApiClient.getApiService().getMyActiveInvestments().enqueue(new Callback<List<Investment>>() {
+                @Override
+                public void onResponse(Call<List<Investment>> call, Response<List<Investment>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Investment> remoteInvestments = response.body();
+                        executor.execute(() -> {
+                            investmentDao.insertInvestments(remoteInvestments);
+                            liveData.postValue(remoteInvestments);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Investment>> call, Throwable t) {
+                    Log.e(TAG, "Failed to fetch investments: " + t.getMessage());
+                }
+            });
+        });
+
+        return liveData;
+    }
+
+    // ===== Callback Methods (Legacy) =====
 
     public void getActiveInvestments(final RepositoryCallback<List<Investment>> callback) {
         // 1. Fetch from Local DB First
