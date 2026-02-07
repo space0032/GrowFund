@@ -81,4 +81,17 @@ public interface ApiService {
 
     @POST("api/quizzes/{id}/submit")
     Call<Boolean> submitQuiz(@Path("id") Long quizId, @retrofit2.http.Query("optionIndex") Integer optionIndex);
+
+    // Random Events
+    @GET("api/events/active")
+    Call<List<com.growfund.seedtowealth.model.RandomEvent>> getActiveEvents();
+
+    @GET("api/events/history")
+    Call<List<com.growfund.seedtowealth.model.RandomEvent>> getEventHistory();
+
+    @POST("api/events/generate")
+    Call<java.util.Map<String, Object>> generateEvent();
+
+    @GET("api/events/active/crop/{cropType}")
+    Call<List<com.growfund.seedtowealth.model.RandomEvent>> getActiveEventsForCrop(@Path("cropType") String cropType);
 }

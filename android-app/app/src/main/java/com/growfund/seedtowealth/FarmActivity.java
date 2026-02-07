@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.growfund.seedtowealth.adapter.CropAdapter;
+import com.growfund.seedtowealth.adapter.EventAdapter;
 import com.growfund.seedtowealth.model.Crop;
 import com.growfund.seedtowealth.model.Farm;
+import com.growfund.seedtowealth.model.RandomEvent;
 import com.growfund.seedtowealth.network.ApiClient;
 
 import java.util.ArrayList;
@@ -43,16 +45,20 @@ public class FarmActivity extends AppCompatActivity {
 
     private TextView farmNameText, landSizeText, savingsText, emergencyFundText;
     private RecyclerView cropsRecyclerView;
+    private RecyclerView eventsRecyclerView;
+    private View eventsSection;
     private ProgressBar loadingProgress;
     private FloatingActionButton plantCropFab;
 
     private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
+    private com.growfund.seedtowealth.repository.EventRepository eventRepository;
     private com.growfund.seedtowealth.utils.SessionManager sessionManager;
     private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
     private android.view.View emptyStateView;
     private Farm currentFarm;
     private List<Crop> cropList = new ArrayList<>();
     private CropAdapter cropAdapter;
+    private EventAdapter eventAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +68,9 @@ public class FarmActivity extends AppCompatActivity {
         // Enable StrictMode for development builds
         com.growfund.seedtowealth.utils.StrictModeConfig.enableStrictMode(this);
 
-        // Initialize Repository
+        // Initialize Repositories
         farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
+        eventRepository = new com.growfund.seedtowealth.repository.EventRepository(getApplication());
 
         sessionManager = new com.growfund.seedtowealth.utils.SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
@@ -83,6 +90,8 @@ public class FarmActivity extends AppCompatActivity {
         savingsText = findViewById(R.id.savingsText);
         emergencyFundText = findViewById(R.id.emergencyFundText);
         cropsRecyclerView = findViewById(R.id.cropsRecyclerView);
+        eventsRecyclerView = findViewById(R.id.eventsRecyclerView);
+        eventsSection = findViewById(R.id.eventsSection);
         emptyStateView = findViewById(R.id.emptyStateView);
         loadingProgress = findViewById(R.id.loadingProgress);
         plantCropFab = findViewById(R.id.plantCropFab);
@@ -129,14 +138,22 @@ public class FarmActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Setup RecyclerView for crops
         cropsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         cropAdapter = new CropAdapter(crop -> {
             Intent intent = new Intent(this, CropDetailActivity.class);
             intent.putExtra("cropId", crop.getId());
             startActivity(intent);
         });
         cropsRecyclerView.setAdapter(cropAdapter);
+
+        // Setup RecyclerView for events
+        eventAdapter = new EventAdapter();
+        eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        eventsRecyclerView.setAdapter(eventAdapter);
+
+        // Load active events
+        loadActiveEvents();
 
         plantCropFab.setOnClickListener(v -> {
             if (currentFarm != null) {
@@ -339,6 +356,44 @@ public class FarmActivity extends AppCompatActivity {
                 weatherText.setText("Weather: --");
             }
         });
+    }
+
+    private void loadActiveEvents() {
+        eventRepository.fetchActiveEventsFromServer(
+                new com.growfund.seedtowealth.repository.EventRepository.RepositoryCallback<List<RandomEvent>>() {
+                    @Override
+                    public void onSuccess(List<RandomEvent> result) {
+                        if (result != null && !result.isEmpty()) {
+                            eventAdapter.setEvents(result);
+                            eventsSection.setVisibility(View.VISIBLE);
+                        } else {
+                            eventsSection.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "Failed to load events: " + error);
+                        // Try loading from local cache
+                        eventRepository.getActiveEvents(
+                                new com.growfund.seedtowealth.repository.EventRepository.RepositoryCallback<List<RandomEvent>>() {
+                                    @Override
+                                    public void onSuccess(List<RandomEvent> result) {
+                                        if (result != null && !result.isEmpty()) {
+                                            eventAdapter.setEvents(result);
+                                            eventsSection.setVisibility(View.VISIBLE);
+                                        } else {
+                                            eventsSection.setVisibility(View.GONE);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(String error) {
+                                        eventsSection.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                });
     }
 
     @Override

@@ -22,6 +22,7 @@ public class CropService {
     private final FarmRepository farmRepository;
     private final WeatherService weatherService;
     private final AchievementService achievementService;
+    private final RandomEventService randomEventService;
     private final Random random = new Random();
 
     @Transactional
@@ -29,13 +30,25 @@ public class CropService {
         Farm farm = farmRepository.findById(farmId)
                 .orElseThrow(() -> new RuntimeException("Farm not found"));
 
+        // Check for active events that affect planting cost
+        double costMultiplier = 1.0;
+        List<com.growfund.model.RandomEvent> activeEvents = randomEventService.getActiveEvents();
+        for (com.growfund.model.RandomEvent event : activeEvents) {
+            if (event.getEventType().equals(com.growfund.model.RandomEvent.GOVERNMENT_SUBSIDY)) {
+                costMultiplier = event.getImpactMultiplier();
+                break;
+            }
+        }
+
+        Long actualCost = (long) (investmentAmount * costMultiplier);
+
         // Check for sufficient funds
-        if (farm.getSavings() < investmentAmount) {
-            throw new RuntimeException("Insufficient savings to plant this crop. Required: " + investmentAmount);
+        if (farm.getSavings() < actualCost) {
+            throw new RuntimeException("Insufficient savings to plant this crop. Required: " + actualCost);
         }
 
         // Deduct cost from savings
-        farm.setSavings(farm.getSavings() - investmentAmount);
+        farm.setSavings(farm.getSavings() - actualCost);
         farmRepository.save(farm);
 
         Crop crop = new Crop();
@@ -48,7 +61,25 @@ public class CropService {
         crop.setStatus("PLANTED");
 
         // Calculate expected yield based on crop type and area
-        crop.setExpectedYield(calculateExpectedYield(cropType, areaPlanted, investmentAmount));
+        Long baseYield = calculateExpectedYield(cropType, areaPlanted, investmentAmount);
+
+        // Apply event multipliers to yield
+        double yieldMultiplier = 1.0;
+        for (com.growfund.model.RandomEvent event : activeEvents) {
+            if (event.getEventType().equals(com.growfund.model.RandomEvent.DROUGHT) ||
+                    event.getEventType().equals(com.growfund.model.RandomEvent.BONUS_RAIN) ||
+                    event.getEventType().equals(com.growfund.model.RandomEvent.HEATWAVE)) {
+                yieldMultiplier *= event.getImpactMultiplier();
+            }
+            // Pest attacks affect specific crops
+            if (event.getEventType().equals(com.growfund.model.RandomEvent.PEST_ATTACK) &&
+                    cropType.equals(event.getAffectedCropType())) {
+                yieldMultiplier *= event.getImpactMultiplier();
+            }
+        }
+
+        Long expectedYield = (long) (baseYield * yieldMultiplier);
+        crop.setExpectedYield(expectedYield);
 
         // Set harvest date based on crop type (Testing: minutes instead of months)
         long baseGrowthTimeMinutes = getGrowthTimeInMinutes(cropType);
@@ -106,8 +137,20 @@ public class CropService {
         Long actualYield = (long) (expectedYield * variance);
         crop.setActualYield(actualYield);
 
-        // Calculate functionality details
-        Long pricePerUnit = getMarketPrice(crop.getCropType());
+        // Calculate market price with event multipliers
+        Long basePrice = getMarketPrice(crop.getCropType());
+        double priceMultiplier = 1.0;
+
+        // Check for market events
+        List<com.growfund.model.RandomEvent> activeEvents = randomEventService.getActiveEvents();
+        for (com.growfund.model.RandomEvent event : activeEvents) {
+            if (event.getEventType().equals(com.growfund.model.RandomEvent.MARKET_SURGE) ||
+                    event.getEventType().equals(com.growfund.model.RandomEvent.MARKET_CRASH)) {
+                priceMultiplier *= event.getImpactMultiplier();
+            }
+        }
+
+        Long pricePerUnit = (long) (basePrice * priceMultiplier);
         Long revenue = actualYield * pricePerUnit;
         Long profit = revenue - crop.getInvestmentAmount();
 

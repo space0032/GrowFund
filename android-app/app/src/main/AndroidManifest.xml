@@ -43,6 +43,15 @@
             android:exported="false" />
 
         <activity
+            android:name=".MarketTrendsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".EventHistoryActivity"
+            android:exported="false"
+            android:parentActivityName=".FarmActivity" />
+
+        <activity
             android:name=".FarmActivity"
             android:exported="false" />
 
