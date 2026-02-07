@@ -47,4 +47,8 @@ public interface ApiService {
 
     @DELETE("api/crops/{id}")
     Call<Void> deleteCrop(@Path("id") Long cropId);
+
+    // Leaderboard
+    @GET("api/leaderboard")
+    Call<List<com.growfund.seedtowealth.model.LeaderboardEntry>> getLeaderboard();
 }

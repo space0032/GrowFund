@@ -56,6 +56,11 @@
             android:name=".CropDetailActivity"
             android:exported="false"
             android:parentActivityName=".FarmActivity" />
+            
+        <activity
+            android:name=".LeaderboardActivity"
+            android:exported="false"
+            android:parentActivityName=".FarmActivity" />
     </application>
 
 </manifest>

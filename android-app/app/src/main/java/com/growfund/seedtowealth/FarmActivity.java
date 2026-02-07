@@ -69,6 +69,11 @@ public class FarmActivity extends AppCompatActivity {
         loadingProgress = findViewById(R.id.loadingProgress);
         plantCropFab = findViewById(R.id.plantCropFab);
 
+        findViewById(R.id.leaderboardButton).setOnClickListener(v -> {
+            Intent intent = new Intent(FarmActivity.this, LeaderboardActivity.class);
+            startActivity(intent);
+        });
+
         cropsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         cropAdapter = new CropAdapter(crop -> {
