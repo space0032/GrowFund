@@ -308,9 +308,9 @@ public class FarmActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (currentFarm != null) {
-            loadCrops(); // Refresh crops when returning from PlantCropActivity
+        if (sessionManager.isLoggedIn()) {
+            // Refresh all farm data (including savings)
+            loadFarmData();
         }
-        // Refresh weather too? Maybe.
     }
 }

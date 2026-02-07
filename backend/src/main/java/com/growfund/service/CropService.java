@@ -29,6 +29,15 @@ public class CropService {
         Farm farm = farmRepository.findById(farmId)
                 .orElseThrow(() -> new RuntimeException("Farm not found"));
 
+        // Check for sufficient funds
+        if (farm.getSavings() < investmentAmount) {
+            throw new RuntimeException("Insufficient savings to plant this crop. Required: " + investmentAmount);
+        }
+
+        // Deduct cost from savings
+        farm.setSavings(farm.getSavings() - investmentAmount);
+        farmRepository.save(farm);
+
         Crop crop = new Crop();
         crop.setFarm(farm);
         crop.setCropType(cropType);
@@ -64,6 +73,7 @@ public class CropService {
 
     public List<CropDTO> getCropsByFarm(Long farmId) {
         return cropRepository.findByFarmId(farmId).stream()
+                .sorted((c1, c2) -> c2.getPlantedDate().compareTo(c1.getPlantedDate()))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
