@@ -53,6 +53,14 @@ public class SyncWorker extends Worker {
                     }
                     database.cropDao().updateCropsForFarm(farm.getId(), crops);
                 }
+
+                // 3. Fetch Investments
+                Response<List<com.growfund.seedtowealth.model.Investment>> investmentsResponse = ApiClient
+                        .getApiService().getMyActiveInvestments().execute();
+                if (investmentsResponse.isSuccessful() && investmentsResponse.body() != null) {
+                    List<com.growfund.seedtowealth.model.Investment> investments = investmentsResponse.body();
+                    database.investmentDao().insertInvestments(investments);
+                }
             } else {
                 // Determine if we should retry based on error code
                 if (farmResponse.code() >= 500) {

@@ -30,11 +30,14 @@ public class CropDetailActivity extends AppCompatActivity {
 
     private Long cropId;
     private Crop currentCrop;
+    private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop_detail);
+
+        farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
 
         cropId = getIntent().getLongExtra("cropId", -1);
         if (cropId == -1) {
@@ -69,25 +72,35 @@ public class CropDetailActivity extends AppCompatActivity {
     private void loadCropData() {
         loadingProgress.setVisibility(View.VISIBLE);
 
-        ApiClient.getApiService().getCrop(cropId).enqueue(new Callback<Crop>() {
-            @Override
-            public void onResponse(Call<Crop> call, Response<Crop> response) {
-                loadingProgress.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    currentCrop = response.body();
-                    updateUI();
-                } else {
-                    Toast.makeText(CropDetailActivity.this,
-                            "Failed to load crop: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
+        farmRepository.getCrop(cropId,
+                new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<Crop>() {
+                    @Override
+                    public void onLocalData(Crop data) {
+                        runOnUiThread(() -> {
+                            currentCrop = data;
+                            updateUI();
+                            loadingProgress.setVisibility(View.GONE);
+                        });
+                    }
 
-            @Override
-            public void onFailure(Call<Crop> call, Throwable t) {
-                loadingProgress.setVisibility(View.GONE);
-                com.growfund.seedtowealth.utils.ErrorHandler.handleError(CropDetailActivity.this, t);
-            }
-        });
+                    @Override
+                    public void onSuccess(Crop data) {
+                        runOnUiThread(() -> {
+                            currentCrop = data;
+                            updateUI();
+                            loadingProgress.setVisibility(View.GONE);
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            Toast.makeText(CropDetailActivity.this, "Error: " + message, Toast.LENGTH_SHORT)
+                                    .show();
+                        });
+                    }
+                });
     }
 
     private void updateUI() {
@@ -177,31 +190,37 @@ public class CropDetailActivity extends AppCompatActivity {
         loadingProgress.setVisibility(View.VISIBLE);
         harvestButton.setEnabled(false);
 
-        ApiClient.getApiService().harvestCrop(cropId).enqueue(new Callback<Crop>() {
-            @Override
-            public void onResponse(Call<Crop> call, Response<Crop> response) {
-                loadingProgress.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    currentCrop = response.body();
-                    updateUI();
+        farmRepository.harvestCrop(cropId,
+                new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<Crop>() {
+                    @Override
+                    public void onLocalData(Crop data) {
+                        // Not used for harvest operation
+                    }
 
-                    // Play Sound & Vibrate
-                    com.growfund.seedtowealth.utils.SoundManager.playHarvestSound(CropDetailActivity.this);
+                    @Override
+                    public void onSuccess(Crop data) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            currentCrop = data;
+                            updateUI();
 
-                    Toast.makeText(CropDetailActivity.this, "Harvest Successful!", Toast.LENGTH_LONG).show();
-                } else {
-                    harvestButton.setEnabled(true);
-                    Toast.makeText(CropDetailActivity.this, "Harvest Failed: " + response.code(), Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
+                            // Play Sound & Vibrate
+                            com.growfund.seedtowealth.utils.SoundManager.playHarvestSound(CropDetailActivity.this);
 
-            @Override
-            public void onFailure(Call<Crop> call, Throwable t) {
-                loadingProgress.setVisibility(View.GONE);
-                harvestButton.setEnabled(true);
-                Toast.makeText(CropDetailActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                            Toast.makeText(CropDetailActivity.this, "Harvest Successful!", Toast.LENGTH_LONG)
+                                    .show();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            harvestButton.setEnabled(true);
+                            Toast.makeText(CropDetailActivity.this, "Error: " + message, Toast.LENGTH_SHORT)
+                                    .show();
+                        });
+                    }
+                });
     }
 }

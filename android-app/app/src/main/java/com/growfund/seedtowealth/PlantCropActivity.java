@@ -36,11 +36,14 @@ public class PlantCropActivity extends AppCompatActivity {
 
     private long currentSavings = 0;
     private TextView currentSavingsText;
+    private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plant_crop);
+
+        farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
 
         farmId = getIntent().getLongExtra("farmId", -1);
         if (farmId == -1) {
@@ -68,26 +71,32 @@ public class PlantCropActivity extends AppCompatActivity {
     }
 
     private void fetchFarmSavings() {
-        ApiClient.getApiService().getMyFarm().enqueue(new Callback<com.growfund.seedtowealth.model.Farm>() {
-            @Override
-            public void onResponse(Call<com.growfund.seedtowealth.model.Farm> call,
-                    Response<com.growfund.seedtowealth.model.Farm> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    currentSavings = response.body().getSavings();
-                    currentSavingsText.setText(String.format("Current Savings: ₹%,d", currentSavings));
-                    Log.d(TAG, "Savings loaded: " + currentSavings);
-                } else {
-                    currentSavingsText.setText("Current Savings: Error");
-                    Log.e(TAG, "Failed to load savings: " + response.code());
-                }
-            }
+        farmRepository.getFarm(
+                new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<com.growfund.seedtowealth.model.Farm>() {
+                    @Override
+                    public void onLocalData(com.growfund.seedtowealth.model.Farm data) {
+                        runOnUiThread(() -> {
+                            currentSavings = data.getSavings();
+                            currentSavingsText.setText(String.format("Current Savings: ₹%,d", currentSavings));
+                        });
+                    }
 
-            @Override
-            public void onFailure(Call<com.growfund.seedtowealth.model.Farm> call, Throwable t) {
-                currentSavingsText.setText("Current Savings: Offline");
-                Log.e(TAG, "Error loading savings", t);
-            }
-        });
+                    @Override
+                    public void onSuccess(com.growfund.seedtowealth.model.Farm data) {
+                        runOnUiThread(() -> {
+                            currentSavings = data.getSavings();
+                            currentSavingsText.setText(String.format("Current Savings: ₹%,d", currentSavings));
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            currentSavingsText.setText("Current Savings: Error");
+                            Log.e(TAG, "Failed to load savings: " + message);
+                        });
+                    }
+                });
     }
 
     private void loadWeatherAndTrends() {
@@ -206,54 +215,62 @@ public class PlantCropActivity extends AppCompatActivity {
         loadingProgress.setVisibility(View.VISIBLE);
         plantButton.setEnabled(false);
 
-        ApiClient.getApiService().plantCrop(farmId, request).enqueue(new Callback<Crop>() {
-            @Override
-            public void onResponse(Call<Crop> call, Response<Crop> response) {
-                loadingProgress.setVisibility(View.GONE);
-                plantButton.setEnabled(true);
-
-                if (response.isSuccessful() && response.body() != null) {
-                    Crop crop = response.body();
-                    long timeInMillis = crop.getTimeRemainingInMillis();
-
-                    if (timeInMillis > 0) {
-                        try {
-                            androidx.work.Data data = new androidx.work.Data.Builder()
-                                    .putString(com.growfund.seedtowealth.worker.HarvestReminderWorker.KEY_CROP_NAME,
-                                            crop.getCropType())
-                                    .build();
-
-                            androidx.work.OneTimeWorkRequest request = new androidx.work.OneTimeWorkRequest.Builder(
-                                    com.growfund.seedtowealth.worker.HarvestReminderWorker.class)
-                                    .setInitialDelay(timeInMillis, java.util.concurrent.TimeUnit.MILLISECONDS)
-                                    .setInputData(data)
-                                    .build();
-
-                            androidx.work.WorkManager.getInstance(PlantCropActivity.this).enqueue(request);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error scheduling notification", e);
-                        }
+        farmRepository.plantCrop(farmId, request,
+                new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<Crop>() {
+                    @Override
+                    public void onLocalData(Crop data) {
+                        // Not used for plant operation
                     }
 
-                    // Play Sound & Vibrate
-                    com.growfund.seedtowealth.utils.SoundManager.playPlantSound(PlantCropActivity.this);
+                    @Override
+                    public void onSuccess(Crop data) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            plantButton.setEnabled(true);
 
-                    Toast.makeText(PlantCropActivity.this,
-                            "Crop planted successfully! You will be notified when ready.", Toast.LENGTH_LONG).show();
-                    finish(); // Return to FarmActivity
-                } else {
-                    Toast.makeText(PlantCropActivity.this,
-                            "Failed to plant crop", Toast.LENGTH_SHORT).show();
-                }
-            }
+                            Crop crop = data;
+                            long timeInMillis = crop.getTimeRemainingInMillis();
 
-            @Override
-            public void onFailure(Call<Crop> call, Throwable t) {
-                loadingProgress.setVisibility(View.GONE);
-                plantButton.setEnabled(true);
-                Log.e(TAG, "Error planting crop", t);
-                com.growfund.seedtowealth.utils.ErrorHandler.handleError(PlantCropActivity.this, t);
-            }
-        });
+                            if (timeInMillis > 0) {
+                                try {
+                                    androidx.work.Data workData = new androidx.work.Data.Builder()
+                                            .putString(
+                                                    com.growfund.seedtowealth.worker.HarvestReminderWorker.KEY_CROP_NAME,
+                                                    crop.getCropType())
+                                            .build();
+
+                                    androidx.work.OneTimeWorkRequest workRequest = new androidx.work.OneTimeWorkRequest.Builder(
+                                            com.growfund.seedtowealth.worker.HarvestReminderWorker.class)
+                                            .setInitialDelay(timeInMillis, java.util.concurrent.TimeUnit.MILLISECONDS)
+                                            .setInputData(workData)
+                                            .build();
+
+                                    androidx.work.WorkManager.getInstance(PlantCropActivity.this)
+                                            .enqueue(workRequest);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error scheduling notification", e);
+                                }
+                            }
+
+                            // Play Sound & Vibrate
+                            com.growfund.seedtowealth.utils.SoundManager.playPlantSound(PlantCropActivity.this);
+
+                            Toast.makeText(PlantCropActivity.this,
+                                    "Crop planted successfully! You will be notified when ready.",
+                                    Toast.LENGTH_LONG).show();
+                            finish(); // Return to FarmActivity
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            plantButton.setEnabled(true);
+                            Toast.makeText(PlantCropActivity.this, "Error: " + message, Toast.LENGTH_SHORT)
+                                    .show();
+                        });
+                    }
+                });
     }
 }

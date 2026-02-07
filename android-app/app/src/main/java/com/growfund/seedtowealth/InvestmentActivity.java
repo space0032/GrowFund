@@ -31,11 +31,14 @@ public class InvestmentActivity extends AppCompatActivity {
     private ProgressBar loadingProgress;
     private FloatingActionButton addInvestmentFab;
     private InvestmentAdapter adapter;
+    private com.growfund.seedtowealth.repository.InvestmentRepository investmentRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_investment);
+
+        investmentRepository = new com.growfund.seedtowealth.repository.InvestmentRepository(getApplication());
 
         investmentsRecyclerView = findViewById(R.id.investmentsRecyclerView);
         loadingProgress = findViewById(R.id.loadingProgress);
@@ -52,23 +55,33 @@ public class InvestmentActivity extends AppCompatActivity {
 
     private void loadInvestments() {
         loadingProgress.setVisibility(View.VISIBLE);
-        ApiClient.getApiService().getMyActiveInvestments().enqueue(new Callback<List<Investment>>() {
-            @Override
-            public void onResponse(Call<List<Investment>> call, Response<List<Investment>> response) {
-                loadingProgress.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    adapter.setInvestments(response.body());
-                } else {
-                    ErrorHandler.handleApiError(InvestmentActivity.this, response);
-                }
-            }
+        investmentRepository.getActiveInvestments(
+                new com.growfund.seedtowealth.repository.InvestmentRepository.RepositoryCallback<List<Investment>>() {
+                    @Override
+                    public void onLocalData(List<Investment> data) {
+                        runOnUiThread(() -> {
+                            adapter.setInvestments(data);
+                            loadingProgress.setVisibility(View.GONE);
+                        });
+                    }
 
-            @Override
-            public void onFailure(Call<List<Investment>> call, Throwable t) {
-                loadingProgress.setVisibility(View.GONE);
-                ErrorHandler.handleError(InvestmentActivity.this, t);
-            }
-        });
+                    @Override
+                    public void onSuccess(List<Investment> data) {
+                        runOnUiThread(() -> {
+                            adapter.setInvestments(data);
+                            loadingProgress.setVisibility(View.GONE);
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            Toast.makeText(InvestmentActivity.this, "Error: " + message, Toast.LENGTH_SHORT)
+                                    .show();
+                        });
+                    }
+                });
     }
 
     private void showCreateInvestmentDialog() {
@@ -126,23 +139,31 @@ public class InvestmentActivity extends AppCompatActivity {
                 12 // 12 Months
         );
 
-        ApiClient.getApiService().createInvestment(investment).enqueue(new Callback<Investment>() {
-            @Override
-            public void onResponse(Call<Investment> call, Response<Investment> response) {
-                loadingProgress.setVisibility(View.GONE);
-                if (response.isSuccessful()) {
-                    Toast.makeText(InvestmentActivity.this, "Investment Created!", Toast.LENGTH_SHORT).show();
-                    loadInvestments();
-                } else {
-                    ErrorHandler.handleApiError(InvestmentActivity.this, response);
-                }
-            }
+        investmentRepository.createInvestment(investment,
+                new com.growfund.seedtowealth.repository.InvestmentRepository.RepositoryCallback<Investment>() {
+                    @Override
+                    public void onLocalData(Investment data) {
+                        // Not used for create operation
+                    }
 
-            @Override
-            public void onFailure(Call<Investment> call, Throwable t) {
-                loadingProgress.setVisibility(View.GONE);
-                ErrorHandler.handleError(InvestmentActivity.this, t);
-            }
-        });
+                    @Override
+                    public void onSuccess(Investment data) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            Toast.makeText(InvestmentActivity.this, "Investment Created!", Toast.LENGTH_SHORT)
+                                    .show();
+                            loadInvestments();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            loadingProgress.setVisibility(View.GONE);
+                            Toast.makeText(InvestmentActivity.this, "Error: " + message, Toast.LENGTH_SHORT)
+                                    .show();
+                        });
+                    }
+                });
     }
 }

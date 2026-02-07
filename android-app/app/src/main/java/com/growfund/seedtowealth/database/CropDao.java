@@ -30,4 +30,10 @@ public interface CropDao {
         }
         insertCrops(crops);
     }
+
+    @Query("SELECT * FROM crops WHERE id = :cropId")
+    Crop getCropById(Long cropId);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertCrop(Crop crop);
 }

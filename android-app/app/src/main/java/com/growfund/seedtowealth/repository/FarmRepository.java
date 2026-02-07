@@ -98,6 +98,83 @@ public class FarmRepository {
         });
     }
 
+    public void getCrop(Long cropId, final RepositoryCallback<Crop> callback) {
+        // 1. Try local DB first
+        executor.execute(() -> {
+            Crop localCrop = cropDao.getCropById(cropId);
+            if (localCrop != null) {
+                callback.onLocalData(localCrop);
+            }
+
+            // 2. Fetch from API
+            ApiClient.getApiService().getCrop(cropId).enqueue(new Callback<Crop>() {
+                @Override
+                public void onResponse(Call<Crop> call, Response<Crop> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Crop remoteCrop = response.body();
+                        executor.execute(() -> {
+                            cropDao.insertCrop(remoteCrop);
+                            callback.onSuccess(remoteCrop);
+                        });
+                    } else {
+                        callback.onError("Failed to fetch crop: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Crop> call, Throwable t) {
+                    callback.onError("Network error: " + t.getMessage());
+                }
+            });
+        });
+    }
+
+    public void harvestCrop(Long cropId, final RepositoryCallback<Crop> callback) {
+        // Harvest requires API call (server-side logic)
+        ApiClient.getApiService().harvestCrop(cropId).enqueue(new Callback<Crop>() {
+            @Override
+            public void onResponse(Call<Crop> call, Response<Crop> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Crop harvestedCrop = response.body();
+                    executor.execute(() -> {
+                        cropDao.insertCrop(harvestedCrop);
+                        callback.onSuccess(harvestedCrop);
+                    });
+                } else {
+                    callback.onError("Failed to harvest crop: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Crop> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    public void plantCrop(Long farmId, java.util.Map<String, Object> request, final RepositoryCallback<Crop> callback) {
+        // Plant requires API call (server-side logic)
+        ApiClient.getApiService().plantCrop(farmId, request).enqueue(new Callback<Crop>() {
+            @Override
+            public void onResponse(Call<Crop> call, Response<Crop> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Crop plantedCrop = response.body();
+                    executor.execute(() -> {
+                        cropDao.insertCrop(plantedCrop);
+                        callback.onSuccess(plantedCrop);
+                    });
+                } else {
+                    callback.onError("Failed to plant crop: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Crop> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
     public interface RepositoryCallback<T> {
         void onLocalData(T data); // Optional: Called when local data is available
 

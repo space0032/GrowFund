@@ -1,8 +1,14 @@
 package com.growfund.seedtowealth.model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.Ignore;
+
 import java.io.Serializable;
 
+@Entity(tableName = "investments")
 public class Investment implements Serializable {
+    @PrimaryKey
     private Long id;
     private Long userId; // Optional, handled efficiently by backend
     private String schemeName;
@@ -19,6 +25,7 @@ public class Investment implements Serializable {
     public Investment() {
     }
 
+    @Ignore
     public Investment(String schemeName, String investmentType, Double principalAmount, Double interestRate,
             Integer durationMonths) {
         this.schemeName = schemeName;
@@ -91,5 +98,29 @@ public class Investment implements Serializable {
 
     public void setCurrentValue(Long currentValue) {
         this.currentValue = currentValue;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getMaturityDate() {
+        return maturityDate;
+    }
+
+    public void setMaturityDate(String maturityDate) {
+        this.maturityDate = maturityDate;
     }
 }
