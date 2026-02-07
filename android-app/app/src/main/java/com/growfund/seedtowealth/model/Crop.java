@@ -132,4 +132,36 @@ public class Crop {
     public void setWeatherImpact(String weatherImpact) {
         this.weatherImpact = weatherImpact;
     }
+
+    public long getTimeRemainingInMillis() {
+        if (harvestDate == null)
+            return 0;
+        try {
+            // Backend sends ISO format roughly: "2023-10-27T10:00:00"
+            // We need to parse this.
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                java.time.LocalDateTime harvest = java.time.LocalDateTime.parse(harvestDate);
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+                long diff = java.time.Duration.between(now, harvest).toMillis();
+                return diff > 0 ? diff : 0;
+            } else {
+                // Fallback for older devices if needed, but minSdk 24 usually implies
+                // desugaring or we can use SimpleDateFormat
+                // For simplicity in this demo environment with Java 17, we assume java.time
+                // works or we use a basic string parse if needed.
+                // However, let's stick to standard Java time which is robust.
+                // If it crashes on older devices without desugaring, we'd need ThreeTenABP.
+                // Given the environment, let's verify if we need to support < O.
+                // MinSdk 24 supports some java.time but full support is 26.
+                // Let's use SimpleDateFormat for maximum compatibility.
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                java.util.Date harvest = sdf.parse(harvestDate);
+                long diff = harvest.getTime() - System.currentTimeMillis();
+                return diff > 0 ? diff : 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }

@@ -39,6 +39,10 @@ public class CropService {
         // Calculate expected yield based on crop type and area
         crop.setExpectedYield(calculateExpectedYield(cropType, areaPlanted, investmentAmount));
 
+        // Set harvest date based on crop type (Testing: minutes instead of months)
+        long growthTimeMinutes = getGrowthTimeInMinutes(cropType);
+        crop.setHarvestDate(LocalDateTime.now().plusMinutes(growthTimeMinutes));
+
         Crop savedCrop = cropRepository.save(crop);
         return convertToDTO(savedCrop);
     }
@@ -62,6 +66,10 @@ public class CropService {
 
         if (!"PLANTED".equals(crop.getStatus()) && !"GROWING".equals(crop.getStatus())) {
             throw new RuntimeException("Crop cannot be harvested in current status: " + crop.getStatus());
+        }
+
+        if (crop.getHarvestDate() != null && LocalDateTime.now().isBefore(crop.getHarvestDate())) {
+            throw new RuntimeException("Crop is not ready for harvest yet. Ready at: " + crop.getHarvestDate());
         }
 
         crop.setStatus("HARVESTED");
@@ -134,6 +142,19 @@ public class CropService {
 
         double investmentFactor = 1.0 + (investmentAmount / 10000.0 * 0.1); // 10% boost per 10k investment
         return (long) (baseYieldPerAcre * areaPlanted * investmentFactor);
+    }
+
+    private long getGrowthTimeInMinutes(String cropType) {
+        // For testing/demo purposes, these are in minutes.
+        // In production, these should be days or months.
+        return switch (cropType.toUpperCase()) {
+            case "WHEAT" -> 2; // 2 minutes
+            case "RICE" -> 3;
+            case "COTTON" -> 5;
+            case "SUGARCANE" -> 4;
+            case "CORN" -> 2;
+            default -> 1;
+        };
     }
 
     private CropDTO convertToDTO(Crop crop) {

@@ -123,10 +123,53 @@ public class CropDetailActivity extends AppCompatActivity {
                 }
             }
         } else if ("PLANTED".equals(currentCrop.getStatus()) || "GROWING".equals(currentCrop.getStatus())) {
-            harvestButton.setVisibility(View.VISIBLE);
             harvestResultsCard.setVisibility(View.GONE);
+
+            long timeRemaining = currentCrop.getTimeRemainingInMillis();
+            if (timeRemaining > 0) {
+                harvestButton.setEnabled(false);
+                startTimer(timeRemaining);
+            } else {
+                harvestButton.setEnabled(true);
+                harvestButton.setText("Harvest Crop");
+            }
+            harvestButton.setVisibility(View.VISIBLE);
         } else {
             harvestButton.setVisibility(View.GONE);
+        }
+    }
+
+    private android.os.CountDownTimer countDownTimer;
+
+    private void startTimer(long millis) {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        countDownTimer = new android.os.CountDownTimer(millis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long seconds = millisUntilFinished / 1000;
+                long minutes = seconds / 60;
+                long remainingSeconds = seconds % 60;
+                harvestButton.setText(String.format("Ready in: %02d:%02d", minutes, remainingSeconds));
+            }
+
+            @Override
+            public void onFinish() {
+                harvestButton.setEnabled(true);
+                harvestButton.setText("Harvest Crop");
+                currentCrop.setStatus("GROWING"); // Or READY?
+                // Ideally refresh data
+            }
+        }.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
         }
     }
 

@@ -29,6 +29,9 @@ public interface ApiService {
     @PUT("api/farms/{id}/savings")
     Call<Farm> updateSavings(@Path("id") Long farmId, @Body Map<String, Long> request);
 
+    @POST("api/farms/expand")
+    Call<Farm> expandFarm();
+
     // Crop endpoints
     @POST("api/farms/{farmId}/crops")
     Call<Crop> plantCrop(@Path("farmId") Long farmId, @Body Map<String, Object> request);

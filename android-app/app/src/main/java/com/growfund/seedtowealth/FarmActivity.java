@@ -148,11 +148,49 @@ public class FarmActivity extends AppCompatActivity {
         });
     }
 
+    private void showExpandDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Expand Farm")
+                .setMessage("Expand your farm by 1 acre for ₹50,000?")
+                .setPositiveButton("Expand", (dialog, which) -> expandFarm())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void expandFarm() {
+        loadingProgress.setVisibility(View.VISIBLE);
+        ApiClient.getApiService().expandFarm().enqueue(new Callback<Farm>() {
+            @Override
+            public void onResponse(Call<Farm> call, Response<Farm> response) {
+                loadingProgress.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null) {
+                    currentFarm = response.body();
+                    updateFarmUI();
+                    Toast.makeText(FarmActivity.this, "Farm Expanded!", Toast.LENGTH_SHORT).show();
+                } else {
+                    com.growfund.seedtowealth.utils.ErrorHandler.handleApiError(FarmActivity.this, response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Farm> call, Throwable t) {
+                loadingProgress.setVisibility(View.GONE);
+                com.growfund.seedtowealth.utils.ErrorHandler.handleError(FarmActivity.this, t);
+            }
+        });
+    }
+
     private void updateFarmUI() {
         farmNameText.setText(currentFarm.getFarmName());
-        landSizeText.setText(String.format("%.1f acres", currentFarm.getLandSize()));
+        landSizeText.setText(String.format("%.1f acres (Tap to expand)", currentFarm.getLandSize()));
         savingsText.setText(String.format("₹%,d", currentFarm.getSavings()));
         emergencyFundText.setText(String.format("₹%,d", currentFarm.getEmergencyFund()));
+
+        if (currentFarm.getSavings() >= 50000) {
+            landSizeText.setOnClickListener(v -> showExpandDialog());
+        } else {
+            landSizeText.setOnClickListener(null);
+        }
     }
 
     private void loadCrops() {

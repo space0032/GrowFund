@@ -65,4 +65,24 @@ public class FarmController {
         FarmDTO farm = farmService.updateFarmSavings(id, savings, emergencyFund);
         return ResponseEntity.ok(farm);
     }
+
+    @PostMapping("/expand")
+    public ResponseEntity<?> expandFarm(@AuthenticationPrincipal String uid) {
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        try {
+            User user = userService.getUserByFirebaseUid(uid);
+            FarmDTO farm = farmService.getFarmByUserId(user.getId());
+
+            // Verify ownership implicitly via getFarmByUserId or explicitly if needed
+            // Here assuming 1 farm per user logic holds
+
+            FarmDTO expandedFarm = farmService.expandFarm(farm.getId());
+            return ResponseEntity.ok(expandedFarm);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

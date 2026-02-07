@@ -64,6 +64,23 @@ public class FarmService {
         return convertToDTO(updatedFarm);
     }
 
+    @Transactional
+    public FarmDTO expandFarm(Long farmId) {
+        Farm farm = farmRepository.findById(farmId)
+                .orElseThrow(() -> new RuntimeException("Farm not found"));
+
+        long expansionCost = 50000;
+        if (farm.getSavings() < expansionCost) {
+            throw new RuntimeException("Insufficient savings for expansion");
+        }
+
+        farm.setSavings(farm.getSavings() - expansionCost);
+        farm.setLandSize(farm.getLandSize() + 1.0);
+
+        Farm savedFarm = farmRepository.save(farm);
+        return convertToDTO(savedFarm);
+    }
+
     public boolean isFarmOwnedByUser(Long farmId, Long userId) {
         return farmRepository.findById(farmId)
                 .map(farm -> farm.getUser().getId().equals(userId))

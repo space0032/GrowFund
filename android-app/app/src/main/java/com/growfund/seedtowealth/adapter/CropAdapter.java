@@ -91,6 +91,18 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.CropViewHolder
                     statusColor = 0xFF9E9E9E; // Gray
             }
             statusText.setTextColor(statusColor);
+
+            if ("PLANTED".equals(crop.getStatus()) || "GROWING".equals(crop.getStatus())) {
+                long time = crop.getTimeRemainingInMillis();
+                if (time > 0) {
+                    long minutes = (time / 1000) / 60;
+                    long seconds = (time / 1000) % 60;
+                    statusText.setText(String.format("%s (%02d:%02d)", crop.getStatus(), minutes, seconds));
+                } else {
+                    statusText.setText("READY TO HARVEST");
+                    statusText.setTextColor(0xFF4CAF50); // Green
+                }
+            }
         }
     }
 }
