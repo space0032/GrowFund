@@ -52,6 +52,16 @@
                                 android:textColor="#2E7D32" />
 
                             <ImageButton
+                                android:id="@+id/profileButton"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@android:drawable/ic_menu_myplaces"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Profile"
+                                app:tint="#2E7D32"
+                                android:layout_marginEnd="8dp" />
+
+                            <ImageButton
                                 android:id="@+id/leaderboardButton"
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"

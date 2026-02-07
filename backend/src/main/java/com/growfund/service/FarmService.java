@@ -66,6 +66,20 @@ public class FarmService {
     }
 
     @Transactional
+    public FarmDTO updateFarmName(Long farmId, String newName) {
+        Farm farm = farmRepository.findById(farmId)
+                .orElseThrow(() -> new RuntimeException("Farm not found"));
+
+        if (newName == null || newName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Farm name cannot be empty");
+        }
+
+        farm.setFarmName(newName);
+        Farm updatedFarm = farmRepository.save(farm);
+        return convertToDTO(updatedFarm);
+    }
+
+    @Transactional
     public FarmDTO expandFarm(Long farmId) {
         Farm farm = farmRepository.findById(farmId)
                 .orElseThrow(() -> new RuntimeException("Farm not found"));

@@ -85,6 +85,15 @@ public class FarmActivity extends AppCompatActivity {
 
         swipeRefreshLayout.setOnRefreshListener(this::loadFarmData);
 
+        findViewById(R.id.profileButton).setOnClickListener(v -> {
+            Intent intent = new Intent(FarmActivity.this, ProfileActivity.class);
+            if (currentFarm != null) {
+                intent.putExtra("farmId", currentFarm.getId());
+                intent.putExtra("farmName", currentFarm.getFarmName());
+            }
+            startActivity(intent);
+        });
+
         findViewById(R.id.leaderboardButton).setOnClickListener(v -> {
             Intent intent = new Intent(FarmActivity.this, LeaderboardActivity.class);
             startActivity(intent);

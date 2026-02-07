@@ -66,6 +66,31 @@ public class FarmController {
         return ResponseEntity.ok(farm);
     }
 
+    @PutMapping("/{id}/name")
+    public ResponseEntity<?> updateFarmName(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request,
+            @AuthenticationPrincipal String uid) {
+
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        try {
+            User user = userService.getUserByFirebaseUid(uid);
+            // Verify ownership
+            if (!farmService.isFarmOwnedByUser(id, user.getId())) {
+                return ResponseEntity.status(403).body("You do not own this farm");
+            }
+
+            String newName = request.get("farmName");
+            FarmDTO farm = farmService.updateFarmName(id, newName);
+            return ResponseEntity.ok(farm);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/expand")
     public ResponseEntity<?> expandFarm(@AuthenticationPrincipal String uid) {
         if (uid == null || uid.isEmpty()) {
