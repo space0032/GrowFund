@@ -17,13 +17,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class InvestmentService {
-    
+
     private final InvestmentRepository investmentRepository;
-    
+
     /**
      * Calculate compound interest for an investment
      * Formula: A = P(1 + r/n)^(nt)
-     * where A = final amount, P = principal, r = annual rate, n = compounds per year, t = time in years
+     * where A = final amount, P = principal, r = annual rate, n = compounds per
+     * year, t = time in years
      */
     public double calculateCompoundInterest(double principal, double annualRate, int months, int compoundsPerYear) {
         double rate = annualRate / 100.0;
@@ -31,7 +32,7 @@ public class InvestmentService {
         double amount = principal * Math.pow(1 + (rate / compoundsPerYear), compoundsPerYear * time);
         return Precision.round(amount, 2);
     }
-    
+
     /**
      * Calculate simple interest for an investment
      * Formula: A = P(1 + rt)
@@ -42,58 +43,72 @@ public class InvestmentService {
         double amount = principal * (1 + rate * time);
         return Precision.round(amount, 2);
     }
-    
+
+    private final com.growfund.repository.FarmRepository farmRepository;
+
     @Transactional
     public Investment createInvestment(Investment investment) {
+        // 1. Get User's Farm
+        com.growfund.model.Farm farm = farmRepository.findByUserId(investment.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("Farm not found for user"));
+
+        // 2. Check Savings
+        if (farm.getSavings() < investment.getPrincipalAmount()) {
+            throw new RuntimeException("Insufficient savings for investment");
+        }
+
+        // 3. Deduct Savings
+        farm.setSavings(farm.getSavings() - investment.getPrincipalAmount().longValue());
+        farmRepository.save(farm);
+
+        // 4. Create Investment
         investment.setStartDate(LocalDateTime.now());
         investment.setMaturityDate(investment.getStartDate().plusMonths(investment.getDurationMonths()));
         investment.setStatus("ACTIVE");
-        
+
         // Calculate expected maturity value based on investment type
         double maturityValue = calculateCompoundInterest(
-            investment.getPrincipalAmount(),
-            investment.getInterestRate(),
-            investment.getDurationMonths(),
-            12 // Monthly compounding
+                investment.getPrincipalAmount(),
+                investment.getInterestRate(),
+                investment.getDurationMonths(),
+                12 // Monthly compounding
         );
         investment.setCurrentValue((long) maturityValue);
-        
+
         return investmentRepository.save(investment);
     }
-    
+
     public List<Investment> getUserInvestments(Long userId) {
         return investmentRepository.findByUserId(userId);
     }
-    
+
     public List<Investment> getActiveInvestments(Long userId) {
         return investmentRepository.findByUserIdAndStatus(userId, "ACTIVE");
     }
-    
+
     @Transactional
     public Investment updateInvestmentValue(Long investmentId) {
         Investment investment = investmentRepository.findById(investmentId)
-            .orElseThrow(() -> new RuntimeException("Investment not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Investment not found"));
+
         // Calculate current value based on time elapsed
         long monthsElapsed = java.time.temporal.ChronoUnit.MONTHS.between(
-            investment.getStartDate(), LocalDateTime.now()
-        );
-        
+                investment.getStartDate(), LocalDateTime.now());
+
         double currentValue = calculateCompoundInterest(
-            investment.getPrincipalAmount(),
-            investment.getInterestRate(),
-            (int) monthsElapsed,
-            12
-        );
-        
+                investment.getPrincipalAmount(),
+                investment.getInterestRate(),
+                (int) monthsElapsed,
+                12);
+
         investment.setCurrentValue((long) currentValue);
-        
+
         // Check if matured
         if (LocalDateTime.now().isAfter(investment.getMaturityDate())) {
             investment.setStatus("MATURED");
             investment.setCompletedAt(LocalDateTime.now());
         }
-        
+
         return investmentRepository.save(investment);
     }
 }

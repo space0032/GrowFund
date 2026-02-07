@@ -36,7 +36,15 @@ public class ErrorHandler {
                 message = "Server error. Please try again later.";
                 break;
             default:
-                message = "Request failed (" + code + ")";
+                try {
+                    if (response.errorBody() != null) {
+                        message = response.errorBody().string();
+                    } else {
+                        message = "Request failed (" + code + ")";
+                    }
+                } catch (Exception e) {
+                    message = "Request failed (" + code + ")";
+                }
         }
 
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();

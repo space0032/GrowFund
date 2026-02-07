@@ -51,4 +51,12 @@ public interface ApiService {
     // Leaderboard
     @GET("api/leaderboard")
     Call<List<com.growfund.seedtowealth.model.LeaderboardEntry>> getLeaderboard();
+
+    // Investments
+    @POST("investments")
+    Call<com.growfund.seedtowealth.model.Investment> createInvestment(
+            @Body com.growfund.seedtowealth.model.Investment investment);
+
+    @GET("investments/user/my-active-investments")
+    Call<List<com.growfund.seedtowealth.model.Investment>> getMyActiveInvestments();
 }

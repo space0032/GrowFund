@@ -55,6 +55,16 @@ public class FarmActivity extends AppCompatActivity {
 
         initViews();
         loadFarmData();
+
+        // Notifications
+        com.growfund.seedtowealth.utils.NotificationHelper.createNotificationChannel(this);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this,
+                        new String[] { android.Manifest.permission.POST_NOTIFICATIONS }, 101);
+            }
+        }
     }
 
     private View emptyStateView;
@@ -71,6 +81,11 @@ public class FarmActivity extends AppCompatActivity {
 
         findViewById(R.id.leaderboardButton).setOnClickListener(v -> {
             Intent intent = new Intent(FarmActivity.this, LeaderboardActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.investmentButton).setOnClickListener(v -> {
+            Intent intent = new Intent(FarmActivity.this, InvestmentActivity.class);
             startActivity(intent);
         });
 

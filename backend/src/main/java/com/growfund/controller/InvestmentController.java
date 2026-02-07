@@ -23,7 +23,7 @@ public class InvestmentController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Investment> createInvestment(
+    public ResponseEntity<?> createInvestment(
             @RequestBody Investment investment,
             @AuthenticationPrincipal String uid) {
 
@@ -33,8 +33,12 @@ public class InvestmentController {
         User user = userService.getUserByFirebaseUid(uid);
         investment.setUser(user);
 
-        Investment created = investmentService.createInvestment(investment);
-        return ResponseEntity.ok(created);
+        try {
+            Investment created = investmentService.createInvestment(investment);
+            return ResponseEntity.ok(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/user/my-investments")

@@ -98,8 +98,30 @@ public class PlantCropActivity extends AppCompatActivity {
                 plantButton.setEnabled(true);
 
                 if (response.isSuccessful() && response.body() != null) {
+                    Crop crop = response.body();
+                    long timeInMillis = crop.getTimeRemainingInMillis();
+
+                    if (timeInMillis > 0) {
+                        try {
+                            androidx.work.Data data = new androidx.work.Data.Builder()
+                                    .putString(com.growfund.seedtowealth.worker.HarvestReminderWorker.KEY_CROP_NAME,
+                                            crop.getCropType())
+                                    .build();
+
+                            androidx.work.OneTimeWorkRequest request = new androidx.work.OneTimeWorkRequest.Builder(
+                                    com.growfund.seedtowealth.worker.HarvestReminderWorker.class)
+                                    .setInitialDelay(timeInMillis, java.util.concurrent.TimeUnit.MILLISECONDS)
+                                    .setInputData(data)
+                                    .build();
+
+                            androidx.work.WorkManager.getInstance(PlantCropActivity.this).enqueue(request);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error scheduling notification", e);
+                        }
+                    }
+
                     Toast.makeText(PlantCropActivity.this,
-                            "Crop planted successfully!", Toast.LENGTH_SHORT).show();
+                            "Crop planted successfully! You will be notified when ready.", Toast.LENGTH_LONG).show();
                     finish(); // Return to FarmActivity
                 } else {
                     Toast.makeText(PlantCropActivity.this,
