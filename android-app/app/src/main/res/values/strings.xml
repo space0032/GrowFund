@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Seed to Wealth</string>
+    <string name="app_tagline">Learn financial planning through farming</string>
     
     <!-- Onboarding -->
     <string name="welcome_title">Welcome to Seed to Wealth!</string>
@@ -12,38 +13,127 @@
     <string name="menu_save">Save</string>
     <string name="menu_learn">Learn</string>
     <string name="menu_profile">Profile</string>
+    <string name="menu_leaderboard">Leaderboard</string>
+    <string name="menu_achievements">Achievements</string>
     
     <!-- Farm -->
+    <string name="farm_name">Farm Name</string>
+    <string name="farm_savings">Savings</string>
+    <string name="farm_emergency_fund">Emergency Fund</string>
+    <string name="farm_land_size">Land Size</string>
     <string name="farm_coins">Coins: %1$d</string>
     <string name="farm_level">Level %1$d</string>
     <string name="plant_crop">Plant Crop</string>
     <string name="harvest">Harvest</string>
+    <string name="expand_farm">Expand Farm</string>
+    <string name="no_crops">No crops planted yet</string>
+    <string name="plant_first_crop">Plant your first crop to get started!</string>
+    
+    <!-- Crop Status -->
+    <string name="status_growing">Growing</string>
+    <string name="status_ready">Ready to Harvest</string>
+    <string name="status_harvested">Harvested</string>
+    <string name="status_withered">Withered</string>
+    
+    <!-- Crop Types -->
+    <string name="crop_wheat">Wheat</string>
+    <string name="crop_rice">Rice</string>
+    <string name="crop_corn">Corn</string>
+    <string name="crop_tomato">Tomato</string>
+    <string name="crop_potato">Potato</string>
+    
+    <!-- Plant Crop Activity -->
+    <string name="select_crop">Select Crop</string>
+    <string name="crop_cost">Cost: ₹%1$d</string>
+    <string name="crop_yield">Expected Yield: ₹%1$d</string>
+    <string name="crop_duration">Duration: %1$d days</string>
+    <string name="market_price">Market Price: ₹%1$d</string>
+    <string name="weather_bonus">Weather Bonus: %1$s</string>
+    <string name="insufficient_funds">Insufficient funds to plant this crop</string>
+    <string name="crop_planted_success">Crop planted successfully!</string>
+    
+    <!-- Harvest -->
+    <string name="harvest_success">Harvested! Earned ₹%1$d</string>
+    <string name="crop_not_ready">Crop is not ready to harvest yet</string>
     
     <!-- Investment -->
     <string name="investment_schemes">Investment Schemes</string>
+    <string name="my_investments">My Investments</string>
+    <string name="active_investments">Active Investments</string>
     <string name="mutual_funds">Mutual Funds</string>
     <string name="fixed_deposit">Fixed Deposit</string>
     <string name="kisan_vikas_patra">Kisan Vikas Patra</string>
     <string name="pm_kisan">PM-Kisan Scheme</string>
     <string name="invest_now">Invest Now</string>
     <string name="calculate_returns">Calculate Returns</string>
+    <string name="investment_amount">Investment Amount</string>
+    <string name="expected_return">Expected Return</string>
+    <string name="maturity_date">Maturity Date</string>
+    <string name="investment_created">Investment created successfully!</string>
+    
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="select_language">Select Language</string>
+    <string name="sound_effects">Sound Effects</string>
+    <string name="haptic_feedback">Haptic Feedback</string>
+    <string name="notifications">Notifications</string>
+    <string name="total_earnings">Total Earnings</string>
+    <string name="crops_harvested">Crops Harvested</string>
+    <string name="investments_made">Investments Made</string>
+    
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">Leaderboard</string>
+    <string name="rank">Rank</string>
+    <string name="farmer_name">Farmer</string>
+    <string name="score">Score</string>
+    <string name="your_rank">Your Rank: #%1$d</string>
+    
+    <!-- Achievements -->
+    <string name="achievements_title">Achievements</string>
+    <string name="achievement_unlocked">Achievement Unlocked!</string>
+    <string name="locked">Locked</string>
+    <string name="unlocked">Unlocked</string>
+    
+    <!-- Quiz -->
+    <string name="quiz_title">Financial Literacy Quiz</string>
+    <string name="daily_tip">Daily Tip</string>
+    <string name="submit_answer">Submit Answer</string>
+    <string name="correct_answer">Correct!</string>
+    <string name="wrong_answer">Incorrect. Try again!</string>
+    <string name="quiz_completed">Quiz Completed!</string>
+    <string name="your_score">Your Score: %1$d/%2$d</string>
     
     <!-- Common -->
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="loading">Loading…</string>
     <string name="error">Error</string>
     <string name="success">Success!</string>
+    <string name="retry">Retry</string>
+    <string name="refresh">Refresh</string>
+    <string name="close">Close</string>
     
-    <!-- Game Messages -->
-    <string name="good_harvest">Great harvest! You earned %1$d coins!</string>
-    <string name="bad_weather">Bad weather affected your crops.</string>
-    <string name="level_up">Level Up! You reached level %1$d</string>
+    <!-- Error Messages -->
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="error_login">Login failed. Please try again.</string>
     
-    <!-- Tutorial -->
-    <string name="tutorial_step1">This is your farm. Start by planting crops!</string>
-    <string name="tutorial_step2">Save money for emergencies and future investments</string>
-    <string name="tutorial_step3">Invest wisely to grow your wealth over time</string>
+    <!-- Confirmation -->
+    <string name="confirm_logout">Are you sure you want to logout?</string>
+    <string name="confirm_delete">Are you sure you want to delete this?</string>
+    
+    <!-- Weather -->
+    <string name="weather_sunny">Sunny</string>
+    <string name="weather_rainy">Rainy</string>
+    <string name="weather_cloudy">Cloudy</string>
+    <string name="weather_stormy">Stormy</string>
 
 </resources>

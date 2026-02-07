@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">बीजापासून संपत्ती</string>
+    <string name="app_tagline">शेतीद्वारे आर्थिक नियोजन शिका</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_title">बीजापासून संपत्तीमध्ये आपले स्वागत आहे!</string>
+    <string name="welcome_subtitle">शेतीद्वारे आर्थिक नियोजन शिका</string>
+    <string name="get_started">सुरू करा</string>
+    
+    <!-- Main Menu -->
+    <string name="menu_farm">माझे शेत</string>
+    <string name="menu_invest">गुंतवणूक करा</string>
+    <string name="menu_save">बचत करा</string>
+    <string name="menu_learn">शिका</string>
+    <string name="menu_profile">प्रोफाइल</string>
+    <string name="menu_leaderboard">लीडरबोर्ड</string>
+    <string name="menu_achievements">यश</string>
+    
+    <!-- Farm -->
+    <string name="farm_name">शेताचे नाव</string>
+    <string name="farm_savings">बचत</string>
+    <string name="farm_emergency_fund">आपत्कालीन निधी</string>
+    <string name="farm_land_size">जमिनीचा आकार</string>
+    <string name="farm_coins">नाणी: %1$d</string>
+    <string name="farm_level">स्तर %1$d</string>
+    <string name="plant_crop">पीक लावा</string>
+    <string name="harvest">कापणी</string>
+    <string name="expand_farm">शेताचा विस्तार करा</string>
+    <string name="no_crops">अद्याप पीक लावलेले नाही</string>
+    <string name="plant_first_crop">सुरू करण्यासाठी तुमचे पहिले पीक लावा!</string>
+    
+    <!-- Crop Status -->
+    <string name="status_growing">वाढत आहे</string>
+    <string name="status_ready">कापणीसाठी तयार</string>
+    <string name="status_harvested">कापणी झाली</string>
+    <string name="status_withered">कोमेजले</string>
+    
+    <!-- Crop Types -->
+    <string name="crop_wheat">गहू</string>
+    <string name="crop_rice">तांदूळ</string>
+    <string name="crop_corn">मका</string>
+    <string name="crop_tomato">टोमॅटो</string>
+    <string name="crop_potato">बटाटा</string>
+    
+    <!-- Plant Crop Activity -->
+    <string name="select_crop">पीक निवडा</string>
+    <string name="crop_cost">खर्च: ₹%1$d</string>
+    <string name="crop_yield">अपेक्षित उत्पन्न: ₹%1$d</string>
+    <string name="crop_duration">कालावधी: %1$d दिवस</string>
+    <string name="market_price">बाजार भाव: ₹%1$d</string>
+    <string name="weather_bonus">हवामान बोनस: %1$s</string>
+    <string name="insufficient_funds">हे पीक लावण्यासाठी पुरेसा निधी नाही</string>
+    <string name="crop_planted_success">पीक यशस्वीरित्या लावले!</string>
+    
+    <!-- Harvest -->
+    <string name="harvest_success">कापणी झाली! ₹%1$d कमावले</string>
+    <string name="crop_not_ready">पीक अद्याप कापणीसाठी तयार नाही</string>
+    
+    <!-- Investment -->
+    <string name="investment_schemes">गुंतवणूक योजना</string>
+    <string name="my_investments">माझी गुंतवणूक</string>
+    <string name="active_investments">सक्रिय गुंतवणूक</string>
+    <string name="mutual_funds">म्युच्युअल फंड</string>
+    <string name="fixed_deposit">ठेव</string>
+    <string name="kisan_vikas_patra">किसान विकास पत्र</string>
+    <string name="pm_kisan">पीएम-किसान योजना</string>
+    <string name="invest_now">आता गुंतवणूक करा</string>
+    <string name="calculate_returns">परतावा मोजा</string>
+    <string name="investment_amount">गुंतवणूक रक्कम</string>
+    <string name="expected_return">अपेक्षित परतावा</string>
+    <string name="maturity_date">परिपक्वता तारीख</string>
+    <string name="investment_created">गुंतवणूक यशस्वीरित्या तयार केली!</string>
+    
+    <!-- Profile -->
+    <string name="profile">प्रोफाइल</string>
+    <string name="edit_profile">प्रोफाइल संपादित करा</string>
+    <string name="logout">लॉग आउट</string>
+    <string name="settings">सेटिंग्ज</string>
+    <string name="language">भाषा</string>
+    <string name="select_language">भाषा निवडा</string>
+    <string name="sound_effects">ध्वनी प्रभाव</string>
+    <string name="haptic_feedback">हॅप्टिक फीडबॅक</string>
+    <string name="notifications">सूचना</string>
+    <string name="total_earnings">एकूण कमाई</string>
+    <string name="crops_harvested">कापणी केलेली पिके</string>
+    <string name="investments_made">केलेली गुंतवणूक</string>
+    
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">लीडरबोर्ड</string>
+    <string name="rank">रँक</string>
+    <string name="farmer_name">शेतकरी</string>
+    <string name="score">स्कोअर</string>
+    <string name="your_rank">तुमची रँक: #%1$d</string>
+    
+    <!-- Achievements -->
+    <string name="achievements_title">यश</string>
+    <string name="achievement_unlocked">यश अनलॉक झाले!</string>
+    <string name="locked">लॉक केलेले</string>
+    <string name="unlocked">अनलॉक केलेले</string>
+    
+    <!-- Quiz -->
+    <string name="quiz_title">आर्थिक साक्षरता प्रश्नमंजुषा</string>
+    <string name="daily_tip">दैनिक टीप</string>
+    <string name="submit_answer">उत्तर सबमिट करा</string>
+    <string name="correct_answer">बरोबर!</string>
+    <string name="wrong_answer">चूक. पुन्हा प्रयत्न करा!</string>
+    <string name="quiz_completed">प्रश्नमंजुषा पूर्ण झाली!</string>
+    <string name="your_score">तुमचा स्कोअर: %1$d/%2$d</string>
+    
+    <!-- Common -->
+    <string name="save">जतन करा</string>
+    <string name="cancel">रद्द करा</string>
+    <string name="ok">ठीक आहे</string>
+    <string name="yes">होय</string>
+    <string name="no">नाही</string>
+    <string name="loading">लोड होत आहे…</string>
+    <string name="error">त्रुटी</string>
+    <string name="success">यश!</string>
+    <string name="retry">पुन्हा प्रयत्न करा</string>
+    <string name="refresh">रीफ्रेश करा</string>
+    <string name="close">बंद करा</string>
+    
+    <!-- Error Messages -->
+    <string name="error_network">नेटवर्क त्रुटी. कृपया तुमचे कनेक्शन तपासा.</string>
+    <string name="error_server">सर्व्हर त्रुटी. कृपया नंतर पुन्हा प्रयत्न करा.</string>
+    <string name="error_unknown">अज्ञात त्रुटी आली.</string>
+    <string name="error_login">लॉगिन अयशस्वी. कृपया पुन्हा प्रयत्न करा.</string>
+    
+    <!-- Confirmation -->
+    <string name="confirm_logout">तुम्हाला नक्की लॉग आउट करायचे आहे का?</string>
+    <string name="confirm_delete">तुम्हाला नक्की हे हटवायचे आहे का?</string>
+    
+    <!-- Weather -->
+    <string name="weather_sunny">उन्हाळी</string>
+    <string name="weather_rainy">पाऊस</string>
+    <string name="weather_cloudy">ढगाळ</string>
+    <string name="weather_stormy">वादळी</string>
+
+</resources>

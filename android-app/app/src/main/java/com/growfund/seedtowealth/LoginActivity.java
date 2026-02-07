@@ -27,6 +27,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
 
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(com.growfund.seedtowealth.utils.LanguageManager.applyLanguage(newBase));
+    }
+
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;

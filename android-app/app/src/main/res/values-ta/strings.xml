@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">விதையிலிருந்து செல்வம்</string>
+    <string name="app_tagline">விவசாயம் மூலம் நிதித் திட்டமிடலைக் கற்றுக்கொள்ளுங்கள்</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_title">விதையிலிருந்து செல்வத்திற்கு வரவேற்கிறோம்!</string>
+    <string name="welcome_subtitle">விவசாயம் மூலம் நிதித் திட்டமிடலைக் கற்றுக்கொள்ளுங்கள்</string>
+    <string name="get_started">தொடங்குங்கள்</string>
+    
+    <!-- Main Menu -->
+    <string name="menu_farm">எனது பண்ணை</string>
+    <string name="menu_invest">முதலீடு செய்யுங்கள்</string>
+    <string name="menu_save">சேமியுங்கள்</string>
+    <string name="menu_learn">கற்றுக்கொள்ளுங்கள்</string>
+    <string name="menu_profile">சுயவிவரம்</string>
+    <string name="menu_leaderboard">தலைமை பலகை</string>
+    <string name="menu_achievements">சாதனைகள்</string>
+    
+    <!-- Farm -->
+    <string name="farm_name">பண்ணை பெயர்</string>
+    <string name="farm_savings">சேமிப்பு</string>
+    <string name="farm_emergency_fund">அவசர நிதி</string>
+    <string name="farm_land_size">நில அளவு</string>
+    <string name="farm_coins">நாணயங்கள்: %1$d</string>
+    <string name="farm_level">நிலை %1$d</string>
+    <string name="plant_crop">பயிர் நடவு</string>
+    <string name="harvest">அறுவடை</string>
+    <string name="expand_farm">பண்ணையை விரிவாக்கு</string>
+    <string name="no_crops">இன்னும் பயிர் நடப்படவில்லை</string>
+    <string name="plant_first_crop">தொடங்க உங்கள் முதல் பயிரை நடவு செய்யுங்கள்!</string>
+    
+    <!-- Crop Status -->
+    <string name="status_growing">வளர்கிறது</string>
+    <string name="status_ready">அறுவடைக்கு தயார்</string>
+    <string name="status_harvested">அறுவடை செய்யப்பட்டது</string>
+    <string name="status_withered">வாடிவிட்டது</string>
+    
+    <!-- Crop Types -->
+    <string name="crop_wheat">கோதுமை</string>
+    <string name="crop_rice">அரிசி</string>
+    <string name="crop_corn">சோளம்</string>
+    <string name="crop_tomato">தக்காளி</string>
+    <string name="crop_potato">உருளைக்கிழங்கு</string>
+    
+    <!-- Plant Crop Activity -->
+    <string name="select_crop">பயிரைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="crop_cost">செலவு: ₹%1$d</string>
+    <string name="crop_yield">எதிர்பார்க்கப்படும் விளைச்சல்: ₹%1$d</string>
+    <string name="crop_duration">காலம்: %1$d நாட்கள்</string>
+    <string name="market_price">சந்தை விலை: ₹%1$d</string>
+    <string name="weather_bonus">வானிலை போனஸ்: %1$s</string>
+    <string name="insufficient_funds">இந்த பயிரை நடவு செய்ய போதுமான நிதி இல்லை</string>
+    <string name="crop_planted_success">பயிர் வெற்றிகரமாக நடப்பட்டது!</string>
+    
+    <!-- Harvest -->
+    <string name="harvest_success">அறுவடை செய்யப்பட்டது! ₹%1$d சம்பாதித்தீர்கள்</string>
+    <string name="crop_not_ready">பயிர் இன்னும் அறுவடைக்கு தயாராக இல்லை</string>
+    
+    <!-- Investment -->
+    <string name="investment_schemes">முதலீட்டுத் திட்டங்கள்</string>
+    <string name="my_investments">எனது முதலீடுகள்</string>
+    <string name="active_investments">செயலில் உள்ள முதலீடுகள்</string>
+    <string name="mutual_funds">பரஸ்பர நிதிகள்</string>
+    <string name="fixed_deposit">நிலையான வைப்பு</string>
+    <string name="kisan_vikas_patra">கிசான் விகாஸ் பத்திரம்</string>
+    <string name="pm_kisan">பிரதமர்-கிசான் திட்டம்</string>
+    <string name="invest_now">இப்போது முதலீடு செய்யுங்கள்</string>
+    <string name="calculate_returns">வருமானத்தைக் கணக்கிடுங்கள்</string>
+    <string name="investment_amount">முதலீட்டுத் தொகை</string>
+    <string name="expected_return">எதிர்பார்க்கப்படும் வருமானம்</string>
+    <string name="maturity_date">முதிர்வு தேதி</string>
+    <string name="investment_created">முதலீடு வெற்றிகரமாக உருவாக்கப்பட்டது!</string>
+    
+    <!-- Profile -->
+    <string name="profile">சுயவிவரம்</string>
+    <string name="edit_profile">சுயவிவரத்தைத் திருத்து</string>
+    <string name="logout">வெளியேறு</string>
+    <string name="settings">அமைப்புகள்</string>
+    <string name="language">மொழி</string>
+    <string name="select_language">மொழியைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="sound_effects">ஒலி விளைவுகள்</string>
+    <string name="haptic_feedback">ஹாப்டிக் பின்னூட்டம்</string>
+    <string name="notifications">அறிவிப்புகள்</string>
+    <string name="total_earnings">மொத்த வருமானம்</string>
+    <string name="crops_harvested">அறுவடை செய்யப்பட்ட பயிர்கள்</string>
+    <string name="investments_made">செய்யப்பட்ட முதலீடுகள்</string>
+    
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">தலைமை பலகை</string>
+    <string name="rank">தரவரிசை</string>
+    <string name="farmer_name">விவசாயி</string>
+    <string name="score">மதிப்பெண்</string>
+    <string name="your_rank">உங்கள் தரவரிசை: #%1$d</string>
+    
+    <!-- Achievements -->
+    <string name="achievements_title">சாதனைகள்</string>
+    <string name="achievement_unlocked">சாதனை திறக்கப்பட்டது!</string>
+    <string name="locked">பூட்டப்பட்டது</string>
+    <string name="unlocked">திறக்கப்பட்டது</string>
+    
+    <!-- Quiz -->
+    <string name="quiz_title">நிதி எழுத்தறிவு வினாடி வினா</string>
+    <string name="daily_tip">தினசரி உதவிக்குறிப்பு</string>
+    <string name="submit_answer">பதிலைச் சமர்ப்பிக்கவும்</string>
+    <string name="correct_answer">சரி!</string>
+    <string name="wrong_answer">தவறு. மீண்டும் முயற்சிக்கவும்!</string>
+    <string name="quiz_completed">வினாடி வினா முடிந்தது!</string>
+    <string name="your_score">உங்கள் மதிப்பெண்: %1$d/%2$d</string>
+    
+    <!-- Common -->
+    <string name="save">சேமி</string>
+    <string name="cancel">ரத்துசெய்</string>
+    <string name="ok">சரி</string>
+    <string name="yes">ஆம்</string>
+    <string name="no">இல்லை</string>
+    <string name="loading">ஏற்றுகிறது…</string>
+    <string name="error">பிழை</string>
+    <string name="success">வெற்றி!</string>
+    <string name="retry">மீண்டும் முயற்சிக்கவும்</string>
+    <string name="refresh">புதுப்பிக்கவும்</string>
+    <string name="close">மூடு</string>
+    
+    <!-- Error Messages -->
+    <string name="error_network">நெட்வொர்க் பிழை. உங்கள் இணைப்பைச் சரிபார்க்கவும்.</string>
+    <string name="error_server">சர்வர் பிழை. பின்னர் மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="error_unknown">அறியப்படாத பிழை ஏற்பட்டது.</string>
+    <string name="error_login">உள்நுழைவு தோல்வியுற்றது. மீண்டும் முயற்சிக்கவும்.</string>
+    
+    <!-- Confirmation -->
+    <string name="confirm_logout">நீங்கள் நிச்சயமாக வெளியேற விரும்புகிறீர்களா?</string>
+    <string name="confirm_delete">நீங்கள் நிச்சயமாக இதை நீக்க விரும்புகிறீர்களா?</string>
+    
+    <!-- Weather -->
+    <string name="weather_sunny">வெயில்</string>
+    <string name="weather_rainy">மழை</string>
+    <string name="weather_cloudy">மேகமூட்டம்</string>
+    <string name="weather_stormy">புயல்</string>
+
+</resources>

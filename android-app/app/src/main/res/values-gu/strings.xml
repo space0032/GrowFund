@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">બીજથી સંપત્તિ</string>
+    <string name="app_tagline">ખેતી દ્વારા નાણાકીય આયોજન શીખો</string>
+    
+    <string name="welcome_title">બીજથી સંપત્તિમાં આપનું સ્વાગત છે!</string>
+    <string name="get_started">શરૂ કરો</string>
+    
+    <string name="menu_farm">મારું ખેતર</string>
+    <string name="menu_invest">રોકાણ કરો</string>
+    <string name="menu_profile">પ્રોફાઇલ</string>
+    
+    <string name="farm_name">ખેતરનું નામ</string>
+    <string name="plant_crop">પાક રોપો</string>
+    <string name="harvest">કાપણી</string>
+    
+    <string name="status_growing">વધી રહ્યું છે</string>
+    <string name="status_ready">કાપણી માટે તૈયાર</string>
+    
+    <string name="crop_wheat">ઘઉં</string>
+    <string name="crop_rice">ચોખા</string>
+    
+    <string name="investment_schemes">રોકાણ યોજનાઓ</string>
+    <string name="invest_now">હવે રોકાણ કરો</string>
+    
+    <string name="profile">પ્રોફાઇલ</string>
+    <string name="logout">લૉગ આઉટ</string>
+    <string name="language">ભાષા</string>
+    <string name="select_language">ભાષા પસંદ કરો</string>
+    
+    <string name="save">સાચવો</string>
+    <string name="cancel">રદ કરો</string>
+    <string name="ok">બરાબર</string>
+    <string name="loading">લોડ થઈ રહ્યું છે…</string>
+    <string name="error">ભૂલ</string>
+    <string name="success">સફળતા!</string>
+
+</resources>

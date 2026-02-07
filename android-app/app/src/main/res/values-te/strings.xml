@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">విత్తనం నుండి సంపద</string>
+    <string name="app_tagline">వ్యవసాయం ద్వారా ఆర్థిక ప్రణాళికను నేర్చుకోండి</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_title">విత్తనం నుండి సంపదకు స్వాగతం!</string>
+    <string name="welcome_subtitle">వ్యవసాయం ద్వారా ఆర్థిక ప్రణాళికను నేర్చుకోండి</string>
+    <string name="get_started">ప్రారంభించండి</string>
+    
+    <!-- Main Menu -->
+    <string name="menu_farm">నా పొలం</string>
+    <string name="menu_invest">పెట్టుబడి పెట్టండి</string>
+    <string name="menu_save">ఆదా చేయండి</string>
+    <string name="menu_learn">నేర్చుకోండి</string>
+    <string name="menu_profile">ప్రొఫైల్</string>
+    <string name="menu_leaderboard">లీడర్‌బోర్డ్</string>
+    <string name="menu_achievements">విజయాలు</string>
+    
+    <!-- Farm -->
+    <string name="farm_name">పొలం పేరు</string>
+    <string name="farm_savings">పొదుపు</string>
+    <string name="farm_emergency_fund">అత్యవసర నిధి</string>
+    <string name="farm_land_size">భూమి పరిమాణం</string>
+    <string name="farm_coins">నాణేలు: %1$d</string>
+    <string name="farm_level">స్థాయి %1$d</string>
+    <string name="plant_crop">పంట నాటండి</string>
+    <string name="harvest">కోత</string>
+    <string name="expand_farm">పొలాన్ని విస్తరించండి</string>
+    <string name="no_crops">ఇంకా పంట నాటలేదు</string>
+    <string name="plant_first_crop">ప్రారంభించడానికి మీ మొదటి పంటను నాటండి!</string>
+    
+    <!-- Crop Status -->
+    <string name="status_growing">పెరుగుతోంది</string>
+    <string name="status_ready">కోతకు సిద్ధం</string>
+    <string name="status_harvested">కోత పూర్తయింది</string>
+    <string name="status_withered">వాడిపోయింది</string>
+    
+    <!-- Crop Types -->
+    <string name="crop_wheat">గోధుమ</string>
+    <string name="crop_rice">వరి</string>
+    <string name="crop_corn">మొక్కజొన్న</string>
+    <string name="crop_tomato">టమాటా</string>
+    <string name="crop_potato">బంగాళాదుంప</string>
+    
+    <!-- Plant Crop Activity -->
+    <string name="select_crop">పంటను ఎంచుకోండి</string>
+    <string name="crop_cost">ఖర్చు: ₹%1$d</string>
+    <string name="crop_yield">ఆశించిన దిగుబడి: ₹%1$d</string>
+    <string name="crop_duration">వ్యవధి: %1$d రోజులు</string>
+    <string name="market_price">మార్కెట్ ధర: ₹%1$d</string>
+    <string name="weather_bonus">వాతావరణ బోనస్: %1$s</string>
+    <string name="insufficient_funds">ఈ పంటను నాటడానికి తగినంత నిధులు లేవు</string>
+    <string name="crop_planted_success">పంట విజయవంతంగా నాటబడింది!</string>
+    
+    <!-- Harvest -->
+    <string name="harvest_success">కోత పూర్తయింది! ₹%1$d సంపాదించారు</string>
+    <string name="crop_not_ready">పంట ఇంకా కోతకు సిద్ధంగా లేదు</string>
+    
+    <!-- Investment -->
+    <string name="investment_schemes">పెట్టుబడి పథకాలు</string>
+    <string name="my_investments">నా పెట్టుబడులు</string>
+    <string name="active_investments">క్రియాశీల పెట్టుబడులు</string>
+    <string name="mutual_funds">మ్యూచువల్ ఫండ్స్</string>
+    <string name="fixed_deposit">స్థిర డిపాజిట్</string>
+    <string name="kisan_vikas_patra">కిసాన్ వికాస్ పత్ర</string>
+    <string name="pm_kisan">పిఎం-కిసాన్ పథకం</string>
+    <string name="invest_now">ఇప్పుడే పెట్టుబడి పెట్టండి</string>
+    <string name="calculate_returns">రాబడులను లెక్కించండి</string>
+    <string name="investment_amount">పెట్టుబడి మొత్తం</string>
+    <string name="expected_return">ఆశించిన రాబడి</string>
+    <string name="maturity_date">మెచ్యూరిటీ తేదీ</string>
+    <string name="investment_created">పెట్టుబడి విజయవంతంగా సృష్టించబడింది!</string>
+    
+    <!-- Profile -->
+    <string name="profile">ప్రొఫైల్</string>
+    <string name="edit_profile">ప్రొఫైల్‌ను సవరించండి</string>
+    <string name="logout">లాగ్అవుట్</string>
+    <string name="settings">సెట్టింగ్‌లు</string>
+    <string name="language">భాష</string>
+    <string name="select_language">భాషను ఎంచుకోండి</string>
+    <string name="sound_effects">ధ్వని ప్రభావాలు</string>
+    <string name="haptic_feedback">హాప్టిక్ ఫీడ్‌బ్యాక్</string>
+    <string name="notifications">నోటిఫికేషన్‌లు</string>
+    <string name="total_earnings">మొత్తం ఆదాయం</string>
+    <string name="crops_harvested">కోత పూర్తయిన పంటలు</string>
+    <string name="investments_made">చేసిన పెట్టుబడులు</string>
+    
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">లీడర్‌బోర్డ్</string>
+    <string name="rank">ర్యాంక్</string>
+    <string name="farmer_name">రైతు</string>
+    <string name="score">స్కోర్</string>
+    <string name="your_rank">మీ ర్యాంక్: #%1$d</string>
+    
+    <!-- Achievements -->
+    <string name="achievements_title">విజయాలు</string>
+    <string name="achievement_unlocked">విజయం అన్‌లాక్ చేయబడింది!</string>
+    <string name="locked">లాక్ చేయబడింది</string>
+    <string name="unlocked">అన్‌లాక్ చేయబడింది</string>
+    
+    <!-- Quiz -->
+    <string name="quiz_title">ఆర్థిక అక్షరాస్యత క్విజ్</string>
+    <string name="daily_tip">రోజువారీ చిట్కా</string>
+    <string name="submit_answer">సమాధానాన్ని సమర్పించండి</string>
+    <string name="correct_answer">సరైనది!</string>
+    <string name="wrong_answer">తప్పు. మళ్లీ ప్రయత్నించండి!</string>
+    <string name="quiz_completed">క్విజ్ పూర్తయింది!</string>
+    <string name="your_score">మీ స్కోర్: %1$d/%2$d</string>
+    
+    <!-- Common -->
+    <string name="save">సేవ్ చేయండి</string>
+    <string name="cancel">రద్దు చేయండి</string>
+    <string name="ok">సరే</string>
+    <string name="yes">అవును</string>
+    <string name="no">కాదు</string>
+    <string name="loading">లోడ్ అవుతోంది…</string>
+    <string name="error">లోపం</string>
+    <string name="success">విజయం!</string>
+    <string name="retry">మళ్లీ ప్రయత్నించండి</string>
+    <string name="refresh">రిఫ్రెష్ చేయండి</string>
+    <string name="close">మూసివేయండి</string>
+    
+    <!-- Error Messages -->
+    <string name="error_network">నెట్‌వర్క్ లోపం. దయచేసి మీ కనెక్షన్‌ను తనిఖీ చేయండి.</string>
+    <string name="error_server">సర్వర్ లోపం. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</string>
+    <string name="error_unknown">తెలియని లోపం సంభవించింది.</string>
+    <string name="error_login">లాగిన్ విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.</string>
+    
+    <!-- Confirmation -->
+    <string name="confirm_logout">మీరు ఖచ్చితంగా లాగ్అవుట్ చేయాలనుకుంటున్నారా?</string>
+    <string name="confirm_delete">మీరు ఖచ్చితంగా దీన్ని తొలగించాలనుకుంటున్నారా?</string>
+    
+    <!-- Weather -->
+    <string name="weather_sunny">ఎండ</string>
+    <string name="weather_rainy">వర్షం</string>
+    <string name="weather_cloudy">మేఘావృతం</string>
+    <string name="weather_stormy">తుఫాను</string>
+
+</resources>

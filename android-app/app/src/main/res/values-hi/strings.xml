@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">बीज से धन</string>
+    <string name="app_tagline">खेती के माध्यम से वित्तीय योजना सीखें</string>
     
     <!-- Onboarding -->
     <string name="welcome_title">बीज से धन में आपका स्वागत है!</string>
@@ -12,37 +14,127 @@
     <string name="menu_save">बचत करें</string>
     <string name="menu_learn">सीखें</string>
     <string name="menu_profile">प्रोफ़ाइल</string>
+    <string name="menu_leaderboard">लीडरबोर्ड</string>
+    <string name="menu_achievements">उपलब्धियां</string>
     
     <!-- Farm -->
+    <string name="farm_name">खेत का नाम</string>
+    <string name="farm_savings">बचत</string>
+    <string name="farm_emergency_fund">आपातकालीन निधि</string>
+    <string name="farm_land_size">भूमि का आकार</string>
     <string name="farm_coins">सिक्के: %1$d</string>
     <string name="farm_level">स्तर %1$d</string>
     <string name="plant_crop">फसल लगाएं</string>
-    <string name="harvest">फसल काटें</string>
+    <string name="harvest">कटाई करें</string>
+    <string name="expand_farm">खेत का विस्तार करें</string>
+    <string name="no_crops">अभी तक कोई फसल नहीं लगाई गई</string>
+    <string name="plant_first_crop">शुरू करने के लिए अपनी पहली फसल लगाएं!</string>
+    
+    <!-- Crop Status -->
+    <string name="status_growing">बढ़ रही है</string>
+    <string name="status_ready">कटाई के लिए तैयार</string>
+    <string name="status_harvested">कटाई हो गई</string>
+    <string name="status_withered">मुरझा गई</string>
+    
+    <!-- Crop Types -->
+    <string name="crop_wheat">गेहूं</string>
+    <string name="crop_rice">चावल</string>
+    <string name="crop_corn">मक्का</string>
+    <string name="crop_tomato">टमाटर</string>
+    <string name="crop_potato">आलू</string>
+    
+    <!-- Plant Crop Activity -->
+    <string name="select_crop">फसल चुनें</string>
+    <string name="crop_cost">लागत: ₹%1$d</string>
+    <string name="crop_yield">अपेक्षित उपज: ₹%1$d</string>
+    <string name="crop_duration">अवधि: %1$d दिन</string>
+    <string name="market_price">बाजार मूल्य: ₹%1$d</string>
+    <string name="weather_bonus">मौसम बोनस: %1$s</string>
+    <string name="insufficient_funds">इस फसल को लगाने के लिए पर्याप्त धन नहीं है</string>
+    <string name="crop_planted_success">फसल सफलतापूर्वक लगाई गई!</string>
+    
+    <!-- Harvest -->
+    <string name="harvest_success">कटाई हो गई! ₹%1$d कमाए</string>
+    <string name="crop_not_ready">फसल अभी कटाई के लिए तैयार नहीं है</string>
     
     <!-- Investment -->
     <string name="investment_schemes">निवेश योजनाएं</string>
+    <string name="my_investments">मेरे निवेश</string>
+    <string name="active_investments">सक्रिय निवेश</string>
     <string name="mutual_funds">म्यूचुअल फंड</string>
     <string name="fixed_deposit">सावधि जमा</string>
     <string name="kisan_vikas_patra">किसान विकास पत्र</string>
     <string name="pm_kisan">पीएम-किसान योजना</string>
     <string name="invest_now">अभी निवेश करें</string>
     <string name="calculate_returns">रिटर्न की गणना करें</string>
+    <string name="investment_amount">निवेश राशि</string>
+    <string name="expected_return">अपेक्षित रिटर्न</string>
+    <string name="maturity_date">परिपक्वता तिथि</string>
+    <string name="investment_created">निवेश सफलतापूर्वक बनाया गया!</string>
+    
+    <!-- Profile -->
+    <string name="profile">प्रोफ़ाइल</string>
+    <string name="edit_profile">प्रोफ़ाइल संपादित करें</string>
+    <string name="logout">लॉग आउट</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="language">भाषा</string>
+    <string name="select_language">भाषा चुनें</string>
+    <string name="sound_effects">ध्वनि प्रभाव</string>
+    <string name="haptic_feedback">हैप्टिक फीडबैक</string>
+    <string name="notifications">सूचनाएं</string>
+    <string name="total_earnings">कुल कमाई</string>
+    <string name="crops_harvested">फसलें काटी गईं</string>
+    <string name="investments_made">निवेश किए गए</string>
+    
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">लीडरबोर्ड</string>
+    <string name="rank">रैंक</string>
+    <string name="farmer_name">किसान</string>
+    <string name="score">स्कोर</string>
+    <string name="your_rank">आपकी रैंक: #%1$d</string>
+    
+    <!-- Achievements -->
+    <string name="achievements_title">उपलब्धियां</string>
+    <string name="achievement_unlocked">उपलब्धि अनलॉक हुई!</string>
+    <string name="locked">लॉक</string>
+    <string name="unlocked">अनलॉक</string>
+    
+    <!-- Quiz -->
+    <string name="quiz_title">वित्तीय साक्षरता प्रश्नोत्तरी</string>
+    <string name="daily_tip">दैनिक सुझाव</string>
+    <string name="submit_answer">उत्तर जमा करें</string>
+    <string name="correct_answer">सही!</string>
+    <string name="wrong_answer">गलत। फिर से प्रयास करें!</string>
+    <string name="quiz_completed">प्रश्नोत्तरी पूर्ण हुई!</string>
+    <string name="your_score">आपका स्कोर: %1$d/%2$d</string>
     
     <!-- Common -->
     <string name="save">सहेजें</string>
     <string name="cancel">रद्द करें</string>
     <string name="ok">ठीक है</string>
+    <string name="yes">हां</string>
+    <string name="no">नहीं</string>
     <string name="loading">लोड हो रहा है…</string>
     <string name="error">त्रुटि</string>
     <string name="success">सफलता!</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="refresh">रीफ्रेश करें</string>
+    <string name="close">बंद करें</string>
     
-    <!-- Game Messages -->
-    <string name="good_harvest">बढ़िया फसल! आपने %1$d सिक्के कमाए!</string>
-    <string name="bad_weather">खराब मौसम ने आपकी फसलों को प्रभावित किया।</string>
-    <string name="level_up">स्तर बढ़ा! आप स्तर %1$d पर पहुंच गए</string>
+    <!-- Error Messages -->
+    <string name="error_network">नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।</string>
+    <string name="error_server">सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करें।</string>
+    <string name="error_unknown">एक अज्ञात त्रुटि हुई।</string>
+    <string name="error_login">लॉगिन विफल। कृपया पुनः प्रयास करें।</string>
     
-    <!-- Tutorial -->
-    <string name="tutorial_step1">यह आपका खेत है। फसल लगाकर शुरुआत करें!</string>
-    <string name="tutorial_step2">आपातकालीन और भविष्य के निवेश के लिए पैसे बचाएं</string>
-    <string name="tutorial_step3">समय के साथ अपनी संपत्ति बढ़ाने के लिए समझदारी से निवेश करें</string>
+    <!-- Confirmation -->
+    <string name="confirm_logout">क्या आप वाकई लॉग आउट करना चाहते हैं?</string>
+    <string name="confirm_delete">क्या आप वाकई इसे हटाना चाहते हैं?</string>
+    
+    <!-- Weather -->
+    <string name="weather_sunny">धूप</string>
+    <string name="weather_rainy">बारिश</string>
+    <string name="weather_cloudy">बादल</string>
+    <string name="weather_stormy">तूफान</string>
+
 </resources>

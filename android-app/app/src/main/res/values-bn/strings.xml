@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">বীজ থেকে সম্পদ</string>
+    <string name="app_tagline">কৃষির মাধ্যমে আর্থিক পরিকল্পনা শিখুন</string>
+    
+    <string name="welcome_title">বীজ থেকে সম্পদে স্বাগতম!</string>
+    <string name="get_started">শুরু করুন</string>
+    
+    <string name="menu_farm">আমার খামার</string>
+    <string name="menu_invest">বিনিয়োগ করুন</string>
+    <string name="menu_profile">প্রোফাইল</string>
+    
+    <string name="farm_name">খামারের নাম</string>
+    <string name="plant_crop">ফসল রোপণ করুন</string>
+    <string name="harvest">ফসল কাটা</string>
+    
+    <string name="status_growing">বৃদ্ধি পাচ্ছে</string>
+    <string name="status_ready">কাটার জন্য প্রস্তুত</string>
+    
+    <string name="crop_wheat">গম</string>
+    <string name="crop_rice">চাল</string>
+    
+    <string name="investment_schemes">বিনিয়োগ প্রকল্প</string>
+    <string name="invest_now">এখনই বিনিয়োগ করুন</string>
+    
+    <string name="profile">প্রোফাইল</string>
+    <string name="logout">লগ আউট</string>
+    <string name="language">ভাষা</string>
+    <string name="select_language">ভাষা নির্বাচন করুন</string>
+    
+    <string name="save">সংরক্ষণ করুন</string>
+    <string name="cancel">বাতিল করুন</string>
+    <string name="ok">ঠিক আছে</string>
+    <string name="loading">লোড হচ্ছে…</string>
+    <string name="error">ত্রুটি</string>
+    <string name="success">সফলতা!</string>
+
+</resources>

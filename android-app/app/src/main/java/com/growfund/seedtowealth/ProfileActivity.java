@@ -14,6 +14,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.growfund.seedtowealth.model.User;
 import com.growfund.seedtowealth.utils.SessionManager;
 import com.growfund.seedtowealth.utils.SoundManager;
+import com.growfund.seedtowealth.utils.LanguageManager;
 
 import android.widget.EditText;
 import android.app.AlertDialog;
@@ -25,10 +26,16 @@ import com.growfund.seedtowealth.network.ApiClient;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LanguageManager.applyLanguage(newBase));
+    }
+
     private ImageView profileImage;
     private TextView userNameText, userEmailText, currentFarmNameText;
     private SwitchMaterial soundSwitch, vibrationSwitch;
     private Button logoutButton;
+    private TextView languageText;
     private SessionManager sessionManager;
     private Long farmId;
     private String farmName;
@@ -49,6 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
         initViews();
         loadUserData();
         setupSettings();
+        setupLanguageSelector();
         setupFarmSettings();
         setupLogout();
     }
@@ -61,6 +69,50 @@ public class ProfileActivity extends AppCompatActivity {
         soundSwitch = findViewById(R.id.soundSwitch);
         vibrationSwitch = findViewById(R.id.vibrationSwitch);
         logoutButton = findViewById(R.id.logoutButton);
+        languageText = findViewById(R.id.languageText);
+    }
+
+    private void setupLanguageSelector() {
+        // Display current language
+        String currentLang = LanguageManager.getLanguage(this);
+        languageText.setText(LanguageManager.getLanguageName(currentLang));
+
+        // Language selector click listener
+        findViewById(R.id.languageContainer).setOnClickListener(v -> showLanguageDialog());
+    }
+
+    private void showLanguageDialog() {
+        String[] languages = LanguageManager.getSupportedLanguageNames();
+        String[] languageCodes = LanguageManager.getSupportedLanguages();
+        String currentLang = LanguageManager.getLanguage(this);
+
+        // Find current language index
+        int currentIndex = 0;
+        for (int i = 0; i < languageCodes.length; i++) {
+            if (languageCodes[i].equals(currentLang)) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.select_language));
+        builder.setSingleChoiceItems(languages, currentIndex, (dialog, which) -> {
+            String selectedLang = languageCodes[which];
+            if (!selectedLang.equals(currentLang)) {
+                LanguageManager.setLanguage(this, selectedLang);
+
+                // Recreate activity to apply language
+                dialog.dismiss();
+                recreate();
+
+                Toast.makeText(this, getString(R.string.success), Toast.LENGTH_SHORT).show();
+            } else {
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 
     private void setupFarmSettings() {

@@ -36,6 +36,11 @@ import com.growfund.seedtowealth.worker.SyncWorker;
 public class FarmActivity extends AppCompatActivity {
     private static final String TAG = "FarmActivity";
 
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(com.growfund.seedtowealth.utils.LanguageManager.applyLanguage(newBase));
+    }
+
     private TextView farmNameText, landSizeText, savingsText, emergencyFundText;
     private RecyclerView cropsRecyclerView;
     private ProgressBar loadingProgress;
