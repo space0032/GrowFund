@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 /**
@@ -15,29 +16,40 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Achievement {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
     @Column(nullable = false)
-    private String achievementType;
-    
+    private String achievementType; // Used as ID
+
     @Column(nullable = false)
     private String title;
-    
+
     private String description;
-    
+
+    private String icon; // Added icon
+
     @Column(nullable = false)
-    private Long rewardCoins;
-    
+    private Long rewardCoins = 0L;
+
     @Column(nullable = false)
-    private Long rewardExperience;
-    
+    private Long rewardExperience = 0L;
+
     @Column(nullable = false)
     private LocalDateTime unlockedAt = LocalDateTime.now();
+
+    @JsonIgnore
+    public String getAchievementId() {
+        return achievementType;
+    }
+
+    public void setAchievementId(String achievementId) {
+        this.achievementType = achievementId;
+    }
 }

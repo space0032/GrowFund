@@ -21,6 +21,7 @@ public class CropService {
     private final CropRepository cropRepository;
     private final FarmRepository farmRepository;
     private final WeatherService weatherService;
+    // private final AchievementService achievementService;
     private final Random random = new Random();
 
     @Transactional
@@ -100,10 +101,13 @@ public class CropService {
         crop.setRevenue(revenue);
         crop.setProfit(profit);
 
-        // Update user's coin balance from profit/revenue (assuming revenue goes to
-        // savings/wallet)
-        // ideally we should update user's totalCoins or Farm savings
-        // for now just saving the crop details
+        // Update user's coin balance from profit/revenue
+        Farm farm = crop.getFarm();
+        farm.setSavings(farm.getSavings() + revenue);
+        farmRepository.save(farm);
+
+        // Check Achievements
+        // achievementService.checkAll(crop.getFarm().getUser(), crop.getFarm());
 
         Crop savedCrop = cropRepository.save(crop);
         return convertToDTO(savedCrop);

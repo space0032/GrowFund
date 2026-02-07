@@ -64,6 +64,10 @@
             android:name=".InvestmentActivity"
             android:exported="false"
             android:parentActivityName=".FarmActivity" />
+        <activity
+            android:name=".AchievementsActivity"
+            android:exported="false"
+            android:parentActivityName=".FarmActivity" />
     </application>
 
 </manifest>

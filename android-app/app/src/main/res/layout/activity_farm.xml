@@ -62,7 +62,17 @@
                             android:src="@android:drawable/ic_menu_manage"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:contentDescription="Investments"
-                            app:tint="#2E7D32" />
+                            app:tint="#2E7D32"
+                            android:layout_marginEnd="8dp" />
+
+                        <ImageButton
+                            android:id="@+id/achievementsButton"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@android:drawable/btn_star"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Achievements"
+                            app:tint="#FBC02D" />
                     </LinearLayout>
 
                     <TextView

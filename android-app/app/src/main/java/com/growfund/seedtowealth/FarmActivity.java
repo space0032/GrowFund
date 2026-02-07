@@ -92,6 +92,11 @@ public class FarmActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        findViewById(R.id.achievementsButton).setOnClickListener(v -> {
+            Intent intent = new Intent(FarmActivity.this, AchievementsActivity.class);
+            startActivity(intent);
+        });
+
         cropsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         cropAdapter = new CropAdapter(crop -> {

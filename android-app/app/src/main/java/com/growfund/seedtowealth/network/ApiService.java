@@ -67,4 +67,8 @@ public interface ApiService {
     // Weather
     @GET("api/weather/current")
     Call<java.util.Map<String, Object>> getCurrentWeather();
+
+    // Achievements
+    @GET("api/achievements")
+    Call<List<com.growfund.seedtowealth.model.Achievement>> getAchievements();
 }

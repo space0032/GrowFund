@@ -19,6 +19,7 @@ public class FarmService {
     private final FarmRepository farmRepository;
     private final UserRepository userRepository;
     private final CropRepository cropRepository;
+    // private final AchievementService achievementService;
 
     @Transactional
     public FarmDTO createFarm(Long userId, String farmName) {
@@ -78,6 +79,10 @@ public class FarmService {
         farm.setLandSize(farm.getLandSize() + 1.0);
 
         Farm savedFarm = farmRepository.save(farm);
+
+        // Check Achievements
+        // achievementService.checkAll(savedFarm.getUser(), savedFarm);
+
         return convertToDTO(savedFarm);
     }
 
