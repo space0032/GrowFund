@@ -5,231 +5,238 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent">
 
-            <!-- Farm Header -->
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <LinearLayout
+                <!-- Farm Header -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:id="@+id/farmNameText"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="My Farm"
-                            android:textSize="24sp"
-                            android:textStyle="bold"
-                            android:textColor="#2E7D32" />
-
-                        <ImageButton
-                            android:id="@+id/leaderboardButton"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@android:drawable/ic_menu_sort_by_size"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="Leaderboard"
-                            app:tint="#2E7D32"
-                            android:layout_marginEnd="8dp" />
-
-                        <ImageButton
-                            android:id="@+id/investmentButton"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@android:drawable/ic_menu_manage"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="Investments"
-                            app:tint="#2E7D32"
-                            android:layout_marginEnd="8dp" />
-
-                        <ImageButton
-                            android:id="@+id/achievementsButton"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@android:drawable/btn_star"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="Achievements"
-                            app:tint="#FBC02D" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/landSizeText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1.0 acres"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:id="@+id/weatherText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Loading weather..."
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#1976D2"
-                        android:layout_marginTop="4dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#E0E0E0"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp" />
-
-                    <!-- Financial Stats -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:id="@+id/farmNameText"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="Savings"
-                                android:textSize="12sp"
-                                android:textColor="#757575" />
-
-                            <TextView
-                                android:id="@+id/savingsText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₹0"
-                                android:textSize="18sp"
+                                android:layout_weight="1"
+                                android:text="My Farm"
+                                android:textSize="24sp"
                                 android:textStyle="bold"
-                                android:textColor="#4CAF50" />
+                                android:textColor="#2E7D32" />
+
+                            <ImageButton
+                                android:id="@+id/leaderboardButton"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@android:drawable/ic_menu_sort_by_size"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Leaderboard"
+                                app:tint="#2E7D32"
+                                android:layout_marginEnd="8dp" />
+
+                            <ImageButton
+                                android:id="@+id/investmentButton"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@android:drawable/ic_menu_manage"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Investments"
+                                app:tint="#2E7D32"
+                                android:layout_marginEnd="8dp" />
+
+                            <ImageButton
+                                android:id="@+id/achievementsButton"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@android:drawable/btn_star"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Achievements"
+                                app:tint="#FBC02D" />
                         </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Emergency Fund"
-                                android:textSize="12sp"
-                                android:textColor="#757575" />
-
-                            <TextView
-                                android:id="@+id/emergencyFundText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₹0"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="#FF9800" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Daily Tip & Quiz Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFF8E1"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="8dp">
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="💡 Daily Tip"
-                            android:textColor="#F57F17"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <Button
-                            android:id="@+id/quizButton"
+                            android:id="@+id/landSizeText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Take Quiz"
-                            android:textSize="12sp"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"/>
-                    </LinearLayout>
+                            android:text="1.0 acres"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp" />
 
-                    <TextView
-                        android:id="@+id/dailyTipText"
+                        <TextView
+                            android:id="@+id/weatherText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Loading weather..."
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#1976D2"
+                            android:layout_marginTop="4dp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Financial Stats -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Savings"
+                                    android:textSize="12sp"
+                                    android:textColor="#757575" />
+
+                                <TextView
+                                    android:id="@+id/savingsText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₹0"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#4CAF50" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Emergency Fund"
+                                    android:textSize="12sp"
+                                    android:textColor="#757575" />
+
+                                <TextView
+                                    android:id="@+id/emergencyFundText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₹0"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Daily Tip & Quiz Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#FFF8E1"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Diversifying your crops can protect against price fluctuations."
-                        android:textColor="#424242"
-                        android:textSize="14sp"
-                        android:lineSpacingExtra="4dp"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-            <!-- Crops Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="My Crops"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="8dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/cropsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="💡 Daily Tip"
+                                android:textColor="#F57F17"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
 
-            <include
-                android:id="@+id/emptyStateView"
-                layout="@layout/empty_state_farm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
+                            <Button
+                                android:id="@+id/quizButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Take Quiz"
+                                android:textSize="12sp"
+                                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                        </LinearLayout>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                        <TextView
+                            android:id="@+id/dailyTipText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Diversifying your crops can protect against price fluctuations."
+                            android:textColor="#424242"
+                            android:textSize="14sp"
+                            android:lineSpacingExtra="4dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Crops Section -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Crops"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/cropsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+                <include
+                    android:id="@+id/emptyStateView"
+                    layout="@layout/empty_state_farm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- Loading Progress -->
     <ProgressBar

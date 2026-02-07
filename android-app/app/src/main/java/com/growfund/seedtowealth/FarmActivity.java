@@ -69,6 +69,8 @@ public class FarmActivity extends AppCompatActivity {
 
     private View emptyStateView;
 
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
+
     private void initViews() {
         farmNameText = findViewById(R.id.farmNameText);
         landSizeText = findViewById(R.id.landSizeText);
@@ -78,7 +80,10 @@ public class FarmActivity extends AppCompatActivity {
         emptyStateView = findViewById(R.id.emptyStateView);
         loadingProgress = findViewById(R.id.loadingProgress);
         plantCropFab = findViewById(R.id.plantCropFab);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         TextView weatherText = findViewById(R.id.weatherText);
+
+        swipeRefreshLayout.setOnRefreshListener(this::loadFarmData);
 
         findViewById(R.id.leaderboardButton).setOnClickListener(v -> {
             Intent intent = new Intent(FarmActivity.this, LeaderboardActivity.class);
@@ -143,12 +148,15 @@ public class FarmActivity extends AppCompatActivity {
     }
 
     private void loadFarmData() {
-        loadingProgress.setVisibility(View.VISIBLE);
+        if (!swipeRefreshLayout.isRefreshing()) {
+            loadingProgress.setVisibility(View.VISIBLE);
+        }
 
         ApiClient.getApiService().getMyFarm().enqueue(new Callback<Farm>() {
             @Override
             public void onResponse(Call<Farm> call, Response<Farm> response) {
                 loadingProgress.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     currentFarm = response.body();
                     updateFarmUI();
@@ -166,6 +174,7 @@ public class FarmActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Farm> call, Throwable t) {
                 loadingProgress.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
                 Log.e(TAG, "Error loading farm", t);
                 com.growfund.seedtowealth.utils.ErrorHandler.handleError(FarmActivity.this, t);
             }
