@@ -78,11 +78,14 @@ public class FarmActivity extends AppCompatActivity {
         emptyStateView = findViewById(R.id.emptyStateView);
         loadingProgress = findViewById(R.id.loadingProgress);
         plantCropFab = findViewById(R.id.plantCropFab);
+        TextView weatherText = findViewById(R.id.weatherText);
 
         findViewById(R.id.leaderboardButton).setOnClickListener(v -> {
             Intent intent = new Intent(FarmActivity.this, LeaderboardActivity.class);
             startActivity(intent);
         });
+
+        loadWeather(weatherText);
 
         findViewById(R.id.investmentButton).setOnClickListener(v -> {
             Intent intent = new Intent(FarmActivity.this, InvestmentActivity.class);
@@ -243,11 +246,41 @@ public class FarmActivity extends AppCompatActivity {
         });
     }
 
+    private void loadWeather(TextView weatherText) {
+        ApiClient.getApiService().getCurrentWeather().enqueue(new Callback<java.util.Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<java.util.Map<String, Object>> call,
+                    Response<java.util.Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    java.util.Map<String, Object> body = response.body();
+                    String condition = (String) body.get("condition"); // SUNNY
+                    String displayName = (String) body.get("displayName"); // Sunny
+
+                    String emoji = "☀️";
+                    if ("RAINY".equals(condition))
+                        emoji = "🌧️";
+                    else if ("DROUGHT".equals(condition))
+                        emoji = "🏜️";
+
+                    weatherText.setText(emoji + " " + displayName);
+                } else {
+                    weatherText.setText("Weather: Unknown");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                weatherText.setText("Weather: --");
+            }
+        });
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         if (currentFarm != null) {
             loadCrops(); // Refresh crops when returning from PlantCropActivity
         }
+        // Refresh weather too? Maybe.
     }
 }

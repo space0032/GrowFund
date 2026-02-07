@@ -47,7 +47,6 @@ public class PlantCropActivity extends AppCompatActivity {
         }
 
         initViews();
-        setupCropTypeSpinner();
     }
 
     private void initViews() {
@@ -59,6 +58,45 @@ public class PlantCropActivity extends AppCompatActivity {
         loadingProgress = findViewById(R.id.loadingProgress);
 
         plantButton.setOnClickListener(v -> plantCrop());
+
+        loadWeatherAndTrends();
+    }
+
+    private void loadWeatherAndTrends() {
+        // Load Trends
+        setupCropTypeSpinner();
+
+        // Load Weather
+        TextView weatherText = findViewById(R.id.weatherImpactText);
+        ApiClient.getApiService().getCurrentWeather().enqueue(new Callback<java.util.Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<java.util.Map<String, Object>> call,
+                    Response<java.util.Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    java.util.Map<String, Object> body = response.body();
+                    String condition = (String) body.get("condition");
+                    Double multiplier = (Double) body.get("growthMultiplier");
+
+                    String message = "Current Weather: " + body.get("displayName");
+                    if ("RAINY".equals(condition)) {
+                        message += "\n(Growth Speed: +20% Faster!)";
+                        weatherText.setTextColor(android.graphics.Color.BLUE);
+                    } else if ("DROUGHT".equals(condition)) {
+                        message += "\n(Growth Speed: -50% Slower!)";
+                        weatherText.setTextColor(android.graphics.Color.RED);
+                    } else {
+                        message += "\n(Standard Growth Rate)";
+                        weatherText.setTextColor(android.graphics.Color.parseColor("#FFA000")); // Orange
+                    }
+                    weatherText.setText(message);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                weatherText.setText("Weather data unavailable");
+            }
+        });
     }
 
     private void setupCropTypeSpinner() {

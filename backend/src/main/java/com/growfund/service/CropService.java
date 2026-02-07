@@ -20,6 +20,7 @@ public class CropService {
 
     private final CropRepository cropRepository;
     private final FarmRepository farmRepository;
+    private final WeatherService weatherService;
     private final Random random = new Random();
 
     @Transactional
@@ -40,8 +41,17 @@ public class CropService {
         crop.setExpectedYield(calculateExpectedYield(cropType, areaPlanted, investmentAmount));
 
         // Set harvest date based on crop type (Testing: minutes instead of months)
-        long growthTimeMinutes = getGrowthTimeInMinutes(cropType);
-        crop.setHarvestDate(LocalDateTime.now().plusMinutes(growthTimeMinutes));
+        long baseGrowthTimeMinutes = getGrowthTimeInMinutes(cropType);
+
+        // Apply weather multiplier
+        WeatherService.WeatherCondition weather = weatherService.getCurrentWeather();
+        double multiplier = weather.getGrowthMultiplier();
+        long actualGrowthTime = (long) (baseGrowthTimeMinutes * multiplier);
+        if (actualGrowthTime < 1)
+            actualGrowthTime = 1; // Minimum 1 minute
+
+        crop.setHarvestDate(LocalDateTime.now().plusMinutes(actualGrowthTime));
+        crop.setWeatherImpact(weather.getDisplayName()); // Store weather at planting time
 
         Crop savedCrop = cropRepository.save(crop);
         return convertToDTO(savedCrop);

@@ -63,4 +63,8 @@ public interface ApiService {
     // Market Trends
     @GET("api/market/trends")
     Call<java.util.Map<String, Double>> getMarketTrends();
+
+    // Weather
+    @GET("api/weather/current")
+    Call<java.util.Map<String, Object>> getCurrentWeather();
 }
