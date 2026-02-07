@@ -62,6 +62,26 @@ public class PlantCropActivity extends AppCompatActivity {
     }
 
     private void setupCropTypeSpinner() {
+        // Fetch trends first
+        ApiClient.getApiService().getMarketTrends().enqueue(new Callback<Map<String, Double>>() {
+            @Override
+            public void onResponse(Call<Map<String, Double>> call, Response<Map<String, Double>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Map<String, Double> trends = response.body();
+                    updateSpinnerWithTrends(trends);
+                } else {
+                    setupDefaultSpinner();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Double>> call, Throwable t) {
+                setupDefaultSpinner();
+            }
+        });
+    }
+
+    private void setupDefaultSpinner() {
         String[] cropTypes = { "WHEAT", "RICE", "COTTON", "SUGARCANE", "CORN" };
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, cropTypes);
@@ -69,8 +89,32 @@ public class PlantCropActivity extends AppCompatActivity {
         cropTypeSpinner.setAdapter(adapter);
     }
 
+    private void updateSpinnerWithTrends(Map<String, Double> trends) {
+        // Create formatted strings: "WHEAT (₹42.50)"
+        String[] cropTypes = new String[] { "WHEAT", "RICE", "COTTON", "SUGARCANE", "CORN" };
+        String[] displayItems = new String[cropTypes.length];
+
+        for (int i = 0; i < cropTypes.length; i++) {
+            String crop = cropTypes[i];
+            Double price = trends.get(crop);
+            if (price != null) {
+                displayItems[i] = crop + " (₹" + price + ")";
+            } else {
+                displayItems[i] = crop;
+            }
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, displayItems);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        cropTypeSpinner.setAdapter(adapter);
+    }
+
     private void plantCrop() {
-        String cropType = cropTypeSpinner.getSelectedItem().toString();
+        String selectedItem = cropTypeSpinner.getSelectedItem().toString();
+        // Extract "WHEAT" from "WHEAT (₹42.50)"
+        String cropType = selectedItem.split(" ")[0];
+
         String areaStr = areaInput.getText().toString();
         String investmentStr = investmentInput.getText().toString();
 

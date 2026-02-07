@@ -59,4 +59,8 @@ public interface ApiService {
 
     @GET("investments/user/my-active-investments")
     Call<List<com.growfund.seedtowealth.model.Investment>> getMyActiveInvestments();
+
+    // Market Trends
+    @GET("api/market/trends")
+    Call<java.util.Map<String, Double>> getMarketTrends();
 }
