@@ -1,7 +1,9 @@
 package com.growfund.controller;
 
 import com.growfund.dto.FarmDTO;
+import com.growfund.model.User;
 import com.growfund.service.FarmService;
+import com.growfund.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class FarmController {
 
     private final FarmService farmService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<FarmDTO> createFarm(
@@ -26,21 +29,25 @@ public class FarmController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Get user ID from UserService using Firebase UID
-        // For now, assuming userId is passed or we need to look it up
-        Long userId = Long.parseLong(request.getOrDefault("userId", "1"));
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
 
-        FarmDTO farm = farmService.createFarm(userId, farmName);
+        User user = userService.getUserByFirebaseUid(uid);
+        FarmDTO farm = farmService.createFarm(user.getId(), farmName);
         return ResponseEntity.ok(farm);
     }
 
     @GetMapping("/my-farm")
     public ResponseEntity<FarmDTO> getMyFarm(@AuthenticationPrincipal String uid) {
-        // TODO: Get userId from uid via UserService
-        Long userId = 1L; // Placeholder
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build(); // Unauthorized
+        }
 
         try {
-            FarmDTO farm = farmService.getFarmByUserId(userId);
+            // Get user by Firebase UID
+            User user = userService.getUserByFirebaseUid(uid);
+            FarmDTO farm = farmService.getFarmByUserId(user.getId());
             return ResponseEntity.ok(farm);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

@@ -1,9 +1,13 @@
 package com.growfund.controller;
 
 import com.growfund.dto.CropDTO;
+import com.growfund.model.User;
 import com.growfund.service.CropService;
+import com.growfund.service.FarmService;
+import com.growfund.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,11 +19,24 @@ import java.util.Map;
 public class CropController {
 
     private final CropService cropService;
+    private final FarmService farmService;
+    private final UserService userService;
 
     @PostMapping("/farms/{farmId}/crops")
     public ResponseEntity<CropDTO> plantCrop(
             @PathVariable Long farmId,
-            @RequestBody Map<String, Object> request) {
+            @RequestBody Map<String, Object> request,
+            @AuthenticationPrincipal String uid) {
+
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        // Verify user owns the farm
+        User user = userService.getUserByFirebaseUid(uid);
+        if (!farmService.isFarmOwnedByUser(farmId, user.getId())) {
+            return ResponseEntity.status(403).build();
+        }
 
         String cropType = (String) request.get("cropType");
         Double areaPlanted = Double.parseDouble(request.get("areaPlanted").toString());

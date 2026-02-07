@@ -112,8 +112,7 @@ public class PlantCropActivity extends AppCompatActivity {
                 loadingProgress.setVisibility(View.GONE);
                 plantButton.setEnabled(true);
                 Log.e(TAG, "Error planting crop", t);
-                Toast.makeText(PlantCropActivity.this,
-                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                com.growfund.seedtowealth.utils.ErrorHandler.handleError(PlantCropActivity.this, t);
             }
         });
     }

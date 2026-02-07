@@ -21,4 +21,7 @@ public class CropDTO {
     private LocalDateTime harvestDate;
     private String status;
     private String weatherImpact;
+    private Long revenue;
+    private Long profit;
+    private Long sellingPricePerUnit;
 }

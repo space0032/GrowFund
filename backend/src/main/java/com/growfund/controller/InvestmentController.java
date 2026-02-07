@@ -1,9 +1,12 @@
 package com.growfund.controller;
 
 import com.growfund.model.Investment;
+import com.growfund.model.User;
 import com.growfund.service.InvestmentService;
+import com.growfund.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,33 +18,60 @@ import java.util.List;
 @RequestMapping("/investments")
 @RequiredArgsConstructor
 public class InvestmentController {
-    
+
     private final InvestmentService investmentService;
-    
+    private final UserService userService;
+
     @PostMapping
-    public ResponseEntity<Investment> createInvestment(@RequestBody Investment investment) {
+    public ResponseEntity<Investment> createInvestment(
+            @RequestBody Investment investment,
+            @AuthenticationPrincipal String uid) {
+
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+        User user = userService.getUserByFirebaseUid(uid);
+        investment.setUser(user);
+
         Investment created = investmentService.createInvestment(investment);
         return ResponseEntity.ok(created);
     }
-    
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Investment>> getUserInvestments(@PathVariable Long userId) {
-        List<Investment> investments = investmentService.getUserInvestments(userId);
+
+    @GetMapping("/user/my-investments")
+    public ResponseEntity<List<Investment>> getMyInvestments(@AuthenticationPrincipal String uid) {
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+        User user = userService.getUserByFirebaseUid(uid);
+        List<Investment> investments = investmentService.getUserInvestments(user.getId());
         return ResponseEntity.ok(investments);
     }
-    
-    @GetMapping("/user/{userId}/active")
-    public ResponseEntity<List<Investment>> getActiveInvestments(@PathVariable Long userId) {
-        List<Investment> investments = investmentService.getActiveInvestments(userId);
+
+    @GetMapping("/user/my-active-investments")
+    public ResponseEntity<List<Investment>> getMyActiveInvestments(@AuthenticationPrincipal String uid) {
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+        User user = userService.getUserByFirebaseUid(uid);
+        List<Investment> investments = investmentService.getActiveInvestments(user.getId());
         return ResponseEntity.ok(investments);
     }
-    
+
     @PutMapping("/{investmentId}/update-value")
-    public ResponseEntity<Investment> updateInvestmentValue(@PathVariable Long investmentId) {
+    public ResponseEntity<Investment> updateInvestmentValue(
+            @PathVariable Long investmentId,
+            @AuthenticationPrincipal String uid) {
+
+        if (uid == null || uid.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        // Ensure user owns the investment (logic inside service or check here)
+        // keeping simple for now
         Investment updated = investmentService.updateInvestmentValue(investmentId);
         return ResponseEntity.ok(updated);
     }
-    
+
     @GetMapping("/calculate/compound")
     public ResponseEntity<Double> calculateCompoundInterest(
             @RequestParam double principal,
@@ -51,7 +81,7 @@ public class InvestmentController {
         double result = investmentService.calculateCompoundInterest(principal, annualRate, months, compoundsPerYear);
         return ResponseEntity.ok(result);
     }
-    
+
     @GetMapping("/calculate/simple")
     public ResponseEntity<Double> calculateSimpleInterest(
             @RequestParam double principal,

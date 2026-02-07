@@ -123,6 +123,13 @@
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false" />
 
+            <include
+                android:id="@+id/emptyStateView"
+                layout="@layout/empty_state_farm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
         </LinearLayout>
     </ScrollView>
 

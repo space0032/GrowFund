@@ -51,4 +51,10 @@ public class Crop {
     private String status = "PLANTED"; // PLANTED, GROWING, HARVESTED, FAILED
 
     private String weatherImpact; // NORMAL, DROUGHT, FLOOD, PEST
+
+    private Long revenue;
+
+    private Long profit;
+
+    private Long sellingPricePerUnit;
 }

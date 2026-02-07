@@ -117,6 +117,14 @@ public class LoginActivity extends AppCompatActivity {
                         showLoading(false);
                         if (response.isSuccessful()) {
                             Log.d(TAG, "User Sync Success: " + response.body());
+
+                            // Save session
+                            com.growfund.seedtowealth.utils.SessionManager sessionManager = new com.growfund.seedtowealth.utils.SessionManager(
+                                    LoginActivity.this);
+                            sessionManager.saveUser(user);
+                            sessionManager.createLoginSession(user.getUid(), user.getEmail(), user.getName(),
+                                    user.getPhotoUrl());
+
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, FarmActivity.class);
                             startActivity(intent);
@@ -132,8 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(retrofit2.Call<com.growfund.seedtowealth.model.User> call, Throwable t) {
                         showLoading(false);
                         Log.e(TAG, "User Sync Error", t);
-                        Toast.makeText(LoginActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT)
-                                .show();
+                        com.growfund.seedtowealth.utils.ErrorHandler.handleError(LoginActivity.this, t);
                     }
                 });
     }

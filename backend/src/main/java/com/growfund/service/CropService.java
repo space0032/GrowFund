@@ -70,10 +70,37 @@ public class CropService {
         // Calculate actual yield with some randomness (80-120% of expected)
         Long expectedYield = crop.getExpectedYield();
         double variance = 0.8 + (random.nextDouble() * 0.4); // 0.8 to 1.2
-        crop.setActualYield((long) (expectedYield * variance));
+        Long actualYield = (long) (expectedYield * variance);
+        crop.setActualYield(actualYield);
+
+        // Calculate functionality details
+        Long pricePerUnit = getMarketPrice(crop.getCropType());
+        Long revenue = actualYield * pricePerUnit;
+        Long profit = revenue - crop.getInvestmentAmount();
+
+        crop.setSellingPricePerUnit(pricePerUnit);
+        crop.setRevenue(revenue);
+        crop.setProfit(profit);
+
+        // Update user's coin balance from profit/revenue (assuming revenue goes to
+        // savings/wallet)
+        // ideally we should update user's totalCoins or Farm savings
+        // for now just saving the crop details
 
         Crop savedCrop = cropRepository.save(crop);
         return convertToDTO(savedCrop);
+    }
+
+    private Long getMarketPrice(String cropType) {
+        // Simple static prices for now
+        return switch (cropType.toUpperCase()) {
+            case "WHEAT" -> 20L;
+            case "RICE" -> 25L;
+            case "COTTON" -> 40L;
+            case "SUGARCANE" -> 15L;
+            case "CORN" -> 18L;
+            default -> 10L;
+        };
     }
 
     @Transactional
@@ -122,6 +149,9 @@ public class CropService {
         dto.setHarvestDate(crop.getHarvestDate());
         dto.setStatus(crop.getStatus());
         dto.setWeatherImpact(crop.getWeatherImpact());
+        dto.setRevenue(crop.getRevenue());
+        dto.setProfit(crop.getProfit());
+        dto.setSellingPricePerUnit(crop.getSellingPricePerUnit());
         return dto;
     }
 }

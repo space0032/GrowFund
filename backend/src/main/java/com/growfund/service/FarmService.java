@@ -64,6 +64,12 @@ public class FarmService {
         return convertToDTO(updatedFarm);
     }
 
+    public boolean isFarmOwnedByUser(Long farmId, Long userId) {
+        return farmRepository.findById(farmId)
+                .map(farm -> farm.getUser().getId().equals(userId))
+                .orElse(false);
+    }
+
     private FarmDTO convertToDTO(Farm farm) {
         FarmDTO dto = new FarmDTO();
         dto.setId(farm.getId());

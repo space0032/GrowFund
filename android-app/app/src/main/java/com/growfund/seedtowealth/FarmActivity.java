@@ -37,14 +37,27 @@ public class FarmActivity extends AppCompatActivity {
     private List<Crop> cropList = new ArrayList<>();
     private CropAdapter cropAdapter;
 
+    private com.growfund.seedtowealth.utils.SessionManager sessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farm);
 
+        sessionManager = new com.growfund.seedtowealth.utils.SessionManager(this);
+        if (!sessionManager.isLoggedIn()) {
+            // Redirect to Login if not logged in (implementation detail, for now just
+            // continue or finish)
+            // Intent intent = new Intent(this, LoginActivity.class);
+            // startActivity(intent);
+            // finish();
+        }
+
         initViews();
         loadFarmData();
     }
+
+    private View emptyStateView;
 
     private void initViews() {
         farmNameText = findViewById(R.id.farmNameText);
@@ -52,14 +65,16 @@ public class FarmActivity extends AppCompatActivity {
         savingsText = findViewById(R.id.savingsText);
         emergencyFundText = findViewById(R.id.emergencyFundText);
         cropsRecyclerView = findViewById(R.id.cropsRecyclerView);
+        emptyStateView = findViewById(R.id.emptyStateView);
         loadingProgress = findViewById(R.id.loadingProgress);
         plantCropFab = findViewById(R.id.plantCropFab);
 
         cropsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         cropAdapter = new CropAdapter(crop -> {
-            // TODO: Handle crop click - navigate to crop details
-            Toast.makeText(this, "Crop: " + crop.getCropType(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, CropDetailActivity.class);
+            intent.putExtra("cropId", crop.getId());
+            startActivity(intent);
         });
         cropsRecyclerView.setAdapter(cropAdapter);
 
@@ -99,7 +114,7 @@ public class FarmActivity extends AppCompatActivity {
             public void onFailure(Call<Farm> call, Throwable t) {
                 loadingProgress.setVisibility(View.GONE);
                 Log.e(TAG, "Error loading farm", t);
-                Toast.makeText(FarmActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                com.growfund.seedtowealth.utils.ErrorHandler.handleError(FarmActivity.this, t);
             }
         });
     }
@@ -109,7 +124,7 @@ public class FarmActivity extends AppCompatActivity {
 
         java.util.Map<String, String> request = new java.util.HashMap<>();
         request.put("farmName", "My Farm");
-        request.put("userId", "1"); // TODO: Get actual user ID
+        // userId is now handled by backend via Auth token
 
         ApiClient.getApiService().createFarm(request).enqueue(new Callback<Farm>() {
             @Override
@@ -151,12 +166,21 @@ public class FarmActivity extends AppCompatActivity {
                     cropList = response.body();
                     cropAdapter.setCrops(cropList);
                     Log.d(TAG, "Loaded " + cropList.size() + " crops");
+
+                    if (cropList.isEmpty()) {
+                        cropsRecyclerView.setVisibility(View.GONE);
+                        emptyStateView.setVisibility(View.VISIBLE);
+                    } else {
+                        cropsRecyclerView.setVisibility(View.VISIBLE);
+                        emptyStateView.setVisibility(View.GONE);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<List<Crop>> call, Throwable t) {
                 Log.e(TAG, "Error loading crops", t);
+                // Can also show empty state or error state here
             }
         });
     }

@@ -12,12 +12,39 @@ public class Crop {
     private String harvestDate;
     private String status;
     private String weatherImpact;
+    private Long revenue;
+    private Long profit;
+    private Long sellingPricePerUnit;
 
     // Constructors
     public Crop() {
     }
 
     // Getters and Setters
+    public Long getRevenue() {
+        return revenue;
+    }
+
+    public void setRevenue(Long revenue) {
+        this.revenue = revenue;
+    }
+
+    public Long getProfit() {
+        return profit;
+    }
+
+    public void setProfit(Long profit) {
+        this.profit = profit;
+    }
+
+    public Long getSellingPricePerUnit() {
+        return sellingPricePerUnit;
+    }
+
+    public void setSellingPricePerUnit(Long sellingPricePerUnit) {
+        this.sellingPricePerUnit = sellingPricePerUnit;
+    }
+
     public Long getId() {
         return id;
     }
