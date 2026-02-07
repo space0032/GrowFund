@@ -71,4 +71,11 @@ public interface ApiService {
     // Achievements
     @GET("api/achievements")
     Call<List<com.growfund.seedtowealth.model.Achievement>> getAchievements();
+
+    // Quiz
+    @GET("api/quizzes/daily")
+    Call<com.growfund.seedtowealth.model.Quiz> getDailyQuiz();
+
+    @POST("api/quizzes/{id}/submit")
+    Call<Boolean> submitQuiz(@Path("id") Long quizId, @retrofit2.http.Query("optionIndex") Integer optionIndex);
 }

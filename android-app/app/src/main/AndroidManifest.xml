@@ -68,6 +68,10 @@
             android:name=".AchievementsActivity"
             android:exported="false"
             android:parentActivityName=".FarmActivity" />
+        <activity
+            android:name=".QuizActivity"
+            android:exported="false"
+            android:parentActivityName=".FarmActivity" />
     </application>
 
 </manifest>

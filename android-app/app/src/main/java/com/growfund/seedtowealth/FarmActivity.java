@@ -115,6 +115,31 @@ public class FarmActivity extends AppCompatActivity {
                 Toast.makeText(FarmActivity.this, "Please wait, loading farm data...", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Initialize Daily Tip & Quiz
+        TextView dailyTipText = findViewById(R.id.dailyTipText);
+        findViewById(R.id.quizButton).setOnClickListener(v -> {
+            if (currentFarm != null) {
+                Intent intent = new Intent(FarmActivity.this, QuizActivity.class);
+                startActivity(intent);
+            }
+        });
+        loadDailyTip(dailyTipText);
+    }
+
+    private void loadDailyTip(TextView tipView) {
+        String[] tips = {
+                "Diversifying your crops can protect against price fluctuations.",
+                "Soil testing helps you use the right amount of fertilizer.",
+                "Drip irrigation saves water and improves yield.",
+                "Always keep an emergency fund for unexpected weather events.",
+                "Government schemes like KCC offer low-interest loans.",
+                "Crop insurance is a safety net against crop failure.",
+                "Rotating crops maintains soil fertility naturally.",
+                "Selling directly to markets can get you better prices than middlemen."
+        };
+        int randomIndex = (int) (Math.random() * tips.length);
+        tipView.setText(tips[randomIndex]);
     }
 
     private void loadFarmData() {
