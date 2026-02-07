@@ -34,6 +34,9 @@ public class PlantCropActivity extends AppCompatActivity {
 
     private Long farmId;
 
+    private long currentSavings = 0;
+    private TextView currentSavingsText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class PlantCropActivity extends AppCompatActivity {
         }
 
         initViews();
+        fetchFarmSavings();
     }
 
     private void initViews() {
@@ -56,10 +60,34 @@ public class PlantCropActivity extends AppCompatActivity {
         expectedYieldText = findViewById(R.id.expectedYieldText);
         plantButton = findViewById(R.id.plantButton);
         loadingProgress = findViewById(R.id.loadingProgress);
+        currentSavingsText = findViewById(R.id.currentSavingsText);
 
         plantButton.setOnClickListener(v -> plantCrop());
 
         loadWeatherAndTrends();
+    }
+
+    private void fetchFarmSavings() {
+        ApiClient.getApiService().getMyFarm().enqueue(new Callback<com.growfund.seedtowealth.model.Farm>() {
+            @Override
+            public void onResponse(Call<com.growfund.seedtowealth.model.Farm> call,
+                    Response<com.growfund.seedtowealth.model.Farm> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    currentSavings = response.body().getSavings();
+                    currentSavingsText.setText(String.format("Current Savings: ₹%,d", currentSavings));
+                    Log.d(TAG, "Savings loaded: " + currentSavings);
+                } else {
+                    currentSavingsText.setText("Current Savings: Error");
+                    Log.e(TAG, "Failed to load savings: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.growfund.seedtowealth.model.Farm> call, Throwable t) {
+                currentSavingsText.setText("Current Savings: Offline");
+                Log.e(TAG, "Error loading savings", t);
+            }
+        });
     }
 
     private void loadWeatherAndTrends() {
@@ -164,6 +192,11 @@ public class PlantCropActivity extends AppCompatActivity {
         double area = Double.parseDouble(areaStr);
         long investment = Long.parseLong(investmentStr);
 
+        if (investment > currentSavings) {
+            Toast.makeText(this, "Insufficient Funds! You only have ₹" + currentSavings, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Map<String, Object> request = new HashMap<>();
         request.put("cropType", cropType);
         request.put("areaPlanted", area);
@@ -201,6 +234,9 @@ public class PlantCropActivity extends AppCompatActivity {
                             Log.e(TAG, "Error scheduling notification", e);
                         }
                     }
+
+                    // Play Sound & Vibrate
+                    com.growfund.seedtowealth.utils.SoundManager.playPlantSound(PlantCropActivity.this);
 
                     Toast.makeText(PlantCropActivity.this,
                             "Crop planted successfully! You will be notified when ready.", Toast.LENGTH_LONG).show();

@@ -90,9 +90,11 @@ public class QuizActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     boolean isCorrect = response.body();
                     if (isCorrect) {
+                        com.growfund.seedtowealth.utils.SoundManager.playSuccessSound(QuizActivity.this);
                         Toast.makeText(QuizActivity.this, "Correct! +50 Coins", Toast.LENGTH_LONG).show();
                         highlightCorrect(optionIndex);
                     } else {
+                        com.growfund.seedtowealth.utils.SoundManager.playFailureSound(QuizActivity.this);
                         Toast.makeText(QuizActivity.this, "Incorrect. Try again tomorrow!", Toast.LENGTH_LONG).show();
                         highlightIncorrect(optionIndex);
                     }

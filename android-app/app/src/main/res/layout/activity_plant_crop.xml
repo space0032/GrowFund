@@ -30,7 +30,19 @@
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="#2E7D32"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/currentSavingsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current Savings: Loading..."
+                    android:textSize="18sp"
+                    android:textColor="#2E7D32"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp"
+                    android:padding="8dp"
+                    android:background="#E8F5E9" />
 
                 <TextView
                     android:id="@+id/weatherImpactText"

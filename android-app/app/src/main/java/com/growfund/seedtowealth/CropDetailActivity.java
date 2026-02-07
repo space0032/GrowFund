@@ -184,6 +184,10 @@ public class CropDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     currentCrop = response.body();
                     updateUI();
+
+                    // Play Sound & Vibrate
+                    com.growfund.seedtowealth.utils.SoundManager.playHarvestSound(CropDetailActivity.this);
+
                     Toast.makeText(CropDetailActivity.this, "Harvest Successful!", Toast.LENGTH_LONG).show();
                 } else {
                     harvestButton.setEnabled(true);
