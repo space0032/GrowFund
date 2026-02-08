@@ -26,10 +26,42 @@ public class CropService {
     private final EquipmentService equipmentService;
     private final Random random = new Random();
 
+    private static final Long MIN_INVESTMENT_PER_ACRE = 5000L;
+    private static final Long STANDARD_INVESTMENT_PER_ACRE = 10000L;
+
     @Transactional
     public CropDTO plantCrop(Long farmId, String cropType, Double areaPlanted, Long investmentAmount, String season) {
         Farm farm = farmRepository.findById(farmId)
-                .orElseThrow(() -> new RuntimeException("Farm not found"));
+                .orElseThrow(() -> new com.growfund.exception.ResourceNotFoundException("Farm not found"));
+
+        if (areaPlanted <= 0) {
+            throw new IllegalArgumentException("Area planted must be greater than 0");
+        }
+
+        // 1. Strict Acreage Validation
+        // Calculate used land from active crops
+        List<Crop> activeCrops = cropRepository.findByFarmId(farmId).stream()
+                .filter(c -> "PLANTED".equals(c.getStatus()) || "GROWING".equals(c.getStatus())
+                        || "READY".equals(c.getStatus()))
+                .collect(Collectors.toList());
+
+        double usedLand = activeCrops.stream()
+                .mapToDouble(c -> c.getAreaPlanted() != null ? c.getAreaPlanted() : 0.0)
+                .sum();
+
+        if (usedLand + areaPlanted > farm.getLandSize()) {
+            throw new IllegalArgumentException(
+                    String.format("Insufficient land! You have %.1f acres available, but tried to plant %.1f acres.",
+                            (farm.getLandSize() - usedLand), areaPlanted));
+        }
+
+        // 2. Strict Minimum Investment Validation
+        long minRequiredInvestment = (long) (areaPlanted * MIN_INVESTMENT_PER_ACRE);
+        if (investmentAmount < minRequiredInvestment) {
+            throw new IllegalArgumentException(
+                    String.format("Insufficient investment! Minimum ₹%d required for %.1f acres (₹%d/acre).",
+                            minRequiredInvestment, areaPlanted, MIN_INVESTMENT_PER_ACRE));
+        }
 
         // Check for active events that affect planting cost
         double costMultiplier = 1.0;
@@ -50,7 +82,7 @@ public class CropService {
 
         // Check for sufficient funds
         if (farm.getSavings() < actualCost) {
-            throw new RuntimeException("Insufficient savings to plant this crop. Required: " + actualCost);
+            throw new IllegalStateException("Insufficient savings to plant this crop. Required: " + actualCost);
         }
 
         // Deduct cost from savings
@@ -117,28 +149,29 @@ public class CropService {
 
     public List<CropDTO> getCropsByFarm(Long farmId) {
         return cropRepository.findByFarmId(farmId).stream()
-                .sorted((c1, c2) -> c2.getPlantedDate().compareTo(c1.getPlantedDate()))
+                .sorted(java.util.Comparator.comparing(Crop::getPlantedDate,
+                        java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder())))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     public CropDTO getCropById(Long cropId) {
         Crop crop = cropRepository.findById(cropId)
-                .orElseThrow(() -> new RuntimeException("Crop not found"));
+                .orElseThrow(() -> new com.growfund.exception.ResourceNotFoundException("Crop not found"));
         return convertToDTO(crop);
     }
 
     @Transactional
     public CropDTO harvestCrop(Long cropId) {
         Crop crop = cropRepository.findById(cropId)
-                .orElseThrow(() -> new RuntimeException("Crop not found"));
+                .orElseThrow(() -> new com.growfund.exception.ResourceNotFoundException("Crop not found"));
 
         if (!"PLANTED".equals(crop.getStatus()) && !"GROWING".equals(crop.getStatus())) {
-            throw new RuntimeException("Crop cannot be harvested in current status: " + crop.getStatus());
+            throw new IllegalStateException("Crop cannot be harvested in current status: " + crop.getStatus());
         }
 
         if (crop.getHarvestDate() != null && LocalDateTime.now().isBefore(crop.getHarvestDate())) {
-            throw new RuntimeException("Crop is not ready for harvest yet. Ready at: " + crop.getHarvestDate());
+            throw new IllegalStateException("Crop is not ready for harvest yet. Ready at: " + crop.getHarvestDate());
         }
 
         crop.setStatus("HARVESTED");
@@ -198,7 +231,7 @@ public class CropService {
     @Transactional
     public CropDTO updateCropStatus(Long cropId, String status) {
         Crop crop = cropRepository.findById(cropId)
-                .orElseThrow(() -> new RuntimeException("Crop not found"));
+                .orElseThrow(() -> new com.growfund.exception.ResourceNotFoundException("Crop not found"));
 
         crop.setStatus(status);
         Crop savedCrop = cropRepository.save(crop);
@@ -208,13 +241,16 @@ public class CropService {
     @Transactional
     public void deleteCrop(Long cropId) {
         if (!cropRepository.existsById(cropId)) {
-            throw new RuntimeException("Crop not found");
+            throw new com.growfund.exception.ResourceNotFoundException("Crop not found");
         }
         cropRepository.deleteById(cropId);
     }
 
     private Long calculateExpectedYield(String cropType, Double areaPlanted, Long investmentAmount) {
-        // Simple calculation: base yield per acre * area * investment factor
+        // 3. Proportional Yield Calculation
+        // Formula: Yield = BaseYield * (Investment / (StandardInvestmentPerAcre *
+        // Area))
+
         long baseYieldPerAcre = switch (cropType.toUpperCase()) {
             case "WHEAT" -> 3000L;
             case "RICE" -> 4000L;
@@ -224,8 +260,23 @@ public class CropService {
             default -> 2000L;
         };
 
-        double investmentFactor = 1.0 + (investmentAmount / 10000.0 * 0.1); // 10% boost per 10k investment
-        return (long) (baseYieldPerAcre * areaPlanted * investmentFactor);
+        // Determine investment density ratio
+        // Standard density is 10,000 per acre
+        double requiredStandardInvestment = areaPlanted * STANDARD_INVESTMENT_PER_ACRE;
+
+        // Ratio of actual investment to standard investment
+        double investmentRatio = investmentAmount / requiredStandardInvestment;
+
+        // Cap the boost at 2.0 (200% yield) to prevent infinite scaling
+        // Since we enforce Min 5000/acre (0.5 ratio), the ratio will be between 0.5 and
+        // 2.0 (capped)
+        investmentRatio = Math.min(investmentRatio, 2.0);
+
+        // Calculate final expected yield
+        // BaseYieldTotal = BasePerAcre * Area
+        long baseYieldTotal = (long) (baseYieldPerAcre * areaPlanted);
+
+        return (long) (baseYieldTotal * investmentRatio);
     }
 
     private long getGrowthTimeInMinutes(String cropType) {

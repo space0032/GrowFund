@@ -230,7 +230,8 @@ public class FarmRepository {
                         mainHandler.post(() -> callback.onSuccess(harvestedCrop));
                     });
                 } else {
-                    mainHandler.post(() -> callback.onError("Failed to harvest crop: " + response.code()));
+                    String errorMessage = parseError(response);
+                    mainHandler.post(() -> callback.onError(errorMessage));
                 }
             }
 
@@ -239,6 +240,21 @@ public class FarmRepository {
                 mainHandler.post(() -> callback.onError("Network error: " + t.getMessage()));
             }
         });
+    }
+
+    private String parseError(Response<?> response) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                org.json.JSONObject jsonObject = new org.json.JSONObject(errorBody);
+                if (jsonObject.has("message")) {
+                    return jsonObject.getString("message");
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error body", e);
+        }
+        return "Error: " + response.code() + " " + response.message();
     }
 
     public void plantCrop(Long farmId, java.util.Map<String, Object> request, final RepositoryCallback<Crop> callback) {
@@ -253,7 +269,8 @@ public class FarmRepository {
                         mainHandler.post(() -> callback.onSuccess(plantedCrop));
                     });
                 } else {
-                    mainHandler.post(() -> callback.onError("Failed to plant crop: " + response.code()));
+                    String errorMessage = parseError(response);
+                    mainHandler.post(() -> callback.onError(errorMessage));
                 }
             }
 
