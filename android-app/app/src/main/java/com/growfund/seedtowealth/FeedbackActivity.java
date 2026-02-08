@@ -44,33 +44,32 @@ public class FeedbackActivity extends AppCompatActivity {
         bundle.putInt("feedback_length", feedback.length());
         mFirebaseAnalytics.logEvent("feedback_submitted", bundle);
 
-        // Send via API
-        java.util.Map<String, String> feedbackData = new java.util.HashMap<>();
+        // Send via Firestore
+        java.util.Map<String, Object> feedbackData = new java.util.HashMap<>();
         feedbackData.put("content", feedback);
-        feedbackData.put("appVersion", "1.0.0"); // TODO: Get dynamically
+        feedbackData.put("appVersion", "1.0.0");
         feedbackData.put("deviceModel", android.os.Build.MODEL);
+        feedbackData.put("timestamp", com.google.firebase.Timestamp.now());
 
-        com.growfund.seedtowealth.network.ApiClient.getApiService()
-                .submitFeedback(feedbackData)
-                .enqueue(new retrofit2.Callback<Void>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(FeedbackActivity.this, "Feedback sent successfully!", Toast.LENGTH_SHORT)
-                                    .show();
-                            finish();
-                        } else {
-                            Toast.makeText(FeedbackActivity.this, "Failed to send feedback (" + response.code() + ")",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
+        // Add User ID if available
+        com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance()
+                .getCurrentUser();
+        if (user != null) {
+            feedbackData.put("userId", user.getUid());
+        }
 
-                    @Override
-                    public void onFailure(retrofit2.Call<Void> call, Throwable t) {
-                        Toast.makeText(FeedbackActivity.this, "Network error. Please try again.", Toast.LENGTH_SHORT)
-                                .show();
-                        t.printStackTrace();
-                    }
+        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore
+                .getInstance();
+        db.collection("feedback")
+                .add(feedbackData)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(FeedbackActivity.this, "Feedback sent successfully!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(FeedbackActivity.this, "Failed to send feedback: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
                 });
     }
 

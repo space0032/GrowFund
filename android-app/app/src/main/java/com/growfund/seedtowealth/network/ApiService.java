@@ -118,6 +118,6 @@ public interface ApiService {
         @GET("analytics/recommendations/{farmId}")
         Call<List<com.growfund.seedtowealth.model.Recommendation>> getRecommendations(@Path("farmId") Long farmId);
 
-        @POST("api/feedback")
+        @POST("feedback")
         Call<Void> submitFeedback(@Body java.util.Map<String, String> feedbackData);
 }
