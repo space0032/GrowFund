@@ -7,16 +7,18 @@ import java.util.Random;
 public class WeatherService {
 
     public enum WeatherCondition {
-        SUNNY("Sunny", 1.0),
-        RAINY("Rainy", 0.8), // 20% faster growth (0.8x duration)
-        DROUGHT("Drought", 1.5); // 50% slower growth (1.5x duration)
+        SUNNY("Sunny", 1.0, 1.0),
+        RAINY("Rainy", 0.8, 1.2), // 20% faster growth (0.8x duration), 20% higher planting cost
+        DROUGHT("Drought", 1.5, 1.1); // 50% slower growth (1.5x duration), 10% higher planting cost
 
         private final String displayName;
         private final double growthMultiplier;
+        private final double plantingCostMultiplier;
 
-        WeatherCondition(String displayName, double growthMultiplier) {
+        WeatherCondition(String displayName, double growthMultiplier, double plantingCostMultiplier) {
             this.displayName = displayName;
             this.growthMultiplier = growthMultiplier;
+            this.plantingCostMultiplier = plantingCostMultiplier;
         }
 
         public String getDisplayName() {
@@ -25,6 +27,10 @@ public class WeatherService {
 
         public double getGrowthMultiplier() {
             return growthMultiplier;
+        }
+
+        public double getPlantingCostMultiplier() {
+            return plantingCostMultiplier;
         }
     }
 

@@ -23,14 +23,13 @@ public class AchievementService {
         checkTycoon(user, farm);
         if (farm != null) {
             checkLandBaron(user, farm);
+            checkStrategist(user, farm);
+            checkEfficientFarmer(user, farm);
         }
     }
 
     private void checkFirstSteps(User user, Farm farm) {
         unlock(user, "FIRST_STEPS", "First Steps", "Plant your first crop.", "🌱");
-        // Logic: Checks if user has planted anything. For now just unlock on first
-        // login or activity?
-        // Better: Called from plantCrop/harvestCrop
     }
 
     private void checkTycoon(User user, Farm farm) {
@@ -42,6 +41,32 @@ public class AchievementService {
     private void checkLandBaron(User user, Farm farm) {
         if (farm.getLandSize() >= 5.0) {
             unlock(user, "LAND_BARON", "Land Baron", "Reach 5 acres of land.", "🚜");
+        }
+    }
+
+    private void checkStrategist(User user, Farm farm) {
+        // Unlock if user has planted 3 or more different crop types
+        long distinctCrops = farm.getCrops().stream()
+                .map(com.growfund.model.Crop::getCropType)
+                .distinct()
+                .count();
+
+        if (distinctCrops >= 3) {
+            unlock(user, "STRATEGIST", "Master Strategist", "Diversify your farm with 3 different crops.", "🧠");
+        }
+    }
+
+    private void checkEfficientFarmer(User user, Farm farm) {
+        // Unlock if any crop yielded more than 2.0x expected yield (lucky + good
+        // management)
+        // Check historical crops? Or just check if they HAVE an achievement?
+        // Let's check current/past crops attached to farm
+        boolean hasHighYield = farm.getCrops().stream()
+                .anyMatch(c -> c.getActualYield() != null && c.getExpectedYield() != null &&
+                        c.getActualYield() > c.getExpectedYield() * 1.5); // 1.5x is pretty good
+
+        if (hasHighYield) {
+            unlock(user, "EFFICIENT", "Efficient Farmer", "Achieve a bumper harvest (1.5x yield).", "📈");
         }
     }
 

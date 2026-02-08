@@ -11,8 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +30,34 @@ public class CropService {
     private final EquipmentService equipmentService;
     private final Random random = new Random();
 
-    private static final Long MIN_INVESTMENT_PER_ACRE = 5000L;
+    // Crop Configuration Map
+    private final Map<String, CropConfig> cropConfigs = new HashMap<>();
+
+    @PostConstruct
+    public void init() {
+        // Initialize Crop Configurations
+        cropConfigs.put("WHEAT", new CropConfig(5000L, 0.70, 3000L, 2));
+        cropConfigs.put("RICE", new CropConfig(8000L, 0.60, 4000L, 3)); // Higher water need logic -> Higher min
+                                                                        // investment
+        cropConfigs.put("COTTON", new CropConfig(6000L, 0.50, 2500L, 5));
+        cropConfigs.put("SUGARCANE", new CropConfig(7000L, 0.40, 5000L, 4));
+        cropConfigs.put("CORN", new CropConfig(5500L, 0.70, 3500L, 2));
+    }
+
+    private static class CropConfig {
+        final Long minInvestmentPerAcre;
+        final Double maxLandPercentage; // 0.0 to 1.0
+        final Long baseYieldPerAcre;
+        final int growthTimeMinutes;
+
+        CropConfig(Long minInvestmentPerAcre, Double maxLandPercentage, Long baseYieldPerAcre, int growthTimeMinutes) {
+            this.minInvestmentPerAcre = minInvestmentPerAcre;
+            this.maxLandPercentage = maxLandPercentage;
+            this.baseYieldPerAcre = baseYieldPerAcre;
+            this.growthTimeMinutes = growthTimeMinutes;
+        }
+    }
+
     private static final Long STANDARD_INVESTMENT_PER_ACRE = 10000L;
 
     @Transactional
@@ -38,7 +69,10 @@ public class CropService {
             throw new IllegalArgumentException("Area planted must be greater than 0");
         }
 
-        // 1. Strict Acreage Validation
+        String normalizedCropType = cropType.toUpperCase();
+        CropConfig config = cropConfigs.getOrDefault(normalizedCropType, new CropConfig(5000L, 1.0, 2000L, 1));
+
+        // 1. Strict Acreage Validation & Limit Check
         // Calculate used land from active crops
         List<Crop> activeCrops = cropRepository.findByFarmId(farmId).stream()
                 .filter(c -> "PLANTED".equals(c.getStatus()) || "GROWING".equals(c.getStatus())
@@ -49,36 +83,73 @@ public class CropService {
                 .mapToDouble(c -> c.getAreaPlanted() != null ? c.getAreaPlanted() : 0.0)
                 .sum();
 
+        // Check 1: Total Farm Acreage Limit
         if (usedLand + areaPlanted > farm.getLandSize()) {
             throw new IllegalArgumentException(
                     String.format("Insufficient land! You have %.1f acres available, but tried to plant %.1f acres.",
                             (farm.getLandSize() - usedLand), areaPlanted));
         }
 
-        // 2. Strict Minimum Investment Validation
-        long minRequiredInvestment = (long) (areaPlanted * MIN_INVESTMENT_PER_ACRE);
-        if (investmentAmount < minRequiredInvestment) {
+        // Check 2: Crop-Specific Land Utilization Cap
+        double currentCropTypeLand = activeCrops.stream()
+                .filter(c -> c.getCropType().equalsIgnoreCase(normalizedCropType))
+                .mapToDouble(c -> c.getAreaPlanted() != null ? c.getAreaPlanted() : 0.0)
+                .sum();
+
+        double maxAllowedForCrop = farm.getLandSize() * config.maxLandPercentage;
+        if (currentCropTypeLand + areaPlanted > maxAllowedForCrop) {
             throw new IllegalArgumentException(
-                    String.format("Insufficient investment! Minimum ₹%d required for %.1f acres (₹%d/acre).",
-                            minRequiredInvestment, areaPlanted, MIN_INVESTMENT_PER_ACRE));
+                    String.format(
+                            "Crop limit exceeded! You can only use %.0f%% of your land for %s. Max allowed: %.1f acres.",
+                            (config.maxLandPercentage * 100), normalizedCropType, maxAllowedForCrop));
         }
 
+        // 2. Crop-Specific Minimum Investment Validation
+        // Scale min investment based on crop type
+        long minRequiredInvestment = (long) (areaPlanted * config.minInvestmentPerAcre);
+        if (investmentAmount < minRequiredInvestment) {
+            throw new IllegalArgumentException(
+                    String.format("Insufficient investment! Minimum ₹%d required for %.1f acres of %s (₹%d/acre).",
+                            minRequiredInvestment, areaPlanted, normalizedCropType, config.minInvestmentPerAcre));
+        }
+
+        // 3. Scale-Based Investment Costs (Progressive Cost Model)
+        // Larger farms have higher operational costs.
+        // Formula: 2% extra cost per acre above 1 acre.
+        double scaleMultiplier = 1.0;
+        if (farm.getLandSize() > 1.0) {
+            scaleMultiplier += (farm.getLandSize() - 1.0) * 0.02;
+        }
+
+        // 4. Weather-Based Planting Cost
+        WeatherService.WeatherCondition weather = weatherService.getCurrentWeather();
+        double weatherCostMultiplier = weather.getPlantingCostMultiplier();
+
+        // Calculate final required cost
+        // Base cost is the investment amount the user WANTS to put in.
+        // But wait, the investment amount IS the cost.
+        // Interpretation: The system should probably CHARGE more for the same
+        // investment value, OR reduce the effective investment.
+        // Let's go with: User specifies Investment Amount (what goes into the crop).
+        // The Actual Cost deducted from savings is Investment Amount * Multipliers.
+
+        // Total Cost Multiplier
+        double totalCostMultiplier = scaleMultiplier * weatherCostMultiplier;
+
         // Check for active events that affect planting cost
-        double costMultiplier = 1.0;
         List<com.growfund.model.RandomEvent> activeEvents = randomEventService.getActiveEvents();
         for (com.growfund.model.RandomEvent event : activeEvents) {
             if (event.getEventType().equals(com.growfund.model.RandomEvent.GOVERNMENT_SUBSIDY)) {
-                costMultiplier = event.getImpactMultiplier();
-                break;
+                totalCostMultiplier *= event.getImpactMultiplier(); // e.g. 0.8
             }
         }
 
         // Apply equipment cost reduction bonuses
         java.util.Map<String, Double> equipmentBonuses = equipmentService.calculateTotalBonuses(farmId);
-        double equipmentCostMultiplier = equipmentBonuses.get("costMultiplier");
-        costMultiplier *= equipmentCostMultiplier;
+        double equipmentCostMultiplier = equipmentBonuses.getOrDefault("costMultiplier", 1.0);
+        totalCostMultiplier *= equipmentCostMultiplier;
 
-        Long actualCost = (long) (investmentAmount * costMultiplier);
+        Long actualCost = (long) (investmentAmount * totalCostMultiplier);
 
         // Check for sufficient funds
         if (farm.getSavings() < actualCost) {
@@ -130,7 +201,10 @@ public class CropService {
         long baseGrowthTimeMinutes = getGrowthTimeInMinutes(cropType);
 
         // Apply weather multiplier
-        WeatherService.WeatherCondition weather = weatherService.getCurrentWeather();
+        // Apply weather multiplier for growth time (already fetched weather above)
+        // Note: Weather might change during growth, but for simplicity we use planting
+        // weather impact or current?
+        // Let's use current weather again to determine growth duration multiplier
         double multiplier = weather.getGrowthMultiplier();
         long actualGrowthTime = (long) (baseGrowthTimeMinutes * multiplier);
         if (actualGrowthTime < 1)
@@ -138,6 +212,12 @@ public class CropService {
 
         crop.setHarvestDate(LocalDateTime.now().plusMinutes(actualGrowthTime));
         crop.setWeatherImpact(weather.getDisplayName()); // Store weather at planting time
+
+        if (totalCostMultiplier > 1.05) {
+            // If cost was significantly higher due to weather/scale, maybe log it or note
+            // it?
+            // For now, just implicit.
+        }
 
         Crop savedCrop = cropRepository.save(crop);
 
@@ -247,18 +327,10 @@ public class CropService {
     }
 
     private Long calculateExpectedYield(String cropType, Double areaPlanted, Long investmentAmount) {
-        // 3. Proportional Yield Calculation
-        // Formula: Yield = BaseYield * (Investment / (StandardInvestmentPerAcre *
-        // Area))
+        // 3. Proportional Yield Calculation with Diminishing Returns
 
-        long baseYieldPerAcre = switch (cropType.toUpperCase()) {
-            case "WHEAT" -> 3000L;
-            case "RICE" -> 4000L;
-            case "COTTON" -> 2500L;
-            case "SUGARCANE" -> 5000L;
-            case "CORN" -> 3500L;
-            default -> 2000L;
-        };
+        CropConfig config = cropConfigs.getOrDefault(cropType.toUpperCase(), new CropConfig(5000L, 1.0, 2000L, 1));
+        long baseYieldPerAcre = config.baseYieldPerAcre;
 
         // Determine investment density ratio
         // Standard density is 10,000 per acre
@@ -267,29 +339,36 @@ public class CropService {
         // Ratio of actual investment to standard investment
         double investmentRatio = investmentAmount / requiredStandardInvestment;
 
-        // Cap the boost at 2.0 (200% yield) to prevent infinite scaling
-        // Since we enforce Min 5000/acre (0.5 ratio), the ratio will be between 0.5 and
-        // 2.0 (capped)
-        investmentRatio = Math.min(investmentRatio, 2.0);
+        // Diminishing Returns Logic:
+        // Linear up to 1.0 ratio.
+        // Square root scaling beyond 1.0 significantly dampens returns for
+        // over-investment.
+        double effectiveRatio;
+        if (investmentRatio <= 1.0) {
+            effectiveRatio = investmentRatio;
+        } else {
+            // e.g. if ratio is 2.0, effective is 1.0 + sqrt(1.0) * 0.5 = 1.5?
+            // Let's use a log scale or simple dampening.
+            // effective = 1.0 + ln(ratio) * 0.5
+            effectiveRatio = 1.0 + Math.log(investmentRatio) * 0.6; // Logarithmic growth after 1.0
+        }
+
+        // Cap the effective ratio to prevent exploits (e.g. max 2.5x yield)
+        effectiveRatio = Math.min(effectiveRatio, 2.5);
 
         // Calculate final expected yield
         // BaseYieldTotal = BasePerAcre * Area
         long baseYieldTotal = (long) (baseYieldPerAcre * areaPlanted);
 
-        return (long) (baseYieldTotal * investmentRatio);
+        // Add minimal soil fertility factor (randomized for now between 0.9 and 1.1)
+        double soilFertility = 0.9 + (random.nextDouble() * 0.2);
+
+        return (long) (baseYieldTotal * effectiveRatio * soilFertility);
     }
 
     private long getGrowthTimeInMinutes(String cropType) {
-        // For testing/demo purposes, these are in minutes.
-        // In production, these should be days or months.
-        return switch (cropType.toUpperCase()) {
-            case "WHEAT" -> 2; // 2 minutes
-            case "RICE" -> 3;
-            case "COTTON" -> 5;
-            case "SUGARCANE" -> 4;
-            case "CORN" -> 2;
-            default -> 1;
-        };
+        CropConfig config = cropConfigs.getOrDefault(cropType.toUpperCase(), new CropConfig(5000L, 1.0, 2000L, 1));
+        return config.growthTimeMinutes;
     }
 
     private CropDTO convertToDTO(Crop crop) {
