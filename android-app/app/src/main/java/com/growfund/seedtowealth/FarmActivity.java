@@ -283,7 +283,10 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
             }
         });
+
         loadDailyTip(dailyTipText);
+
+        findViewById(R.id.sortButton).setOnClickListener(v -> showSortPopup(v));
     }
 
     private void loadDailyTip(TextView tipView) {
@@ -504,6 +507,56 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
                                 });
                     }
                 });
+    }
+
+    private void showSortPopup(View v) {
+        androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(this, v);
+        popup.getMenuInflater().inflate(R.menu.menu_farm, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.action_sort_name) {
+                sortCrops(java.util.Comparator.comparing(Crop::getCropType));
+                return true;
+            } else if (id == R.id.action_sort_status) {
+                sortCrops((c1, c2) -> {
+                    int status1 = getStatusPriority(c1.getStatus());
+                    int status2 = getStatusPriority(c2.getStatus());
+                    return Integer.compare(status1, status2);
+                });
+                return true;
+            } else if (id == R.id.action_sort_date) {
+                sortCrops((c1, c2) -> {
+                    if (c1.getPlantedDate() == null && c2.getPlantedDate() == null)
+                        return 0;
+                    if (c1.getPlantedDate() == null)
+                        return 1;
+                    if (c2.getPlantedDate() == null)
+                        return -1;
+                    return c2.getPlantedDate().compareTo(c1.getPlantedDate());
+                });
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private int getStatusPriority(String status) {
+        if ("READY".equals(status))
+            return 1;
+        if ("GROWING".equals(status))
+            return 2;
+        return 3;
+    }
+
+    private void sortCrops(java.util.Comparator<Crop> comparator) {
+        if (cropList != null) {
+            java.util.Collections.sort(cropList, comparator);
+            cropAdapter.setCrops(cropList);
+            // Scroll to top after sorting
+            cropsRecyclerView.scrollToPosition(0);
+        }
     }
 
     @Override
