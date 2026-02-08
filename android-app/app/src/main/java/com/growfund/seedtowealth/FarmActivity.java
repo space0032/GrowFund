@@ -121,6 +121,7 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
 
         initViews();
         loadFarmData();
+        checkForAppUpdate();
     }
 
     private void updateNavHeader() {
@@ -174,8 +175,7 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
             shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out Seed to Wealth - The best farming simulation game!");
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         } else if (id == R.id.nav_send) {
-            // Send feedback logic
-            Toast.makeText(this, "Feedback feature coming soon!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(FarmActivity.this, FeedbackActivity.class));
         } else if (id == R.id.nav_language) {
             // Language settings
             Toast.makeText(this, "Language settings coming soon!", Toast.LENGTH_SHORT).show();
@@ -572,6 +572,39 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
         if (sessionManager.isLoggedIn()) {
             // Refresh all farm data (including savings)
             loadFarmData();
+        }
+    }
+
+    private void checkForAppUpdate() {
+        com.google.android.play.core.appupdate.AppUpdateManager appUpdateManager = com.google.android.play.core.appupdate.AppUpdateManagerFactory
+                .create(this);
+
+        int appUpdateType = com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
+
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo
+                    .updateAvailability() == com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(appUpdateType)) {
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            appUpdateInfo,
+                            appUpdateType,
+                            this,
+                            100);
+                } catch (android.content.IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100) {
+            if (resultCode != RESULT_OK) {
+                Log.w(TAG, "Update flow failed! Result code: " + resultCode);
+            }
         }
     }
 }

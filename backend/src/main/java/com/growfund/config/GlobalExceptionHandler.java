@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         // Fallback for other runtime exceptions to avoid 500 if possible, or just log
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getMessage(), // Be careful exposing internal errors in prod
+                "An internal server error occurred.", // Sanitized for production
                 System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

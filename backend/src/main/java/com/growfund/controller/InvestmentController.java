@@ -24,7 +24,7 @@ public class InvestmentController {
 
     @PostMapping
     public ResponseEntity<?> createInvestment(
-            @RequestBody Investment investment,
+            @jakarta.validation.Valid @RequestBody Investment investment,
             @AuthenticationPrincipal String uid) {
 
         if (uid == null || uid.isEmpty()) {

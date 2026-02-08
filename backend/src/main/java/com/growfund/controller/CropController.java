@@ -25,7 +25,7 @@ public class CropController {
     @PostMapping("/farms/{farmId}/crops")
     public ResponseEntity<CropDTO> plantCrop(
             @PathVariable Long farmId,
-            @RequestBody Map<String, Object> request,
+            @jakarta.validation.Valid @RequestBody com.growfund.dto.PlantCropRequest request,
             @AuthenticationPrincipal String uid) {
 
         if (uid == null || uid.isEmpty()) {
@@ -38,12 +38,12 @@ public class CropController {
             return ResponseEntity.status(403).build();
         }
 
-        String cropType = (String) request.get("cropType");
-        Double areaPlanted = Double.parseDouble(request.get("areaPlanted").toString());
-        Long investmentAmount = Long.parseLong(request.get("investmentAmount").toString());
-        String season = (String) request.getOrDefault("season", "KHARIF");
-
-        CropDTO crop = cropService.plantCrop(farmId, cropType, areaPlanted, investmentAmount, season);
+        CropDTO crop = cropService.plantCrop(
+                farmId,
+                request.getCropType(),
+                request.getAreaPlanted(),
+                request.getInvestmentAmount(),
+                request.getSeason());
         return ResponseEntity.ok(crop);
     }
 
