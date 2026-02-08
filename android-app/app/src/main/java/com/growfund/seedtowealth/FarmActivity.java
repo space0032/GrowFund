@@ -432,8 +432,9 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
             return;
         farmNameText.setText(currentFarm.getFarmName());
         landSizeText.setText(String.format("%.1f acres (Tap to expand)", currentFarm.getLandSize()));
-        savingsText.setText(String.format("₹%,d", currentFarm.getSavings()));
-        emergencyFundText.setText(String.format("₹%,d", currentFarm.getEmergencyFund()));
+        savingsText.setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentFarm.getSavings()));
+        emergencyFundText
+                .setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentFarm.getEmergencyFund()));
 
         if (currentFarm.getSavings() >= 50000) {
             landSizeText.setOnClickListener(v -> showExpandDialog());

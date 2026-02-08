@@ -16,7 +16,7 @@ public class Investment implements Serializable {
     private Long userId; // Optional, handled efficiently by backend
     private String schemeName;
     private String investmentType; // "FD", "MUTUAL_FUND", "STOCK"
-    private Double principalAmount;
+    private Long principalAmount;
     private Double interestRate;
     private Integer durationMonths;
     private String startDate; // ISO String
@@ -29,7 +29,7 @@ public class Investment implements Serializable {
     }
 
     @Ignore
-    public Investment(String schemeName, String investmentType, Double principalAmount, Double interestRate,
+    public Investment(String schemeName, String investmentType, Long principalAmount, Double interestRate,
             Integer durationMonths) {
         this.schemeName = schemeName;
         this.investmentType = investmentType;
@@ -63,11 +63,11 @@ public class Investment implements Serializable {
         this.investmentType = investmentType;
     }
 
-    public Double getPrincipalAmount() {
+    public Long getPrincipalAmount() {
         return principalAmount;
     }
 
-    public void setPrincipalAmount(Double principalAmount) {
+    public void setPrincipalAmount(Long principalAmount) {
         this.principalAmount = principalAmount;
     }
 

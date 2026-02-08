@@ -122,7 +122,7 @@ public class EquipmentShopActivity extends AppCompatActivity implements Equipmen
             if (farm != null) {
                 currentFarmId = farm.getId();
                 currentBalance = farm.getSavings();
-                textViewBalance.setText("₹" + String.format("%,d", currentBalance));
+                textViewBalance.setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentBalance));
 
                 // Load owned equipment for this farm
                 loadOwnedEquipment();
@@ -279,8 +279,9 @@ public class EquipmentShopActivity extends AppCompatActivity implements Equipmen
 
         // Check if user has enough funds
         if (currentBalance < equipment.getCost()) {
-            Toast.makeText(this, "Insufficient funds! Need ₹" +
-                    String.format("%,d", equipment.getCost() - currentBalance) + " more",
+            Toast.makeText(this, "Insufficient funds! Need " +
+                    com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(equipment.getCost() - currentBalance)
+                    + " more",
                     Toast.LENGTH_LONG).show();
             return;
         }

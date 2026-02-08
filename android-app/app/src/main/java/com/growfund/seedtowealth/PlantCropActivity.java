@@ -77,7 +77,8 @@ public class PlantCropActivity extends AppCompatActivity {
                     public void onLocalData(com.growfund.seedtowealth.model.Farm data) {
                         runOnUiThread(() -> {
                             currentSavings = data.getSavings();
-                            currentSavingsText.setText(String.format("Current Savings: ₹%,d", currentSavings));
+                            currentSavingsText.setText("Current Savings: "
+                                    + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
                         });
                     }
 
@@ -85,7 +86,8 @@ public class PlantCropActivity extends AppCompatActivity {
                     public void onSuccess(com.growfund.seedtowealth.model.Farm data) {
                         runOnUiThread(() -> {
                             currentSavings = data.getSavings();
-                            currentSavingsText.setText(String.format("Current Savings: ₹%,d", currentSavings));
+                            currentSavingsText.setText("Current Savings: "
+                                    + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
                         });
                     }
 
@@ -173,7 +175,7 @@ public class PlantCropActivity extends AppCompatActivity {
             String crop = cropTypes[i];
             Double price = trends.get(crop);
             if (price != null) {
-                displayItems[i] = crop + " (₹" + price + ")";
+                displayItems[i] = crop + " (" + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(price) + ")";
             } else {
                 displayItems[i] = crop;
             }
@@ -202,7 +204,10 @@ public class PlantCropActivity extends AppCompatActivity {
         long investment = Long.parseLong(investmentStr);
 
         if (investment > currentSavings) {
-            Toast.makeText(this, "Insufficient Funds! You only have ₹" + currentSavings, Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "Insufficient Funds! You only have "
+                            + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings),
+                    Toast.LENGTH_LONG).show();
             return;
         }
 

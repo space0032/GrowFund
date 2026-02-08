@@ -116,7 +116,8 @@ public class InvestmentActivity extends AppCompatActivity {
             }
 
             try {
-                double amount = Double.parseDouble(amountStr);
+                double amountDouble = Double.parseDouble(amountStr);
+                long amount = Math.round(amountDouble);
                 createInvestment(name, amount);
             } catch (NumberFormatException e) {
                 Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
@@ -127,7 +128,7 @@ public class InvestmentActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void createInvestment(String name, double amount) {
+    private void createInvestment(String name, long amount) {
         loadingProgress.setVisibility(View.VISIBLE);
 
         // Demo: Fixed Deposit logic

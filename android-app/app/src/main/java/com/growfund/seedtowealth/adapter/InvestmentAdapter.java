@@ -58,13 +58,15 @@ public class InvestmentAdapter extends RecyclerView.Adapter<InvestmentAdapter.Vi
         public void bind(Investment investment) {
             investmentName.setText(investment.getSchemeName());
             investmentType.setText(investment.getInvestmentType());
-            principalAmount.setText("₹" + String.format("%,.0f", investment.getPrincipalAmount()));
+            principalAmount.setText(
+                    com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(investment.getPrincipalAmount()));
 
             if (investment.getCurrentValue() != null) {
-                currentValue.setText("₹" + String.format("%,d", investment.getCurrentValue()));
+                currentValue.setText(
+                        com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(investment.getCurrentValue()));
 
                 // Color logic: Green if profit, Red if loss (though usually grow)
-                long principal = investment.getPrincipalAmount().longValue();
+                long principal = investment.getPrincipalAmount();
                 if (investment.getCurrentValue() >= principal) {
                     currentValue.setTextColor(0xFF4CAF50); // Green
                 } else {
