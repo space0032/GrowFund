@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="Profile" />
+        <item
+            android:id="@+id/nav_leaderboard"
+            android:icon="@android:drawable/ic_menu_sort_by_size"
+            android:title="Leaderboard" />
+        <item
+            android:id="@+id/nav_achievements"
+            android:icon="@android:drawable/btn_star"
+            android:title="Achievements" />
+        <item
+            android:id="@+id/nav_investment"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="Investment Portfolio" />
+         <item
+            android:id="@+id/nav_equipment_shop"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="Equipment Shop" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@android:drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@android:drawable/ic_menu_send"
+                android:title="Send Feedback" />
+        </menu>
+    </item>
+
+    <item android:title="Settings">
+        <menu>
+            <item
+                android:id="@+id/nav_language"
+                android:icon="@android:drawable/ic_menu_preferences"
+                android:title="Language" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@android:drawable/ic_lock_power_off"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>

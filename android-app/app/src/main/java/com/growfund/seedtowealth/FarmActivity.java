@@ -35,7 +35,15 @@ import androidx.work.WorkManager;
 import java.util.concurrent.TimeUnit;
 import com.growfund.seedtowealth.worker.SyncWorker;
 
-public class FarmActivity extends AppCompatActivity {
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
+
+public class FarmActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "FarmActivity";
 
     @Override
@@ -60,6 +68,9 @@ public class FarmActivity extends AppCompatActivity {
     private CropAdapter cropAdapter;
     private EventAdapter eventAdapter;
 
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +78,21 @@ public class FarmActivity extends AppCompatActivity {
 
         // Enable StrictMode for development builds
         com.growfund.seedtowealth.utils.StrictModeConfig.enableStrictMode(this);
+
+        // Initialize Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Initialize DrawerLayout and NavigationView
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
 
         // Initialize Repositories
         farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
@@ -77,11 +103,86 @@ public class FarmActivity extends AppCompatActivity {
             // ... login check
         }
 
-        // ... (rest of onCreate)
+        // Update Nav Header with User Info
+        updateNavHeader();
+
+        // Use OnBackPressedDispatcher for back press handling
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
+
         initViews();
         loadFarmData();
+    }
 
-        // ...
+    private void updateNavHeader() {
+        View headerView = navigationView.getHeaderView(0);
+        TextView navName = headerView.findViewById(R.id.navHeaderName);
+        TextView navEmail = headerView.findViewById(R.id.navHeaderEmail);
+
+        // Try to get user info from FirebaseAuth or SessionManager
+        com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance()
+                .getCurrentUser();
+        if (user != null) {
+            navName.setText(user.getDisplayName() != null ? user.getDisplayName() : "Farmer");
+            navEmail.setText(user.getEmail());
+            // You could load profile image here using Glide/Picasso if you had it
+        } else {
+            navName.setText("Guest Farmer");
+            navEmail.setText("");
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull android.view.MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            // Already on Home
+        } else if (id == R.id.nav_profile) {
+            Intent intent = new Intent(FarmActivity.this, ProfileActivity.class);
+            if (currentFarm != null) {
+                intent.putExtra("farmId", currentFarm.getId());
+                intent.putExtra("farmName", currentFarm.getFarmName());
+            }
+            startActivity(intent);
+        } else if (id == R.id.nav_leaderboard) {
+            startActivity(new Intent(FarmActivity.this, LeaderboardActivity.class));
+        } else if (id == R.id.nav_achievements) {
+            startActivity(new Intent(FarmActivity.this, AchievementsActivity.class));
+        } else if (id == R.id.nav_investment) {
+            startActivity(new Intent(FarmActivity.this, InvestmentActivity.class));
+        } else if (id == R.id.nav_equipment_shop) {
+            startActivity(new Intent(FarmActivity.this, EquipmentShopActivity.class));
+        } else if (id == R.id.nav_share) {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out Seed to Wealth - The best farming simulation game!");
+            startActivity(Intent.createChooser(shareIntent, "Share via"));
+        } else if (id == R.id.nav_send) {
+            // Send feedback logic
+            Toast.makeText(this, "Feedback feature coming soon!", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_language) {
+            // Language settings
+            Toast.makeText(this, "Language settings coming soon!", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_logout) {
+            sessionManager.logoutUser();
+            Intent intent = new Intent(FarmActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private void initViews() {

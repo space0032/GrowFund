@@ -146,4 +146,6 @@
     <string name="insufficient_funds_equipment">Insufficient funds to purchase this equipment</string>
     <string name="equipment_purchased">Equipment purchased successfully!</string>
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
