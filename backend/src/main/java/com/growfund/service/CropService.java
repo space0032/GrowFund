@@ -23,6 +23,7 @@ public class CropService {
     private final WeatherService weatherService;
     private final AchievementService achievementService;
     private final RandomEventService randomEventService;
+    private final EquipmentService equipmentService;
     private final Random random = new Random();
 
     @Transactional
@@ -40,6 +41,11 @@ public class CropService {
             }
         }
 
+        // Apply equipment cost reduction bonuses
+        java.util.Map<String, Double> equipmentBonuses = equipmentService.calculateTotalBonuses(farmId);
+        double equipmentCostMultiplier = equipmentBonuses.get("costMultiplier");
+        costMultiplier *= equipmentCostMultiplier;
+
         Long actualCost = (long) (investmentAmount * costMultiplier);
 
         // Check for sufficient funds
@@ -50,6 +56,9 @@ public class CropService {
         // Deduct cost from savings
         farm.setSavings(farm.getSavings() - actualCost);
         farmRepository.save(farm);
+
+        // Use equipment (reduce durability)
+        equipmentService.useEquipment(farmId);
 
         Crop crop = new Crop();
         crop.setFarm(farm);
@@ -77,6 +86,10 @@ public class CropService {
                 yieldMultiplier *= event.getImpactMultiplier();
             }
         }
+
+        // Apply equipment yield bonuses
+        double equipmentYieldMultiplier = equipmentBonuses.get("yieldMultiplier");
+        yieldMultiplier *= equipmentYieldMultiplier;
 
         Long expectedYield = (long) (baseYield * yieldMultiplier);
         crop.setExpectedYield(expectedYield);

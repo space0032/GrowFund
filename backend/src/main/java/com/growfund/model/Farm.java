@@ -53,5 +53,5 @@ public class Farm {
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Set<Equipment> equipment = new HashSet<>();
+    private Set<FarmEquipment> farmEquipment = new HashSet<>();
 }

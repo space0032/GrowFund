@@ -7,14 +7,17 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.growfund.seedtowealth.model.Crop;
+import com.growfund.seedtowealth.model.Equipment;
 import com.growfund.seedtowealth.model.Farm;
+import com.growfund.seedtowealth.model.FarmEquipment;
 import com.growfund.seedtowealth.model.Investment;
 import com.growfund.seedtowealth.model.RandomEvent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = { Farm.class, Crop.class, Investment.class, RandomEvent.class }, version = 4, exportSchema = false)
+@Database(entities = { Farm.class, Crop.class, Investment.class, RandomEvent.class, Equipment.class,
+        FarmEquipment.class }, version = 5, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract FarmDao farmDao();
@@ -24,6 +27,10 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract InvestmentDao investmentDao();
 
     public abstract RandomEventDao randomEventDao();
+
+    public abstract EquipmentDao equipmentDao();
+
+    public abstract FarmEquipmentDao farmEquipmentDao();
 
     private static volatile AppDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;

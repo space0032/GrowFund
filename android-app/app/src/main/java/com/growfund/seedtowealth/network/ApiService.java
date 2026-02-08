@@ -14,6 +14,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("api/users/sync")
@@ -94,4 +95,18 @@ public interface ApiService {
 
     @GET("api/events/active/crop/{cropType}")
     Call<List<com.growfund.seedtowealth.model.RandomEvent>> getActiveEventsForCrop(@Path("cropType") String cropType);
+
+    // Equipment
+    @GET("api/equipment")
+    Call<List<com.growfund.seedtowealth.model.Equipment>> getAllEquipment();
+
+    @GET("api/equipment/farm/{farmId}")
+    Call<List<com.growfund.seedtowealth.model.FarmEquipment>> getFarmEquipment(@Path("farmId") Long farmId);
+
+    @POST("api/equipment/purchase")
+    Call<java.util.Map<String, Object>> purchaseEquipment(@Query("farmId") Long farmId,
+            @Query("equipmentId") Long equipmentId);
+
+    @GET("api/equipment/bonuses/{farmId}")
+    Call<java.util.Map<String, Double>> getEquipmentBonuses(@Path("farmId") Long farmId);
 }
