@@ -37,19 +37,41 @@ public class FeedbackActivity extends AppCompatActivity {
             return;
         }
 
-        // Send via Email Intent
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "growfund.feedback@example.com" });
-        intent.putExtra(Intent.EXTRA_SUBJECT, "GrowFund Feedback");
-        intent.putExtra(Intent.EXTRA_TEXT, feedback);
+        // Log to Firebase Analytics
+        com.google.firebase.analytics.FirebaseAnalytics mFirebaseAnalytics = com.google.firebase.analytics.FirebaseAnalytics
+                .getInstance(this);
+        Bundle bundle = new Bundle();
+        bundle.putInt("feedback_length", feedback.length());
+        mFirebaseAnalytics.logEvent("feedback_submitted", bundle);
 
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "No email app found", Toast.LENGTH_SHORT).show();
-            // Fallback: Could log to analytics or API
-        }
+        // Send via API
+        java.util.Map<String, String> feedbackData = new java.util.HashMap<>();
+        feedbackData.put("content", feedback);
+        feedbackData.put("appVersion", "1.0.0"); // TODO: Get dynamically
+        feedbackData.put("deviceModel", android.os.Build.MODEL);
+
+        com.growfund.seedtowealth.network.ApiClient.getApiService()
+                .submitFeedback(feedbackData)
+                .enqueue(new retrofit2.Callback<Void>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(FeedbackActivity.this, "Feedback sent successfully!", Toast.LENGTH_SHORT)
+                                    .show();
+                            finish();
+                        } else {
+                            Toast.makeText(FeedbackActivity.this, "Failed to send feedback (" + response.code() + ")",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                        Toast.makeText(FeedbackActivity.this, "Network error. Please try again.", Toast.LENGTH_SHORT)
+                                .show();
+                        t.printStackTrace();
+                    }
+                });
     }
 
     @Override
