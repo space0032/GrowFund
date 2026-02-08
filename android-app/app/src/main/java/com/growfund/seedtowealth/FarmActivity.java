@@ -138,6 +138,15 @@ public class FarmActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Equipment Shop button
+        View equipmentButton = findViewById(R.id.investmentButton); // Reusing investment button for now
+        if (equipmentButton != null) {
+            equipmentButton.setOnClickListener(v -> {
+                Intent intent = new Intent(FarmActivity.this, EquipmentShopActivity.class);
+                startActivity(intent);
+            });
+        }
+
         // Setup RecyclerView for crops
         cropsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         cropAdapter = new CropAdapter(crop -> {

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/leaderboard")
+@RequestMapping("/leaderboard")
 @RequiredArgsConstructor
 public class LeaderboardController {
 

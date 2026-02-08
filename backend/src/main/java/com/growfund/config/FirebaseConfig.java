@@ -16,22 +16,25 @@ import java.util.List;
 @Configuration
 public class FirebaseConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${firebase.config-path}")
+    private String firebaseConfigPath;
+
     @PostConstruct
     public void initialize() {
         try {
             List<FirebaseApp> apps = FirebaseApp.getApps();
             if (apps.isEmpty()) {
-                // Look for firebase-config.json in root or resources
+                // Look for config file in root or resources
                 InputStream serviceAccount = null;
                 try {
-                    serviceAccount = new ClassPathResource("firebase-config.json").getInputStream();
+                    serviceAccount = new ClassPathResource(firebaseConfigPath).getInputStream();
                 } catch (IOException e) {
                     // Fallback to checking file system if not in classpath
                     try {
-                        serviceAccount = new FileInputStream("firebase-config.json");
+                        serviceAccount = new FileInputStream(firebaseConfigPath);
                     } catch (IOException ex) {
-                        System.out
-                                .println("WARNING: firebase-config.json not found. Firebase will not work correctly.");
+                        System.out.println(
+                                "WARNING: " + firebaseConfigPath + " not found. Firebase will not work correctly.");
                         return;
                     }
                 }
@@ -41,7 +44,7 @@ public class FirebaseConfig {
                         .build();
 
                 FirebaseApp.initializeApp(options);
-                System.out.println("Firebase Application Initialized");
+                System.out.println("Firebase Application Initialized with " + firebaseConfigPath);
             }
         } catch (IOException e) {
             e.printStackTrace();

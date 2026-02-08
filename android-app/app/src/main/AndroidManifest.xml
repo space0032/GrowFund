@@ -87,6 +87,11 @@
             android:name=".QuizActivity"
             android:exported="false"
             android:parentActivityName=".FarmActivity" />
+        <activity
+            android:name=".EquipmentShopActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SeedToWealth.NoActionBar"
+            android:parentActivityName=".FarmActivity" />
     </application>
 
 </manifest>

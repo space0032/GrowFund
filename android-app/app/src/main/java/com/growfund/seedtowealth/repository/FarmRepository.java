@@ -79,6 +79,13 @@ public class FarmRepository {
     }
 
     /**
+     * Alias for getFarmLiveData() for compatibility
+     */
+    public LiveData<Farm> getUserFarm() {
+        return getFarmLiveData();
+    }
+
+    /**
      * Get crops as LiveData for reactive updates.
      */
     public LiveData<List<Crop>> getCropsLiveData(Long farmId) {

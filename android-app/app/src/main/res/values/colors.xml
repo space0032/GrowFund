@@ -27,4 +27,10 @@
     <color name="sky_blue">#64B5F6</color>
     <color name="sun_yellow">#FFD54F</color>
     <color name="coin_gold">#FFD700</color>
+
+    <!-- Additional UI colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="divider">#E0E0E0</color>
 </resources>

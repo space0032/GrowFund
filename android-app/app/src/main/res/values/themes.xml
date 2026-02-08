@@ -30,4 +30,16 @@
         <item name="cardElevation">4dp</item>
         <item name="contentPadding">16dp</item>
     </style>
+
+    <!-- NoActionBar theme for activities with custom toolbar -->
+    <style name="Theme.SeedToWealth.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white_text</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accent_dark</item>
+        <item name="colorOnSecondary">@color/primary_text</item>
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:windowBackground">@color/background</item>
+    </style>
 </resources>

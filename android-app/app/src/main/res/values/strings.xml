@@ -136,4 +136,14 @@
     <string name="weather_cloudy">Cloudy</string>
     <string name="weather_stormy">Stormy</string>
 
+    <!-- Equipment -->
+    <string name="equipment_shop">Equipment Shop</string>
+    <string name="my_equipment">My Equipment</string>
+    <string name="purchase">Purchase</string>
+    <string name="owned">Owned</string>
+    <string name="no_equipment_available">No equipment available</string>
+    <string name="your_balance">Your Balance</string>
+    <string name="insufficient_funds_equipment">Insufficient funds to purchase this equipment</string>
+    <string name="equipment_purchased">Equipment purchased successfully!</string>
+
 </resources>

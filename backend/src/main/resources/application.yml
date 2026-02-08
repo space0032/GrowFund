@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/growfund?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:space112}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
   jpa:
@@ -30,7 +30,7 @@ server:
 
 # Firebase configuration
 firebase:
-  config-path: ${FIREBASE_CONFIG_PATH:firebase-config.json}
+  config-path: ${FIREBASE_CONFIG_PATH:service-account.json}
 
 # Application-specific configuration
 app:

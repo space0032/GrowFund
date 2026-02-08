@@ -101,12 +101,12 @@ public class EquipmentRepository {
     }
 
     // Purchase Equipment
-    public void purchaseEquipment(Long farmId, Long equipmentId, RepositoryCallback<Map<String, Object>> callback) {
+    public void purchaseEquipment(Long farmId, Long equipmentId, PurchaseCallback callback) {
         apiService.purchaseEquipment(farmId, equipmentId).enqueue(new Callback<Map<String, Object>>() {
             @Override
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess();
                     // Refresh farm equipment
                     fetchFarmEquipment(farmId, new RepositoryCallback<List<FarmEquipment>>() {
                         @Override
@@ -152,6 +152,12 @@ public class EquipmentRepository {
 
     public interface RepositoryCallback<T> {
         void onSuccess(T result);
+
+        void onError(String error);
+    }
+
+    public interface PurchaseCallback {
+        void onSuccess();
 
         void onError(String error);
     }

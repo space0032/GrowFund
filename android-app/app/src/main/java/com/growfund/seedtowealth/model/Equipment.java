@@ -177,4 +177,18 @@ public class Equipment {
         }
         return bonus.toString();
     }
+
+    public String getYieldBonusText() {
+        if (hasYieldBonus()) {
+            return "+" + (int) (yieldBonus * 100) + "% Yield";
+        }
+        return "";
+    }
+
+    public String getCostReductionText() {
+        if (hasCostReduction()) {
+            return "-" + (int) (costReduction * 100) + "% Cost";
+        }
+        return "";
+    }
 }
