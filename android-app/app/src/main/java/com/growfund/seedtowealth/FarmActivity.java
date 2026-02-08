@@ -162,6 +162,12 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(FarmActivity.this, InvestmentActivity.class));
         } else if (id == R.id.nav_equipment_shop) {
             startActivity(new Intent(FarmActivity.this, EquipmentShopActivity.class));
+        } else if (id == R.id.nav_analytics) {
+            Intent intent = new Intent(FarmActivity.this, AnalyticsActivity.class);
+            if (currentFarm != null) {
+                intent.putExtra("farmId", currentFarm.getId());
+            }
+            startActivity(intent);
         } else if (id == R.id.nav_share) {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");

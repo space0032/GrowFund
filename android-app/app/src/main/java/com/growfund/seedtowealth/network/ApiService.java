@@ -110,4 +110,11 @@ public interface ApiService {
 
         @GET("equipment/bonuses/{farmId}")
         Call<java.util.Map<String, Double>> getEquipmentBonuses(@Path("farmId") Long farmId);
+
+        // Analytics
+        @GET("analytics/dashboard/{farmId}")
+        Call<com.growfund.seedtowealth.model.AnalyticsData> getFarmAnalytics(@Path("farmId") Long farmId);
+
+        @GET("analytics/recommendations/{farmId}")
+        Call<List<com.growfund.seedtowealth.model.Recommendation>> getRecommendations(@Path("farmId") Long farmId);
 }

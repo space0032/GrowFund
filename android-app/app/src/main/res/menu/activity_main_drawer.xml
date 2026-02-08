@@ -26,8 +26,11 @@
             android:title="Investment Portfolio" />
          <item
             android:id="@+id/nav_equipment_shop"
-            android:icon="@android:drawable/ic_menu_manage"
             android:title="Equipment Shop" />
+        <item
+            android:id="@+id/nav_analytics"
+            android:icon="@android:drawable/ic_menu_sort_by_size"
+            android:title="Analytics &amp; Advice" />
     </group>
 
     <item android:title="Communicate">

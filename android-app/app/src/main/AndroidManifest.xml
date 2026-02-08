@@ -93,6 +93,12 @@
             android:exported="false"
             android:theme="@style/Theme.SeedToWealth.NoActionBar"
             android:parentActivityName=".FarmActivity" />
+
+        <activity
+            android:name=".AnalyticsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SeedToWealth.NoActionBar"
+            android:parentActivityName=".FarmActivity" />
     </application>
 
 </manifest>
