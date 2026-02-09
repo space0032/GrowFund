@@ -54,4 +54,21 @@ public class Farm {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<FarmEquipment> farmEquipment = new HashSet<>();
+
+    /**
+     * Calculate available land by subtracting planted areas from total land size
+     */
+    @com.fasterxml.jackson.annotation.JsonProperty("availableLand")
+    public Double getAvailableLand() {
+        if (crops == null || crops.isEmpty()) {
+            return landSize;
+        }
+
+        double plantedArea = crops.stream()
+                .filter(crop -> "PLANTED".equals(crop.getStatus()) || "GROWING".equals(crop.getStatus()))
+                .mapToDouble(Crop::getAreaPlanted)
+                .sum();
+
+        return Math.max(0, landSize - plantedArea);
+    }
 }
