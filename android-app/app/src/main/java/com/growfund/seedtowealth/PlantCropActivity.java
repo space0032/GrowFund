@@ -39,9 +39,11 @@ public class PlantCropActivity extends AppCompatActivity {
 
     private long currentSavings = 0;
     private TextView currentSavingsText;
+    private TextView availableAcresText;
     private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
 
     private String selectedCropType = null;
+    private float availableAcres = 0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class PlantCropActivity extends AppCompatActivity {
         }
 
         initViews();
-        fetchFarmSavings();
+        fetchFarmAndLandData();
     }
 
     private void initViews() {
@@ -79,6 +81,7 @@ public class PlantCropActivity extends AppCompatActivity {
         plantButton = findViewById(R.id.plantButton);
         loadingProgress = findViewById(R.id.loadingProgress);
         currentSavingsText = findViewById(R.id.currentSavingsText);
+        availableAcresText = findViewById(R.id.availableAcresText);
 
         plantButton.setOnClickListener(v -> plantCrop());
 
@@ -188,41 +191,104 @@ public class PlantCropActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchFarmSavings() {
+    private void fetchFarmAndLandData() {
         farmRepository.getFarm(
                 new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<com.growfund.seedtowealth.model.Farm>() {
                     @Override
                     public void onLocalData(com.growfund.seedtowealth.model.Farm data) {
-                        runOnUiThread(() -> updateSavingsUI(data));
+                        runOnUiThread(() -> updateSavingsAndFetchCrops(data));
                     }
 
                     @Override
                     public void onSuccess(com.growfund.seedtowealth.model.Farm data) {
-                        runOnUiThread(() -> updateSavingsUI(data));
+                        runOnUiThread(() -> updateSavingsAndFetchCrops(data));
                     }
 
                     @Override
                     public void onError(String message) {
                         runOnUiThread(() -> {
                             currentSavingsText.setText("Wallet: Error");
+                            availableAcresText.setText("Available: Error");
                         });
                     }
                 });
     }
 
-    private void updateSavingsUI(com.growfund.seedtowealth.model.Farm data) {
-        currentSavings = data.getSavings();
+    private void updateSavingsAndFetchCrops(com.growfund.seedtowealth.model.Farm farmData) {
+        currentSavings = farmData.getSavings();
         currentSavingsText.setText("Wallet: "
                 + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
 
-        // Update Slider Max to Land Size
-        Double landSizeDouble = data.getLandSize();
-        float landSize = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
-        if (landSize > 0) {
-            areaSlider.setValueTo(landSize);
-            if (areaSlider.getValue() > landSize) {
-                areaSlider.setValue(landSize);
+        // Fetch crops to calculate used land
+        farmRepository.getCrops(farmId,
+                new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<java.util.List<Crop>>() {
+                    @Override
+                    public void onLocalData(java.util.List<Crop> crops) {
+                        runOnUiThread(() -> calculateAndUpdateAvailableLand(farmData, crops));
+                    }
+
+                    @Override
+                    public void onSuccess(java.util.List<Crop> crops) {
+                        runOnUiThread(() -> calculateAndUpdateAvailableLand(farmData, crops));
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            // Fallback: use total land if crops fetch fails
+                            Double landSizeDouble = farmData.getLandSize();
+                            float landSize = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
+                            availableAcres = landSize;
+                            updateLandUI();
+                        });
+                    }
+                });
+    }
+
+    private void calculateAndUpdateAvailableLand(com.growfund.seedtowealth.model.Farm farmData,
+            java.util.List<Crop> crops) {
+        Double landSizeDouble = farmData.getLandSize();
+        float totalLand = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
+
+        // Calculate used land from active crops (PLANTED, GROWING)
+        float usedLand = 0f;
+        if (crops != null) {
+            for (Crop crop : crops) {
+                String status = crop.getStatus();
+                if ("PLANTED".equals(status) || "GROWING".equals(status)) {
+                    Double areaPlanted = crop.getAreaPlanted();
+                    if (areaPlanted != null) {
+                        usedLand += areaPlanted.floatValue();
+                    }
+                }
             }
+        }
+
+        // Calculate available land
+        availableAcres = Math.max(0, totalLand - usedLand);
+        updateLandUI();
+    }
+
+    private void updateLandUI() {
+        availableAcresText.setText(String.format("Available: %.1f Acres", availableAcres));
+
+        // Update slider max to available acres
+        if (availableAcres > 0) {
+            areaSlider.setValueTo(availableAcres);
+            if (areaSlider.getValue() > availableAcres) {
+                areaSlider.setValue(availableAcres);
+            }
+            // Update minimum to be reasonable
+            areaSlider.setValueFrom(Math.min(0.5f, availableAcres));
+        } else {
+            // No land available
+            areaSlider.setValueTo(0.5f);
+            areaSlider.setValue(0.5f);
+            areaSlider.setEnabled(false);
+            areaInput.setEnabled(false);
+            plantButton.setEnabled(false);
+            plantButton.setText("No Land Available");
+            availableAcresText.setTextColor(getResources().getColor(R.color.error, null));
         }
     }
 
