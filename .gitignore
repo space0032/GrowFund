@@ -3,6 +3,7 @@ target/
 build/
 *.class
 *.jar
+!gradle-wrapper.jar
 *.war
 *.ear
 
