@@ -153,4 +153,11 @@ public class EquipmentService {
     public boolean ownsEquipment(Long farmId, Long equipmentId) {
         return farmEquipmentRepository.existsByFarmIdAndEquipmentId(farmId, equipmentId);
     }
+
+    /**
+     * Check if farm has any active equipment
+     */
+    public boolean hasEquipment(Long farmId) {
+        return !getUsableEquipment(farmId).isEmpty();
+    }
 }

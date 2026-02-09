@@ -25,6 +25,7 @@ public class AchievementService {
             checkLandBaron(user, farm);
             checkStrategist(user, farm);
             checkEfficientFarmer(user, farm);
+            checkMasterFarmer(user, farm);
         }
     }
 
@@ -67,6 +68,26 @@ public class AchievementService {
 
         if (hasHighYield) {
             unlock(user, "EFFICIENT", "Efficient Farmer", "Achieve a bumper harvest (1.5x yield).", "📈");
+        }
+    }
+
+    private void checkMasterFarmer(User user, Farm farm) {
+        // "Master Farmer": Reward for achieving a profit margin of over 100%
+        // Logic: (netProfit / totalCosts) * 100 > 100
+        // We need to check if ANY crop provided this margin.
+
+        boolean hasMasterProfit = farm.getCrops().stream()
+                .anyMatch(c -> {
+                    if ("HARVESTED".equals(c.getStatus()) && c.getProfit() != null && c.getInvestmentAmount() != null
+                            && c.getInvestmentAmount() > 0) {
+                        double margin = ((double) c.getProfit() / c.getInvestmentAmount()) * 100.0;
+                        return margin > 100.0;
+                    }
+                    return false;
+                });
+
+        if (hasMasterProfit) {
+            unlock(user, "MASTER_FARMER", "Master Farmer", "Achieve a profit margin of over 100%.", "🏆");
         }
     }
 
