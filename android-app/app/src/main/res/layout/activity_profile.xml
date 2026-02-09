@@ -4,8 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5"
-    android:padding="16dp">
+    android:background="#F5F5F5">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Profile"
+        app:titleTextColor="@android:color/white"
+        android:background="?attr/colorPrimary" />
+    
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
     <!-- User Profile Card -->
     <com.google.android.material.card.MaterialCardView
@@ -275,4 +292,6 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:strokeColor="#D32F2F" />
 
+</LinearLayout>
+</ScrollView>
 </LinearLayout>

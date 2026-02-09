@@ -51,6 +51,14 @@ public class ProfileActivity extends AppCompatActivity {
             farmName = getIntent().getStringExtra("farmName");
         }
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         sessionManager = new SessionManager(this);
 
         initViews();

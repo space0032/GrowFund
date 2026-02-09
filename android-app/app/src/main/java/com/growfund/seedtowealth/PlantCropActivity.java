@@ -48,13 +48,13 @@ public class PlantCropActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plant_crop);
 
-        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        // androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        // setSupportActionBar(toolbar);
+        // if (getSupportActionBar() != null) {
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // getSupportActionBar().setDisplayShowHomeEnabled(true);
+        // }
+        // toolbar.setNavigationOnClickListener(v -> finish());
 
         farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
 
@@ -214,6 +214,16 @@ public class PlantCropActivity extends AppCompatActivity {
         currentSavings = data.getSavings();
         currentSavingsText.setText("Wallet: "
                 + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
+
+        // Update Slider Max to Land Size
+        Double landSizeDouble = data.getLandSize();
+        float landSize = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
+        if (landSize > 0) {
+            areaSlider.setValueTo(landSize);
+            if (areaSlider.getValue() > landSize) {
+                areaSlider.setValue(landSize);
+            }
+        }
     }
 
     private void loadWeatherAndTrends() {

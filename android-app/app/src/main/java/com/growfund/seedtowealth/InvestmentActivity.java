@@ -44,6 +44,14 @@ public class InvestmentActivity extends AppCompatActivity {
         loadingProgress = findViewById(R.id.loadingProgress);
         addInvestmentFab = findViewById(R.id.addInvestmentFab);
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         investmentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new InvestmentAdapter();
         investmentsRecyclerView.setAdapter(adapter);
