@@ -132,6 +132,40 @@ public class CropService {
         return finalCost;
     }
 
+    @Transactional(readOnly = true)
+    public Map<String, Double> getCropLimit(Long farmId, String cropType) {
+        String normalizedCropType = cropType.toUpperCase();
+        CropConfig config = cropConfigs.get(normalizedCropType);
+        if (config == null) {
+            throw new IllegalArgumentException("Unknown crop type: " + cropType);
+        }
+
+        Farm farm = farmRepository.findById(farmId)
+                .orElseThrow(() -> new com.growfund.exception.ResourceNotFoundException("Farm not found"));
+
+        // Get active crops for this type
+        List<Crop> activeCrops = cropRepository.findByFarmId(farmId).stream()
+                .filter(c -> "PLANTED".equals(c.getStatus()) || "GROWING".equals(c.getStatus())
+                        || "READY".equals(c.getStatus()))
+                .collect(Collectors.toList());
+
+        double currentCropTypeLand = activeCrops.stream()
+                .filter(c -> c.getCropType().equalsIgnoreCase(normalizedCropType))
+                .mapToDouble(c -> c.getAreaPlanted() != null ? c.getAreaPlanted() : 0.0)
+                .sum();
+
+        double maxAllowedForCrop = farm.getLandSize() * config.maxLandPercentage;
+        double availableForCrop = Math.max(0, maxAllowedForCrop - currentCropTypeLand);
+
+        Map<String, Double> result = new HashMap<>();
+        result.put("maxPercentage", config.maxLandPercentage);
+        result.put("maxAcres", maxAllowedForCrop);
+        result.put("currentUsed", currentCropTypeLand);
+        result.put("available", availableForCrop);
+
+        return result;
+    }
+
     @Transactional
     public CropDTO plantCrop(Long farmId, String cropType, Double areaPlanted, String season) {
         Farm farm = farmRepository.findById(farmId)

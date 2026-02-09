@@ -128,6 +128,7 @@ public class PlantCropActivity extends AppCompatActivity {
                 // Tag contains the raw crop code e.g., "WHEAT"
                 selectedCropType = (String) chip.getTag();
                 updateCostEstimate();
+                fetchCropLimitAndUpdateUI(); // Fetch crop-specific limit
             } else {
                 selectedCropType = null;
                 estimatedCostText.setText("Select a Crop");
@@ -267,6 +268,61 @@ public class PlantCropActivity extends AppCompatActivity {
         // Calculate available land
         availableAcres = Math.max(0, totalLand - usedLand);
         updateLandUI();
+    }
+
+    private void fetchCropLimitAndUpdateUI() {
+        if (selectedCropType == null) {
+            return;
+        }
+
+        ApiClient.getApiService().getCropLimit(farmId, selectedCropType).enqueue(new Callback<Map<String, Double>>() {
+            @Override
+            public void onResponse(Call<Map<String, Double>> call, Response<Map<String, Double>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Map<String, Double> limit = response.body();
+                    Double cropAvailable = limit.get("available");
+                    Double maxPercentage = limit.get("maxPercentage");
+
+                    if (cropAvailable != null) {
+                        // Apply the most restrictive limit
+                        float effectiveMax = Math.min(availableAcres, cropAvailable.floatValue());
+
+                        if (effectiveMax > 0) {
+                            // Re-enable controls in case they were disabled by previous crop
+                            areaSlider.setEnabled(true);
+                            areaInput.setEnabled(true);
+
+                            areaSlider.setValueTo(effectiveMax);
+                            if (areaSlider.getValue() > effectiveMax) {
+                                areaSlider.setValue(effectiveMax);
+                            }
+                            areaSlider.setValueFrom(Math.min(0.5f, effectiveMax));
+                        } else {
+                            // No planting allowed for this crop
+                            areaSlider.setValueTo(0.5f);
+                            areaSlider.setValue(0.5f);
+                            areaSlider.setEnabled(false);
+                            areaInput.setEnabled(false);
+                        }
+
+                        // Update available text with crop-specific info
+                        if (maxPercentage != null && cropAvailable < availableAcres) {
+                            int percentage = (int) (maxPercentage * 100);
+                            availableAcresText.setText(String.format("Available: %.1f Acres (%d%% limit for %s)",
+                                    effectiveMax, percentage, selectedCropType));
+                        } else {
+                            availableAcresText.setText(String.format("Available: %.1f Acres", effectiveMax));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Double>> call, Throwable t) {
+                Log.e(TAG, "Failed to fetch crop limit: " + t.getMessage());
+                // Fallback: use general available acres
+            }
+        });
     }
 
     private void updateLandUI() {

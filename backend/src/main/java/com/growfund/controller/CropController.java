@@ -95,6 +95,18 @@ public class CropController {
         return ResponseEntity.ok(crop);
     }
 
+    @GetMapping("/farms/{farmId}/crops/limits/{cropType}")
+    public ResponseEntity<Map<String, Double>> getCropLimit(
+            @PathVariable Long farmId,
+            @PathVariable String cropType) {
+        try {
+            Map<String, Double> limit = cropService.getCropLimit(farmId, cropType);
+            return ResponseEntity.ok(limit);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @DeleteMapping("/crops/{id}")
     public ResponseEntity<Void> deleteCrop(@PathVariable Long id) {
         try {
