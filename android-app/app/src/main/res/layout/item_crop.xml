@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.SeedToWealth.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp">
+    android:layout_marginVertical="8dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Crop Icon -->
+        <!-- Icon Container -->
         <androidx.cardview.widget.CardView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:cardCornerRadius="25dp"
+            android:id="@+id/iconContainer"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:cardCornerRadius="28dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#E8F5E9">
+            app:cardBackgroundColor="#E8F5E9"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:id="@+id/cropIconText"
@@ -29,78 +29,77 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="W"
-                android:textColor="#2E7D32"
+                android:textColor="@color/primary"
                 android:textSize="24sp"
                 android:textStyle="bold" />
         </androidx.cardview.widget.CardView>
 
-        <!-- Content -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Crop Name and Status -->
+        <TextView
+            android:id="@+id/cropTypeText"
+            style="@style/TextAppearance.SeedToWealth.Headline"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:text="Wheat"
+            android:textSize="18sp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/iconContainer"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/statusBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Growing"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/white_text"
+            android:background="@drawable/bg_status_badge"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/cropTypeText"
+            app:layout_constraintTop_toTopOf="@id/cropTypeText"
+            app:layout_constraintBottom_toBottomOf="@id/cropTypeText" />
 
-                <TextView
-                    android:id="@+id/cropTypeText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Wheat"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#212121" />
+        <!-- Area Text -->
+        <TextView
+            android:id="@+id/areaText"
+            style="@style/TextAppearance.SeedToWealth.Subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.5 acres"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/cropTypeText"
+            app:layout_constraintTop_toBottomOf="@id/cropTypeText"
+            android:layout_marginTop="4dp"/>
 
-                <TextView
-                    android:id="@+id/statusBadge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Growing"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:background="@drawable/bg_status_badge"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="4dp" />
-            </LinearLayout>
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/growthProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:progress="45"
+            android:progressDrawable="@drawable/bg_rounded_status" 
+            app:layout_constraintStart_toStartOf="@id/cropTypeText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/areaText" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+        <!-- Timer/Action Text -->
+        <TextView
+            android:id="@+id/timerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2h 45m remaining"
+            android:textSize="12sp"
+            android:textColor="@color/warning"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="@id/growthProgressBar"
+            app:layout_constraintTop_toBottomOf="@id/growthProgressBar"
+            android:layout_marginTop="4dp" />
 
-                <TextView
-                    android:id="@+id/areaText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.5 acres"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-                    android:layout_marginEnd="16dp" />
-
-                <TextView
-                    android:id="@+id/timerText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ready in 02:45"
-                    android:textSize="14sp"
-                    android:textColor="#F57F17" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_crop"
-            app:tint="#BDBDBD" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

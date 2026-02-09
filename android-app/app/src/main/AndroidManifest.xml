@@ -54,7 +54,7 @@
         <activity
             android:name=".FarmActivity"
             android:exported="false"
-            android:theme="@style/Theme.SeedToWealth.NoActionBar" />
+            android:theme="@style/Theme.SeedToWealth" />
 
         <activity
             android:name=".PlantCropActivity"
@@ -91,13 +91,13 @@
         <activity
             android:name=".EquipmentShopActivity"
             android:exported="false"
-            android:theme="@style/Theme.SeedToWealth.NoActionBar"
+            android:theme="@style/Theme.SeedToWealth"
             android:parentActivityName=".FarmActivity" />
 
         <activity
             android:name=".AnalyticsActivity"
             android:exported="false"
-            android:theme="@style/Theme.SeedToWealth.NoActionBar"
+            android:theme="@style/Theme.SeedToWealth"
             android:parentActivityName=".FarmActivity" />
 
         <activity

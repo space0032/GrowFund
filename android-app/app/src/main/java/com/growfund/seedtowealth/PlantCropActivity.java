@@ -3,16 +3,17 @@ package com.growfund.seedtowealth;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.slider.Slider;
 import com.growfund.seedtowealth.model.Crop;
 import com.growfund.seedtowealth.network.ApiClient;
 
@@ -26,10 +27,11 @@ import retrofit2.Response;
 public class PlantCropActivity extends AppCompatActivity {
     private static final String TAG = "PlantCropActivity";
 
-    private Spinner cropTypeSpinner;
+    private ChipGroup cropTypeChipGroup;
     private EditText areaInput;
+    private Slider areaSlider;
     private TextView expectedYieldText;
-    private TextView estimatedCostText; // Added
+    private TextView estimatedCostText;
     private Button plantButton;
     private ProgressBar loadingProgress;
 
@@ -39,10 +41,20 @@ public class PlantCropActivity extends AppCompatActivity {
     private TextView currentSavingsText;
     private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
 
+    private String selectedCropType = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plant_crop);
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
 
@@ -58,18 +70,19 @@ public class PlantCropActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        cropTypeSpinner = findViewById(R.id.cropTypeSpinner);
+        cropTypeChipGroup = findViewById(R.id.cropTypeChipGroup);
         areaInput = findViewById(R.id.areaInput);
+        areaSlider = findViewById(R.id.areaSlider);
 
         expectedYieldText = findViewById(R.id.expectedYieldText);
-        estimatedCostText = findViewById(R.id.estimatedCostText); // Init
+        estimatedCostText = findViewById(R.id.estimatedCostText);
         plantButton = findViewById(R.id.plantButton);
         loadingProgress = findViewById(R.id.loadingProgress);
         currentSavingsText = findViewById(R.id.currentSavingsText);
 
         plantButton.setOnClickListener(v -> plantCrop());
 
-        // Add TextWatcher for automatic cost estimation
+        // Setup Text/Slider synchronization
         areaInput.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -81,19 +94,40 @@ public class PlantCropActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(android.text.Editable s) {
-                updateCostEstimate();
+                try {
+                    String val = s.toString();
+                    if (!val.isEmpty()) {
+                        float area = Float.parseFloat(val);
+                        // Update slider only if within range
+                        if (area >= areaSlider.getValueFrom() && area <= areaSlider.getValueTo()) {
+                            areaSlider.setValue(area);
+                        }
+                        updateCostEstimate();
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore invalid text inputs during typing
+                }
             }
         });
 
-        // Also update when spinner selection changes
-        cropTypeSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                updateCostEstimate();
+        areaSlider.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                // Round to 1 decimal place
+                float roundedValue = (float) (Math.round(value * 2) / 2.0);
+                areaInput.setText(String.valueOf(roundedValue));
+                // updateCostEstimate handled by TextWatcher
             }
+        });
 
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+        cropTypeChipGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId != View.NO_ID) {
+                Chip chip = group.findViewById(checkedId);
+                // Tag contains the raw crop code e.g., "WHEAT"
+                selectedCropType = (String) chip.getTag();
+                updateCostEstimate();
+            } else {
+                selectedCropType = null;
+                estimatedCostText.setText("Select a Crop");
             }
         });
 
@@ -101,59 +135,54 @@ public class PlantCropActivity extends AppCompatActivity {
     }
 
     private void updateCostEstimate() {
+        if (selectedCropType == null) {
+            return;
+        }
+
         String areaStr = areaInput.getText().toString();
         if (areaStr.isEmpty()) {
-            // Show rate per 1 acre
-            fetchCostForArea(1.0, true);
             return;
         }
 
         try {
             double area = Double.parseDouble(areaStr);
-            fetchCostForArea(area, false);
+            fetchCostForArea(area);
         } catch (NumberFormatException e) {
             estimatedCostText.setText("Invalid Area");
         }
     }
 
-    private void fetchCostForArea(double area, boolean isRate) {
-        Object selectedItem = cropTypeSpinner.getSelectedItem();
-        if (selectedItem == null)
+    private void fetchCostForArea(double area) {
+        if (selectedCropType == null)
             return;
 
-        // Extract "WHEAT" from "WHEAT (₹42.50)"
-        String cropType = selectedItem.toString().split(" ")[0];
-
-        ApiClient.getApiService().getPlantingCostEstimate(farmId, cropType, area).enqueue(new Callback<Long>() {
+        ApiClient.getApiService().getPlantingCostEstimate(farmId, selectedCropType, area).enqueue(new Callback<Long>() {
             @Override
             public void onResponse(Call<Long> call, Response<Long> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Long cost = response.body();
 
-                    if (isRate) {
-                        estimatedCostText
-                                .setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(cost) + " / acre");
-                        estimatedCostText.setTextColor(android.graphics.Color.parseColor("#757575")); // Neutral color
-                                                                                                      // for rate
+                    estimatedCostText.setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(cost));
+
+                    // Visual feedback
+                    int colorRes = (cost > currentSavings) ? R.color.error : R.color.text_primary;
+                    estimatedCostText.setTextColor(getResources().getColor(colorRes, null));
+
+                    plantButton.setEnabled(cost <= currentSavings);
+                    if (cost > currentSavings) {
+                        plantButton.setText("Insufficient Funds");
                     } else {
-                        estimatedCostText.setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(cost));
-                        // Visual feedback if can't afford
-                        if (cost > currentSavings) {
-                            estimatedCostText.setTextColor(android.graphics.Color.RED);
-                        } else {
-                            estimatedCostText.setTextColor(
-                                    android.graphics.Color.parseColor(cost > currentSavings ? "#D32F2F" : "#388E3C"));
-                        }
+                        plantButton.setText("Confirm Planting");
                     }
+
                 } else {
-                    Log.e(TAG, "Estimate Failed: " + response.code() + " " + response.message());
+                    Log.e(TAG, "Estimate Failed");
                     estimatedCostText.setText("Error");
                 }
             }
 
             @Override
             public void onFailure(Call<Long> call, Throwable t) {
-                Log.e(TAG, "Network Error: " + t.getMessage());
                 estimatedCostText.setText("Net Error");
             }
         });
@@ -164,35 +193,32 @@ public class PlantCropActivity extends AppCompatActivity {
                 new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<com.growfund.seedtowealth.model.Farm>() {
                     @Override
                     public void onLocalData(com.growfund.seedtowealth.model.Farm data) {
-                        runOnUiThread(() -> {
-                            currentSavings = data.getSavings();
-                            currentSavingsText.setText("Current Savings: "
-                                    + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
-                        });
+                        runOnUiThread(() -> updateSavingsUI(data));
                     }
 
                     @Override
                     public void onSuccess(com.growfund.seedtowealth.model.Farm data) {
-                        runOnUiThread(() -> {
-                            currentSavings = data.getSavings();
-                            currentSavingsText.setText("Current Savings: "
-                                    + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
-                        });
+                        runOnUiThread(() -> updateSavingsUI(data));
                     }
 
                     @Override
                     public void onError(String message) {
                         runOnUiThread(() -> {
-                            currentSavingsText.setText("Current Savings: Error");
-                            Log.e(TAG, "Failed to load savings: " + message);
+                            currentSavingsText.setText("Wallet: Error");
                         });
                     }
                 });
     }
 
+    private void updateSavingsUI(com.growfund.seedtowealth.model.Farm data) {
+        currentSavings = data.getSavings();
+        currentSavingsText.setText("Wallet: "
+                + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
+    }
+
     private void loadWeatherAndTrends() {
         // Load Trends
-        setupCropTypeSpinner();
+        setupCropChips();
 
         // Load Weather
         TextView weatherText = findViewById(R.id.weatherImpactText);
@@ -203,20 +229,21 @@ public class PlantCropActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     java.util.Map<String, Object> body = response.body();
                     String condition = (String) body.get("condition");
-                    // Double multiplier = (Double) body.get("growthMultiplier"); // Unused
+                    String displayName = (String) body.get("displayName");
 
-                    String message = "Current Weather: " + body.get("displayName");
+                    String message = "Weather: " + displayName;
+                    int color = getResources().getColor(R.color.accent_dark, null);
+
                     if ("RAINY".equals(condition)) {
-                        message += "\n(Growth Speed: +20% Faster!)";
-                        weatherText.setTextColor(android.graphics.Color.BLUE);
+                        message += " (+20% Speed)";
+                        color = getResources().getColor(R.color.info, null);
                     } else if ("DROUGHT".equals(condition)) {
-                        message += "\n(Growth Speed: -50% Slower!)";
-                        weatherText.setTextColor(android.graphics.Color.RED);
-                    } else {
-                        message += "\n(Standard Growth Rate)";
-                        weatherText.setTextColor(android.graphics.Color.parseColor("#FFA000")); // Orange
+                        message += " (-50% Speed)";
+                        color = getResources().getColor(R.color.error, null);
                     }
+
                     weatherText.setText(message);
+                    weatherText.setTextColor(color);
                 }
             }
 
@@ -227,73 +254,72 @@ public class PlantCropActivity extends AppCompatActivity {
         });
     }
 
-    private void setupCropTypeSpinner() {
-        // Fetch trends first
+    private void setupCropChips() {
         ApiClient.getApiService().getMarketTrends().enqueue(new Callback<Map<String, Double>>() {
             @Override
             public void onResponse(Call<Map<String, Double>> call, Response<Map<String, Double>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Map<String, Double> trends = response.body();
-                    updateSpinnerWithTrends(trends);
+                    updateChipsWithTrends(response.body());
                 } else {
-                    setupDefaultSpinner();
+                    // Fallback defaults
+                    updateChipsWithTrends(new HashMap<>());
                 }
             }
 
             @Override
             public void onFailure(Call<Map<String, Double>> call, Throwable t) {
-                setupDefaultSpinner();
+                updateChipsWithTrends(new HashMap<>());
             }
         });
     }
 
-    private void setupDefaultSpinner() {
-        String[] cropTypes = { "WHEAT", "RICE", "COTTON", "SUGARCANE", "CORN" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, cropTypes);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        cropTypeSpinner.setAdapter(adapter);
-    }
-
-    private void updateSpinnerWithTrends(Map<String, Double> trends) {
-        // Create formatted strings: "WHEAT (₹42.50)"
+    private void updateChipsWithTrends(Map<String, Double> trends) {
         String[] cropTypes = new String[] { "WHEAT", "RICE", "COTTON", "SUGARCANE", "CORN" };
-        String[] displayItems = new String[cropTypes.length];
 
-        for (int i = 0; i < cropTypes.length; i++) {
-            String crop = cropTypes[i];
+        cropTypeChipGroup.removeAllViews();
+
+        for (String crop : cropTypes) {
+            Chip chip = new Chip(this);
+            chip.setCheckable(true);
+            chip.setTag(crop); // Store raw code
+
             Double price = trends.get(crop);
             if (price != null) {
-                displayItems[i] = crop + " (" + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(price) + ")";
+                chip.setText(crop + "\n" + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(price));
             } else {
-                displayItems[i] = crop;
+                chip.setText(crop);
             }
+
+            // Style
+            chip.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+            cropTypeChipGroup.addView(chip);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, displayItems);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        cropTypeSpinner.setAdapter(adapter);
+        // Select first by default
+        if (cropTypeChipGroup.getChildCount() > 0) {
+            ((Chip) cropTypeChipGroup.getChildAt(0)).setChecked(true);
+        }
     }
 
     private void plantCrop() {
-        String selectedItem = cropTypeSpinner.getSelectedItem().toString();
-        // Extract "WHEAT" from "WHEAT (₹42.50)"
-        String cropType = selectedItem.split(" ")[0];
+        if (selectedCropType == null) {
+            Toast.makeText(this, "Please select a crop", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String areaStr = areaInput.getText().toString();
         if (areaStr.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter area", Toast.LENGTH_SHORT).show();
             return;
         }
 
         double area = Double.parseDouble(areaStr);
-        // Investment is now auto-calculated by backend
 
         Map<String, Object> request = new HashMap<>();
-        request.put("cropType", cropType);
+        request.put("cropType", selectedCropType);
         request.put("areaPlanted", area);
-        request.put("season", "KHARIF");
+        request.put("season", "KHARIF"); // Dynamic season?
 
         loadingProgress.setVisibility(View.VISIBLE);
         plantButton.setEnabled(false);
@@ -302,7 +328,6 @@ public class PlantCropActivity extends AppCompatActivity {
                 new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<Crop>() {
                     @Override
                     public void onLocalData(Crop data) {
-                        // Not used for plant operation
                     }
 
                     @Override
@@ -310,38 +335,15 @@ public class PlantCropActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             loadingProgress.setVisibility(View.GONE);
                             plantButton.setEnabled(true);
-
-                            Crop crop = data;
-                            long timeInMillis = crop.getTimeRemainingInMillis();
-
-                            if (timeInMillis > 0) {
-                                try {
-                                    androidx.work.Data workData = new androidx.work.Data.Builder()
-                                            .putString(
-                                                    com.growfund.seedtowealth.worker.HarvestReminderWorker.KEY_CROP_NAME,
-                                                    crop.getCropType())
-                                            .build();
-
-                                    androidx.work.OneTimeWorkRequest workRequest = new androidx.work.OneTimeWorkRequest.Builder(
-                                            com.growfund.seedtowealth.worker.HarvestReminderWorker.class)
-                                            .setInitialDelay(timeInMillis, java.util.concurrent.TimeUnit.MILLISECONDS)
-                                            .setInputData(workData)
-                                            .build();
-
-                                    androidx.work.WorkManager.getInstance(PlantCropActivity.this)
-                                            .enqueue(workRequest);
-                                } catch (Exception e) {
-                                    Log.e(TAG, "Error scheduling notification", e);
-                                }
-                            }
+                            scheduleNotification(data);
 
                             // Play Sound & Vibrate
                             com.growfund.seedtowealth.utils.SoundManager.playPlantSound(PlantCropActivity.this);
 
                             Toast.makeText(PlantCropActivity.this,
-                                    "Crop planted successfully! You will be notified when ready.",
+                                    "Crop planted successfully!",
                                     Toast.LENGTH_LONG).show();
-                            finish(); // Return to FarmActivity
+                            finish();
                         });
                     }
 
@@ -350,10 +352,34 @@ public class PlantCropActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             loadingProgress.setVisibility(View.GONE);
                             plantButton.setEnabled(true);
-                            Toast.makeText(PlantCropActivity.this, "Error: " + message, Toast.LENGTH_SHORT)
-                                    .show();
+                            Toast.makeText(PlantCropActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                         });
                     }
                 });
+    }
+
+    private void scheduleNotification(Crop crop) {
+        long timeInMillis = crop.getTimeRemainingInMillis();
+
+        if (timeInMillis > 0) {
+            try {
+                androidx.work.Data workData = new androidx.work.Data.Builder()
+                        .putString(
+                                com.growfund.seedtowealth.worker.HarvestReminderWorker.KEY_CROP_NAME,
+                                crop.getCropType())
+                        .build();
+
+                androidx.work.OneTimeWorkRequest workRequest = new androidx.work.OneTimeWorkRequest.Builder(
+                        com.growfund.seedtowealth.worker.HarvestReminderWorker.class)
+                        .setInitialDelay(timeInMillis, java.util.concurrent.TimeUnit.MILLISECONDS)
+                        .setInputData(workData)
+                        .build();
+
+                androidx.work.WorkManager.getInstance(PlantCropActivity.this)
+                        .enqueue(workRequest);
+            } catch (Exception e) {
+                Log.e(TAG, "Error scheduling notification", e);
+            }
+        }
     }
 }

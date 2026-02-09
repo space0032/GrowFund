@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#4CAF50</color>
-    <color name="primary_dark">#388E3C</color>
-    <color name="primary_light">#81C784</color>
-    <color name="accent">#FFC107</color>
-    <color name="accent_dark">#FFA000</color>
-    
-    <!-- Text colors -->
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#757575</color>
-    <color name="white_text">#FFFFFF</color>
-    
-    <!-- Background colors -->
-    <color name="background">#F5F5F5</color>
-    <color name="card_background">#FFFFFF</color>
-    
-    <!-- Status colors -->
-    <color name="success">#4CAF50</color>
-    <color name="warning">#FF9800</color>
-    <color name="error">#F44336</color>
-    <color name="info">#2196F3</color>
-    
-    <!-- Farm theme colors -->
-    <color name="soil_brown">#8D6E63</color>
-    <color name="plant_green">#66BB6A</color>
-    <color name="sky_blue">#64B5F6</color>
-    <color name="sun_yellow">#FFD54F</color>
-    <color name="coin_gold">#FFD700</color>
+    <!-- Brand Colors (Nature Palette) -->
+    <color name="primary">#2E7D32</color>      <!-- Deep Emerald Green -->
+    <color name="primary_dark">#1B5E20</color> <!-- Forest Green -->
+    <color name="primary_light">#4CAF50</color> <!-- Fresh Leaf Green -->
+    <color name="accent">#FFC107</color>       <!-- Golden Harvest -->
+    <color name="accent_dark">#FFA000</color>  <!-- Amber -->
+    <color name="secondary">#8D6E63</color>    <!-- Earth Brown -->
 
-    <!-- Additional UI colors -->
+    <!-- Semantic Colors -->
+    <color name="success">#43A047</color>      <!-- Success Green -->
+    <color name="warning">#FB8C00</color>      <!-- Warning Orange -->
+    <color name="error">#E53935</color>        <!-- Error Red -->
+    <color name="info">#1E88E5</color>         <!-- Info Blue -->
+
+    <!-- Text Colors -->
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="divider">#E0E0E0</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="white_text">#FFFFFF</color>
+
+    <!-- Backgrounds -->
+    <color name="background">#F5F5F5</color>   <!-- Off-white background -->
+    <color name="surface">#FFFFFF</color>      <!-- Card background -->
+    <color name="divider">#EEEEEE</color>
+
+    <!-- UI Elements -->
+    <color name="status_bar_color">#1B5E20</color>
+    <color name="nav_bar_color">#FFFFFF</color>
+    
+    <!-- Farm Specific -->
+    <color name="soil_brown">#795548</color>
+    <color name="sky_blue">#E3F2FD</color>
+    <color name="weather_sunny">#FDD835</color>
+    <color name="weather_rainy">#90CAF9</color>
 </resources>

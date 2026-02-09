@@ -1,162 +1,253 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/background">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Plant New Crop"
+            app:titleTextColor="@color/white_text"
+            app:navigationIcon="@drawable/ic_back"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:clipToPadding="false">
 
+            <!-- Money & Weather Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.SeedToWealth.Card"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Plant New Crop"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#2E7D32"
-                    android:layout_marginBottom="4dp" />
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp">
 
-                <TextView
-                    android:id="@+id/currentSavingsText"
-                    android:layout_width="wrap_content"
+                     <TextView
+                        android:id="@+id/currentSavingsText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Wallet: Loading..."
+                        android:textSize="14sp"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.SeedToWealth.Card"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Current Savings: Loading..."
-                    android:textSize="18sp"
-                    android:textColor="#2E7D32"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"
-                    android:padding="8dp"
-                    android:background="#E8F5E9" />
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp">
 
-                <TextView
-                    android:id="@+id/weatherImpactText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Loading weather..."
-                    android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:textColor="#FFA000"
-                    android:layout_marginBottom="20dp" />
-
-                <!-- Crop Type -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Crop Type"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-                    android:layout_marginBottom="8dp" />
-
-                <Spinner
-                    android:id="@+id/cropTypeSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Area -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Area (acres)"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-                    android:layout_marginBottom="8dp" />
-
-                <EditText
-                    android:id="@+id/areaInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="e.g., 0.5"
-                    android:inputType="numberDecimal"
-                    android:minHeight="48dp"
-                    android:layout_marginBottom="16dp" />
-
-
-
-                <!-- Expected Yield -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E0E0E0"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Cost Estimate -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Estimated Cost"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/estimatedCostText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="₹0"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#F44336"
-                    android:layout_marginBottom="16dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Expected Yield"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/expectedYieldText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Will be calculated"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#4CAF50"
-                    android:layout_marginBottom="24dp" />
-
-                <!-- Plant Button -->
-                <Button
-                    android:id="@+id/plantButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Plant Crop"
-                    android:textSize="16sp"
-                    android:backgroundTint="#4CAF50"
-                    android:textColor="@android:color/white"
-                    android:minHeight="56dp" />
-
-                <!-- Loading Progress -->
-                <ProgressBar
-                    android:id="@+id/loadingProgress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:visibility="gone" />
-
+                     <TextView
+                        android:id="@+id/weatherImpactText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Weather: ..."
+                        android:textSize="14sp"
+                        android:textStyle="italic"
+                        android:textColor="@color/accent_dark"/>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
-</ScrollView>
+            <!-- Crop Selection Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Crop"
+                style="@style/TextAppearance.SeedToWealth.Headline"
+                android:textSize="18sp"
+                android:layout_marginBottom="12dp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="24dp">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cropTypeChipGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+                    <!-- Chips added dynamically -->
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <!-- Area Selection Section -->
+             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Planting Area"
+                style="@style/TextAppearance.SeedToWealth.Headline"
+                android:textSize="18sp"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.SeedToWealth.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+                         <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Acres"
+                            android:textColor="@color/text_secondary"/>
+                        
+                        <EditText
+                            android:id="@+id/areaInput"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:textAlignment="viewEnd"
+                            android:text="1.0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:background="@null" />
+                    </LinearLayout>
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/areaSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:valueFrom="0.5"
+                        android:valueTo="10.0"
+                        android:stepSize="0.5"
+                        android:value="1.0" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Cost & Yield Summary -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Order Summary"
+                        style="@style/TextAppearance.SeedToWealth.Headline"
+                        android:textSize="18sp"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Estimated Cost"
+                            android:textColor="@color/text_secondary" />
+                        <TextView
+                            android:id="@+id/estimatedCostText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/error"/>
+                    </LinearLayout>
+
+                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="24dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Est. Yield Revenue"
+                            android:textColor="@color/text_secondary" />
+                        <TextView
+                            android:id="@+id/expectedYieldText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calculating..."
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/success"/>
+                    </LinearLayout>
+                    
+                    <Button
+                        android:id="@+id/plantButton"
+                        style="@style/Widget.SeedToWealth.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Confirm Planting"
+                        android:backgroundTint="@color/primary"
+                        android:textColor="@color/white_text" />
+
+                     <!-- Loading Progress -->
+                    <ProgressBar
+                        android:id="@+id/loadingProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Space for scrolling -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
