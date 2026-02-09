@@ -48,13 +48,13 @@ public class PlantCropActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plant_crop);
 
-        // androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        // setSupportActionBar(toolbar);
-        // if (getSupportActionBar() != null) {
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // getSupportActionBar().setDisplayShowHomeEnabled(true);
-        // }
-        // toolbar.setNavigationOnClickListener(v -> finish());
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         farmRepository = new com.growfund.seedtowealth.repository.FarmRepository(getApplication());
 
