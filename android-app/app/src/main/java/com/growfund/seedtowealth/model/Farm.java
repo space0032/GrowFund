@@ -10,6 +10,7 @@ public class Farm {
     private Long id;
     private String farmName;
     private Double landSize;
+    private Double availableLand; // Land not currently planted
     private Long savings;
     private Long emergencyFund;
     private Integer cropCount;
@@ -19,10 +20,12 @@ public class Farm {
     }
 
     @Ignore
-    public Farm(Long id, String farmName, Double landSize, Long savings, Long emergencyFund, Integer cropCount) {
+    public Farm(Long id, String farmName, Double landSize, Double availableLand, Long savings, Long emergencyFund,
+            Integer cropCount) {
         this.id = id;
         this.farmName = farmName;
         this.landSize = landSize;
+        this.availableLand = availableLand;
         this.savings = savings;
         this.emergencyFund = emergencyFund;
         this.cropCount = cropCount;
@@ -51,6 +54,14 @@ public class Farm {
 
     public void setLandSize(Double landSize) {
         this.landSize = landSize;
+    }
+
+    public Double getAvailableLand() {
+        return availableLand;
+    }
+
+    public void setAvailableLand(Double availableLand) {
+        this.availableLand = availableLand;
     }
 
     public Long getSavings() {

@@ -114,6 +114,12 @@ public class FarmService {
         dto.setSavings(farm.getSavings());
         dto.setEmergencyFund(farm.getEmergencyFund());
         dto.setCropCount((int) cropRepository.countByFarmId(farm.getId()));
+
+        // Calculate available land
+        Double plantedArea = cropRepository.sumPlantedAreaByFarmId(farm.getId());
+        double availableLand = farm.getLandSize() - (plantedArea != null ? plantedArea : 0.0);
+        dto.setAvailableLand(Math.max(0, availableLand)); // Ensure non-negative
+
         return dto;
     }
 }

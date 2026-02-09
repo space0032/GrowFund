@@ -217,19 +217,40 @@ public class PlantCropActivity extends AppCompatActivity {
         currentSavingsText.setText("Wallet: "
                 + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
 
-        // Update Slider Max to Land Size
-        Double landSizeDouble = data.getLandSize();
-        float landSize = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
-        if (landSize > 0) {
-            areaSlider.setValueTo(landSize);
-            if (areaSlider.getValue() > landSize) {
-                areaSlider.setValue(landSize);
+        // Get available land from backend
+        Double availableLand = data.getAvailableLand();
+        Double totalLand = data.getLandSize();
+
+        if (availableLand != null && totalLand != null && totalLand > 0) {
+            // Calculate percentage of available land
+            double percentage = (availableLand / totalLand) * 100;
+
+            // Display available land with color coding
+            availableLandText.setText(String.format("Available: %.1f Acres", availableLand));
+
+            // Color coding based on percentage
+            if (percentage > 50) {
+                // Green for plenty of land
+                availableLandText.setTextColor(getResources().getColor(R.color.success, null));
+            } else if (percentage < 20) {
+                // Red for low land
+                availableLandText.setTextColor(getResources().getColor(R.color.error, null));
+            } else {
+                // Amber/Warning for moderate land
+                availableLandText.setTextColor(getResources().getColor(R.color.warning, null));
             }
 
-            // Display available land
-            availableLandText.setText(String.format("Available: %.1f Acres", landSize));
+            // Update Slider Max to Available Land (not total land)
+            float maxPlantable = availableLand.floatValue();
+            if (maxPlantable > 0) {
+                areaSlider.setValueTo(maxPlantable);
+                if (areaSlider.getValue() > maxPlantable) {
+                    areaSlider.setValue(maxPlantable);
+                }
+            }
         } else {
             availableLandText.setText("Available: N/A");
+            availableLandText.setTextColor(getResources().getColor(R.color.text_secondary, null));
         }
     }
 

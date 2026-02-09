@@ -13,4 +13,7 @@ public interface CropRepository extends JpaRepository<Crop, Long> {
     List<Crop> findByFarmIdAndStatus(Long farmId, String status);
 
     long countByFarmId(Long farmId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(c.areaPlanted), 0.0) FROM Crop c WHERE c.farm.id = :farmId AND c.status IN ('PLANTED', 'GROWING')")
+    Double sumPlantedAreaByFarmId(@org.springframework.data.repository.query.Param("farmId") Long farmId);
 }
