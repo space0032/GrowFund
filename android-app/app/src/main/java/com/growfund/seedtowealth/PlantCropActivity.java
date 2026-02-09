@@ -39,6 +39,7 @@ public class PlantCropActivity extends AppCompatActivity {
 
     private long currentSavings = 0;
     private TextView currentSavingsText;
+    private TextView availableLandText;
     private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
 
     private String selectedCropType = null;
@@ -79,6 +80,7 @@ public class PlantCropActivity extends AppCompatActivity {
         plantButton = findViewById(R.id.plantButton);
         loadingProgress = findViewById(R.id.loadingProgress);
         currentSavingsText = findViewById(R.id.currentSavingsText);
+        availableLandText = findViewById(R.id.availableLandText);
 
         plantButton.setOnClickListener(v -> plantCrop());
 
@@ -223,6 +225,11 @@ public class PlantCropActivity extends AppCompatActivity {
             if (areaSlider.getValue() > landSize) {
                 areaSlider.setValue(landSize);
             }
+
+            // Display available land
+            availableLandText.setText(String.format("Available: %.1f Acres", landSize));
+        } else {
+            availableLandText.setText("Available: N/A");
         }
     }
 
