@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.growfund.seedtowealth.adapter.CropAdapter;
 import com.growfund.seedtowealth.adapter.EventAdapter;
 import com.growfund.seedtowealth.model.Crop;
@@ -56,7 +56,7 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView eventsRecyclerView;
     private View eventsSection;
     private ProgressBar loadingProgress;
-    private FloatingActionButton plantCropFab;
+    private ExtendedFloatingActionButton plantCropFab;
 
     private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
     private com.growfund.seedtowealth.repository.EventRepository eventRepository;
@@ -245,14 +245,7 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         });
 
-        // Equipment Shop button
-        View equipmentButton = findViewById(R.id.investmentButton); // Reusing investment button for now
-        if (equipmentButton != null) {
-            equipmentButton.setOnClickListener(v -> {
-                Intent intent = new Intent(FarmActivity.this, EquipmentShopActivity.class);
-                startActivity(intent);
-            });
-        }
+        // Equipment Shop is accessible via Navigation Drawer
 
         // Setup RecyclerView for crops
         cropsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
