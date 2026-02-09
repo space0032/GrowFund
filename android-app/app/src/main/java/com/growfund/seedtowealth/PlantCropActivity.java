@@ -27,8 +27,9 @@ public class PlantCropActivity extends AppCompatActivity {
     private static final String TAG = "PlantCropActivity";
 
     private Spinner cropTypeSpinner;
-    private EditText areaInput, investmentInput;
+    private EditText areaInput;
     private TextView expectedYieldText;
+    private TextView estimatedCostText; // Added
     private Button plantButton;
     private ProgressBar loadingProgress;
 
@@ -59,15 +60,103 @@ public class PlantCropActivity extends AppCompatActivity {
     private void initViews() {
         cropTypeSpinner = findViewById(R.id.cropTypeSpinner);
         areaInput = findViewById(R.id.areaInput);
-        investmentInput = findViewById(R.id.investmentInput);
+
         expectedYieldText = findViewById(R.id.expectedYieldText);
+        estimatedCostText = findViewById(R.id.estimatedCostText); // Init
         plantButton = findViewById(R.id.plantButton);
         loadingProgress = findViewById(R.id.loadingProgress);
         currentSavingsText = findViewById(R.id.currentSavingsText);
 
         plantButton.setOnClickListener(v -> plantCrop());
 
+        // Add TextWatcher for automatic cost estimation
+        areaInput.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                updateCostEstimate();
+            }
+        });
+
+        // Also update when spinner selection changes
+        cropTypeSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                updateCostEstimate();
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+            }
+        });
+
         loadWeatherAndTrends();
+    }
+
+    private void updateCostEstimate() {
+        String areaStr = areaInput.getText().toString();
+        if (areaStr.isEmpty()) {
+            // Show rate per 1 acre
+            fetchCostForArea(1.0, true);
+            return;
+        }
+
+        try {
+            double area = Double.parseDouble(areaStr);
+            fetchCostForArea(area, false);
+        } catch (NumberFormatException e) {
+            estimatedCostText.setText("Invalid Area");
+        }
+    }
+
+    private void fetchCostForArea(double area, boolean isRate) {
+        Object selectedItem = cropTypeSpinner.getSelectedItem();
+        if (selectedItem == null)
+            return;
+
+        // Extract "WHEAT" from "WHEAT (₹42.50)"
+        String cropType = selectedItem.toString().split(" ")[0];
+
+        ApiClient.getApiService().getPlantingCostEstimate(farmId, cropType, area).enqueue(new Callback<Long>() {
+            @Override
+            public void onResponse(Call<Long> call, Response<Long> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Long cost = response.body();
+
+                    if (isRate) {
+                        estimatedCostText
+                                .setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(cost) + " / acre");
+                        estimatedCostText.setTextColor(android.graphics.Color.parseColor("#757575")); // Neutral color
+                                                                                                      // for rate
+                    } else {
+                        estimatedCostText.setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(cost));
+                        // Visual feedback if can't afford
+                        if (cost > currentSavings) {
+                            estimatedCostText.setTextColor(android.graphics.Color.RED);
+                        } else {
+                            estimatedCostText.setTextColor(
+                                    android.graphics.Color.parseColor(cost > currentSavings ? "#D32F2F" : "#388E3C"));
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "Estimate Failed: " + response.code() + " " + response.message());
+                    estimatedCostText.setText("Error");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Long> call, Throwable t) {
+                Log.e(TAG, "Network Error: " + t.getMessage());
+                estimatedCostText.setText("Net Error");
+            }
+        });
     }
 
     private void fetchFarmSavings() {
@@ -114,7 +203,7 @@ public class PlantCropActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     java.util.Map<String, Object> body = response.body();
                     String condition = (String) body.get("condition");
-                    Double multiplier = (Double) body.get("growthMultiplier");
+                    // Double multiplier = (Double) body.get("growthMultiplier"); // Unused
 
                     String message = "Current Weather: " + body.get("displayName");
                     if ("RAINY".equals(condition)) {
@@ -193,28 +282,17 @@ public class PlantCropActivity extends AppCompatActivity {
         String cropType = selectedItem.split(" ")[0];
 
         String areaStr = areaInput.getText().toString();
-        String investmentStr = investmentInput.getText().toString();
-
-        if (areaStr.isEmpty() || investmentStr.isEmpty()) {
+        if (areaStr.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         double area = Double.parseDouble(areaStr);
-        long investment = Long.parseLong(investmentStr);
-
-        if (investment > currentSavings) {
-            Toast.makeText(this,
-                    "Insufficient Funds! You only have "
-                            + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings),
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
+        // Investment is now auto-calculated by backend
 
         Map<String, Object> request = new HashMap<>();
         request.put("cropType", cropType);
         request.put("areaPlanted", area);
-        request.put("investmentAmount", investment);
         request.put("season", "KHARIF");
 
         loadingProgress.setVisibility(View.VISIBLE);

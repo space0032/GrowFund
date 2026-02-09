@@ -88,23 +88,7 @@
                     android:minHeight="48dp"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Investment -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Investment Amount (₹)"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-                    android:layout_marginBottom="8dp" />
 
-                <EditText
-                    android:id="@+id/investmentInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="e.g., 5000"
-                    android:inputType="number"
-                    android:minHeight="48dp"
-                    android:layout_marginBottom="16dp" />
 
                 <!-- Expected Yield -->
                 <View
@@ -112,6 +96,25 @@
                     android:layout_height="1dp"
                     android:background="#E0E0E0"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Cost Estimate -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Estimated Cost"
+                    android:textSize="14sp"
+                    android:textColor="#757575"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/estimatedCostText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹0"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#F44336"
                     android:layout_marginBottom="16dp" />
 
                 <TextView

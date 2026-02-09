@@ -42,9 +42,21 @@ public class CropController {
                 farmId,
                 request.getCropType(),
                 request.getAreaPlanted(),
-                request.getInvestmentAmount(),
                 request.getSeason());
         return ResponseEntity.ok(crop);
+    }
+
+    @GetMapping("/farms/{farmId}/crops/estimate-cost")
+    public ResponseEntity<Long> getPlantingCostEstimate(
+            @PathVariable Long farmId,
+            @RequestParam String cropType,
+            @RequestParam Double areaPlanted) {
+        try {
+            Long cost = cropService.calculatePlantingCost(farmId, cropType, areaPlanted);
+            return ResponseEntity.ok(cost);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/farms/{farmId}/crops")

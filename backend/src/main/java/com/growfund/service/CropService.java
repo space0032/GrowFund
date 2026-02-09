@@ -99,9 +99,41 @@ public class CropService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public Long calculatePlantingCost(Long farmId, String cropType, Double areaPlanted) {
+        String normalizedCropType = cropType.toUpperCase();
+        CropConfig config = cropConfigs.get(normalizedCropType);
+        if (config == null) {
+            throw new IllegalArgumentException("Unknown crop type: " + cropType);
+        }
+
+        // Base Cost
+        Long baseCostPerAcre = config.getTotalCostPerAcre();
+        Long totalCalculatedCost = (long) (baseCostPerAcre * areaPlanted);
+
+        // Weather Adjustments
+        WeatherService.WeatherCondition weather = weatherService.getCurrentWeather();
+        double weatherCostMultiplier = weather.getPlantingCostMultiplier();
+        Long finalCost = (long) (totalCalculatedCost * weatherCostMultiplier);
+
+        // Government Subsidy
+        List<com.growfund.model.RandomEvent> activeEvents = randomEventService.getActiveEvents();
+        for (com.growfund.model.RandomEvent event : activeEvents) {
+            if (event.getEventType().equals(com.growfund.model.RandomEvent.GOVERNMENT_SUBSIDY)) {
+                finalCost = (long) (finalCost * event.getImpactMultiplier());
+            }
+        }
+
+        // Equipment Bonuses
+        java.util.Map<String, Double> equipmentBonuses = equipmentService.calculateTotalBonuses(farmId);
+        double equipmentCostMultiplier = equipmentBonuses.getOrDefault("costMultiplier", 1.0);
+        finalCost = (long) (finalCost * equipmentCostMultiplier);
+
+        return finalCost;
+    }
+
     @Transactional
-    public CropDTO plantCrop(Long farmId, String cropType, Double areaPlanted, Long unusedInvestmentInput,
-            String season) {
+    public CropDTO plantCrop(Long farmId, String cropType, Double areaPlanted, String season) {
         Farm farm = farmRepository.findById(farmId)
                 .orElseThrow(() -> new com.growfund.exception.ResourceNotFoundException("Farm not found"));
 
@@ -110,15 +142,12 @@ public class CropService {
         }
 
         String normalizedCropType = cropType.toUpperCase();
-
-        // Default fallback if config missing
-        CropConfig config = cropConfigs.get(normalizedCropType);
+        CropConfig config = cropConfigs.get(normalizedCropType); // Need config for yield calc later
         if (config == null) {
             throw new IllegalArgumentException("Unknown crop type: " + cropType);
         }
 
         // 1. Strict Acreage Validation & Limit Check
-        // Calculate used land from active crops
         List<Crop> activeCrops = cropRepository.findByFarmId(farmId).stream()
                 .filter(c -> "PLANTED".equals(c.getStatus()) || "GROWING".equals(c.getStatus())
                         || "READY".equals(c.getStatus()))
@@ -128,14 +157,12 @@ public class CropService {
                 .mapToDouble(c -> c.getAreaPlanted() != null ? c.getAreaPlanted() : 0.0)
                 .sum();
 
-        // Check 1: Total Farm Acreage Limit
         if (usedLand + areaPlanted > farm.getLandSize()) {
             throw new IllegalArgumentException(
                     String.format("Insufficient land! You have %.1f acres available, but tried to plant %.1f acres.",
                             (farm.getLandSize() - usedLand), areaPlanted));
         }
 
-        // Check 2: Crop-Specific Land Utilization Cap
         double currentCropTypeLand = activeCrops.stream()
                 .filter(c -> c.getCropType().equalsIgnoreCase(normalizedCropType))
                 .mapToDouble(c -> c.getAreaPlanted() != null ? c.getAreaPlanted() : 0.0)
@@ -149,31 +176,8 @@ public class CropService {
                             (config.maxLandPercentage * 100), normalizedCropType, maxAllowedForCrop));
         }
 
-        // 2. Automatic Investment Calculation
-        // Formula: (seed + fertilizer + labor + irrigation + logistics) * areaPlanted
-        // Note: Logistics is included in cost per acre in our config
-        Long baseCostPerAcre = config.getTotalCostPerAcre();
-        Long totalCalculatedCost = (long) (baseCostPerAcre * areaPlanted);
-
-        // 3. Weather-Based Cost Adjustments
-        // Extreme weather might increase irrigation or labor costs
-        WeatherService.WeatherCondition weather = weatherService.getCurrentWeather();
-        double weatherCostMultiplier = weather.getPlantingCostMultiplier();
-
-        Long finalCost = (long) (totalCalculatedCost * weatherCostMultiplier);
-
-        // Apply government subsidy if active
-        List<com.growfund.model.RandomEvent> activeEvents = randomEventService.getActiveEvents();
-        for (com.growfund.model.RandomEvent event : activeEvents) {
-            if (event.getEventType().equals(com.growfund.model.RandomEvent.GOVERNMENT_SUBSIDY)) {
-                finalCost = (long) (finalCost * event.getImpactMultiplier());
-            }
-        }
-
-        // Apply equipment cost reduction bonuses
-        java.util.Map<String, Double> equipmentBonuses = equipmentService.calculateTotalBonuses(farmId);
-        double equipmentCostMultiplier = equipmentBonuses.getOrDefault("costMultiplier", 1.0);
-        finalCost = (long) (finalCost * equipmentCostMultiplier);
+        // 2. Calculate Cost using extracted method
+        Long finalCost = calculatePlantingCost(farmId, cropType, areaPlanted);
 
         // Check for sufficient funds
         if (farm.getSavings() < finalCost) {
@@ -202,6 +206,7 @@ public class CropService {
 
         // Apply event multipliers to yield
         double yieldMultiplier = 1.0;
+        List<com.growfund.model.RandomEvent> activeEvents = randomEventService.getActiveEvents();
         for (com.growfund.model.RandomEvent event : activeEvents) {
             if (event.getEventType().equals(com.growfund.model.RandomEvent.DROUGHT) ||
                     event.getEventType().equals(com.growfund.model.RandomEvent.BONUS_RAIN) ||
@@ -216,7 +221,8 @@ public class CropService {
         }
 
         // Apply equipment yield bonuses
-        double equipmentYieldMultiplier = equipmentBonuses.get("yieldMultiplier"); // e.g. 1.2 for Tractor
+        java.util.Map<String, Double> equipmentBonuses = equipmentService.calculateTotalBonuses(farmId);
+        double equipmentYieldMultiplier = equipmentBonuses.getOrDefault("yieldMultiplier", 1.0); // e.g. 1.2 for Tractor
         yieldMultiplier *= equipmentYieldMultiplier;
 
         expectedYield = (long) (expectedYield * yieldMultiplier);
@@ -224,6 +230,7 @@ public class CropService {
 
         // Calculate Growth Time
         long baseGrowthTimeMinutes = config.growthTimeMinutes;
+        WeatherService.WeatherCondition weather = weatherService.getCurrentWeather();
         double growthMultiplier = weather.getGrowthMultiplier();
         long actualGrowthTime = (long) (baseGrowthTimeMinutes * growthMultiplier);
         if (actualGrowthTime < 1)

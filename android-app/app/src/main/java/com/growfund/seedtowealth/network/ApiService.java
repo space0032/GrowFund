@@ -40,6 +40,12 @@ public interface ApiService {
         @POST("farms/{farmId}/crops")
         Call<Crop> plantCrop(@Path("farmId") Long farmId, @Body Map<String, Object> request);
 
+        @GET("farms/{farmId}/crops/estimate-cost")
+        Call<Long> getPlantingCostEstimate(
+                        @Path("farmId") Long farmId,
+                        @Query("cropType") String cropType,
+                        @Query("areaPlanted") Double areaPlanted);
+
         @GET("farms/{farmId}/crops")
         Call<List<Crop>> getCrops(@Path("farmId") Long farmId);
 
