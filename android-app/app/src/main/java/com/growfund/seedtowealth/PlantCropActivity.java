@@ -39,11 +39,9 @@ public class PlantCropActivity extends AppCompatActivity {
 
     private long currentSavings = 0;
     private TextView currentSavingsText;
-    private TextView availableAcresText;
     private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
 
     private String selectedCropType = null;
-    private float availableAcres = 0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,7 @@ public class PlantCropActivity extends AppCompatActivity {
         }
 
         initViews();
-        fetchFarmAndLandData();
+        fetchFarmSavings();
     }
 
     private void initViews() {
@@ -81,7 +79,6 @@ public class PlantCropActivity extends AppCompatActivity {
         plantButton = findViewById(R.id.plantButton);
         loadingProgress = findViewById(R.id.loadingProgress);
         currentSavingsText = findViewById(R.id.currentSavingsText);
-        availableAcresText = findViewById(R.id.availableAcresText);
 
         plantButton.setOnClickListener(v -> plantCrop());
 
@@ -128,7 +125,6 @@ public class PlantCropActivity extends AppCompatActivity {
                 // Tag contains the raw crop code e.g., "WHEAT"
                 selectedCropType = (String) chip.getTag();
                 updateCostEstimate();
-                fetchCropLimitAndUpdateUI(); // Fetch crop-specific limit
             } else {
                 selectedCropType = null;
                 estimatedCostText.setText("Select a Crop");
@@ -192,159 +188,41 @@ public class PlantCropActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchFarmAndLandData() {
+    private void fetchFarmSavings() {
         farmRepository.getFarm(
                 new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<com.growfund.seedtowealth.model.Farm>() {
                     @Override
                     public void onLocalData(com.growfund.seedtowealth.model.Farm data) {
-                        runOnUiThread(() -> updateSavingsAndFetchCrops(data));
+                        runOnUiThread(() -> updateSavingsUI(data));
                     }
 
                     @Override
                     public void onSuccess(com.growfund.seedtowealth.model.Farm data) {
-                        runOnUiThread(() -> updateSavingsAndFetchCrops(data));
+                        runOnUiThread(() -> updateSavingsUI(data));
                     }
 
                     @Override
                     public void onError(String message) {
                         runOnUiThread(() -> {
                             currentSavingsText.setText("Wallet: Error");
-                            availableAcresText.setText("Available: Error");
                         });
                     }
                 });
     }
 
-    private void updateSavingsAndFetchCrops(com.growfund.seedtowealth.model.Farm farmData) {
-        currentSavings = farmData.getSavings();
+    private void updateSavingsUI(com.growfund.seedtowealth.model.Farm data) {
+        currentSavings = data.getSavings();
         currentSavingsText.setText("Wallet: "
                 + com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentSavings));
 
-        // Fetch crops to calculate used land
-        farmRepository.getCrops(farmId,
-                new com.growfund.seedtowealth.repository.FarmRepository.RepositoryCallback<java.util.List<Crop>>() {
-                    @Override
-                    public void onLocalData(java.util.List<Crop> crops) {
-                        runOnUiThread(() -> calculateAndUpdateAvailableLand(farmData, crops));
-                    }
-
-                    @Override
-                    public void onSuccess(java.util.List<Crop> crops) {
-                        runOnUiThread(() -> calculateAndUpdateAvailableLand(farmData, crops));
-                    }
-
-                    @Override
-                    public void onError(String message) {
-                        runOnUiThread(() -> {
-                            // Fallback: use total land if crops fetch fails
-                            Double landSizeDouble = farmData.getLandSize();
-                            float landSize = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
-                            availableAcres = landSize;
-                            updateLandUI();
-                        });
-                    }
-                });
-    }
-
-    private void calculateAndUpdateAvailableLand(com.growfund.seedtowealth.model.Farm farmData,
-            java.util.List<Crop> crops) {
-        Double landSizeDouble = farmData.getLandSize();
-        float totalLand = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
-
-        // Calculate used land from active crops (PLANTED, GROWING)
-        float usedLand = 0f;
-        if (crops != null) {
-            for (Crop crop : crops) {
-                String status = crop.getStatus();
-                if ("PLANTED".equals(status) || "GROWING".equals(status)) {
-                    Double areaPlanted = crop.getAreaPlanted();
-                    if (areaPlanted != null) {
-                        usedLand += areaPlanted.floatValue();
-                    }
-                }
+        // Update Slider Max to Land Size
+        Double landSizeDouble = data.getLandSize();
+        float landSize = landSizeDouble != null ? landSizeDouble.floatValue() : 0f;
+        if (landSize > 0) {
+            areaSlider.setValueTo(landSize);
+            if (areaSlider.getValue() > landSize) {
+                areaSlider.setValue(landSize);
             }
-        }
-
-        // Calculate available land
-        availableAcres = Math.max(0, totalLand - usedLand);
-        updateLandUI();
-    }
-
-    private void fetchCropLimitAndUpdateUI() {
-        if (selectedCropType == null) {
-            return;
-        }
-
-        ApiClient.getApiService().getCropLimit(farmId, selectedCropType).enqueue(new Callback<Map<String, Double>>() {
-            @Override
-            public void onResponse(Call<Map<String, Double>> call, Response<Map<String, Double>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Map<String, Double> limit = response.body();
-                    Double cropAvailable = limit.get("available");
-                    Double maxPercentage = limit.get("maxPercentage");
-
-                    if (cropAvailable != null) {
-                        // Apply the most restrictive limit
-                        float effectiveMax = Math.min(availableAcres, cropAvailable.floatValue());
-
-                        if (effectiveMax > 0) {
-                            // Re-enable controls in case they were disabled by previous crop
-                            areaSlider.setEnabled(true);
-                            areaInput.setEnabled(true);
-
-                            areaSlider.setValueTo(effectiveMax);
-                            if (areaSlider.getValue() > effectiveMax) {
-                                areaSlider.setValue(effectiveMax);
-                            }
-                            areaSlider.setValueFrom(Math.min(0.5f, effectiveMax));
-                        } else {
-                            // No planting allowed for this crop
-                            areaSlider.setValueTo(0.5f);
-                            areaSlider.setValue(0.5f);
-                            areaSlider.setEnabled(false);
-                            areaInput.setEnabled(false);
-                        }
-
-                        // Update available text with crop-specific info
-                        if (maxPercentage != null && cropAvailable < availableAcres) {
-                            int percentage = (int) (maxPercentage * 100);
-                            availableAcresText.setText(String.format("Available: %.1f Acres (%d%% limit for %s)",
-                                    effectiveMax, percentage, selectedCropType));
-                        } else {
-                            availableAcresText.setText(String.format("Available: %.1f Acres", effectiveMax));
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Map<String, Double>> call, Throwable t) {
-                Log.e(TAG, "Failed to fetch crop limit: " + t.getMessage());
-                // Fallback: use general available acres
-            }
-        });
-    }
-
-    private void updateLandUI() {
-        availableAcresText.setText(String.format("Available: %.1f Acres", availableAcres));
-
-        // Update slider max to available acres
-        if (availableAcres > 0) {
-            areaSlider.setValueTo(availableAcres);
-            if (areaSlider.getValue() > availableAcres) {
-                areaSlider.setValue(availableAcres);
-            }
-            // Update minimum to be reasonable
-            areaSlider.setValueFrom(Math.min(0.5f, availableAcres));
-        } else {
-            // No land available
-            areaSlider.setValueTo(0.5f);
-            areaSlider.setValue(0.5f);
-            areaSlider.setEnabled(false);
-            areaInput.setEnabled(false);
-            plantButton.setEnabled(false);
-            plantButton.setText("No Land Available");
-            availableAcresText.setTextColor(getResources().getColor(R.color.error, null));
         }
     }
 
