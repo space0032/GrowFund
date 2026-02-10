@@ -84,7 +84,10 @@ public class FarmService {
         Farm farm = farmRepository.findById(farmId)
                 .orElseThrow(() -> new RuntimeException("Farm not found"));
 
-        long expansionCost = 50000;
+        // Progressive pricing: base cost multiplied by current land size
+        long baseCost = 200000;
+        long expansionCost = (long) (baseCost * farm.getLandSize());
+
         if (farm.getSavings() < expansionCost) {
             throw new RuntimeException("Insufficient savings for expansion");
         }
@@ -98,6 +101,13 @@ public class FarmService {
         achievementService.checkAll(savedFarm.getUser(), savedFarm);
 
         return convertToDTO(savedFarm);
+    }
+
+    public long calculateExpansionCost(Long farmId) {
+        Farm farm = farmRepository.findById(farmId)
+                .orElseThrow(() -> new RuntimeException("Farm not found"));
+        long baseCost = 200000;
+        return (long) (baseCost * farm.getLandSize());
     }
 
     public boolean isFarmOwnedByUser(Long farmId, Long userId) {
@@ -119,6 +129,10 @@ public class FarmService {
         Double plantedArea = cropRepository.sumPlantedAreaByFarmId(farm.getId());
         double availableLand = farm.getLandSize() - (plantedArea != null ? plantedArea : 0.0);
         dto.setAvailableLand(Math.max(0, availableLand)); // Ensure non-negative
+
+        // Calculate expansion cost
+        long baseCost = 200000;
+        dto.setExpansionCost((long) (baseCost * farm.getLandSize()));
 
         return dto;
     }

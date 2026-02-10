@@ -15,4 +15,5 @@ public class FarmDTO {
     private Long savings;
     private Long emergencyFund;
     private Integer cropCount;
+    private Long expansionCost; // Cost for next expansion
 }
