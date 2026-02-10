@@ -169,11 +169,17 @@ public class CropService {
                 .sum();
 
         double maxAllowedForCrop = farm.getLandSize() * config.maxLandPercentage;
+        double yieldPenaltyMultiplier = 1.0;
+
         if (currentCropTypeLand + areaPlanted > maxAllowedForCrop) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Crop limit exceeded! You can only use %.0f%% of your land for %s. Max allowed: %.1f acres.",
-                            (config.maxLandPercentage * 100), normalizedCropType, maxAllowedForCrop));
+            // Calculate overuse percentage relative to total land
+            double overuseAmount = (currentCropTypeLand + areaPlanted) - maxAllowedForCrop;
+            double overuseRatio = overuseAmount / farm.getLandSize();
+
+            // Penalty Formula: yieldMultiplier *= (1.0 - (overuseRatio * 2.0))
+            // Example: 10% overuse = 20% penalty.
+            // Minimum yield floor: 10% (0.1 multiplier)
+            yieldPenaltyMultiplier = Math.max(0.1, 1.0 - (overuseRatio * 2.0));
         }
 
         // 2. Calculate Cost using extracted method
@@ -224,6 +230,9 @@ public class CropService {
         java.util.Map<String, Double> equipmentBonuses = equipmentService.calculateTotalBonuses(farmId);
         double equipmentYieldMultiplier = equipmentBonuses.getOrDefault("yieldMultiplier", 1.0); // e.g. 1.2 for Tractor
         yieldMultiplier *= equipmentYieldMultiplier;
+
+        // Apply overuse penalty
+        yieldMultiplier *= yieldPenaltyMultiplier;
 
         expectedYield = (long) (expectedYield * yieldMultiplier);
         crop.setExpectedYield(expectedYield);
