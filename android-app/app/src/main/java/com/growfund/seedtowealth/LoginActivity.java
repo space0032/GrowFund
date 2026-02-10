@@ -74,15 +74,6 @@ public class LoginActivity extends AppCompatActivity {
 
         btnGoogleSignIn.setOnClickListener(v -> signIn());
 
-        // Guest Login (Testing)
-        Button btnGuest = findViewById(R.id.btn_guest);
-        btnGuest.setOnClickListener(v -> {
-            Toast.makeText(this, "Guest Mode: Backend features will be limited.", Toast.LENGTH_LONG).show();
-            // Navigate to InvestmentActivity (or Home)
-            Intent intent = new Intent(LoginActivity.this, InvestmentActivity.class);
-            startActivity(intent);
-            finish();
-        });
     }
 
     private void signIn() {
