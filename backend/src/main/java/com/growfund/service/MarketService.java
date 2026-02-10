@@ -28,7 +28,7 @@ public class MarketService {
         // So Sugarcane price matches yield. If yield is 10x wheat, price should be
         // 1/10th.
         // Sugarcane Price: ₹1.5 - ₹2.5.
-        priceRanges.put("SUGARCANE", new PriceRange(1.5, 2.5));
+        priceRanges.put("SUGARCANE", new PriceRange(2.8, 4.1));
 
         // Corn: ₹15-22
         priceRanges.put("CORN", new PriceRange(15.0, 22.0));
