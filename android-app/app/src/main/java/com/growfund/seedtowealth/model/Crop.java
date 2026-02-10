@@ -161,25 +161,32 @@ public class Crop {
         try {
             // Backend sends ISO format roughly: "2023-10-27T10:00:00"
             // We need to parse this.
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                java.time.LocalDateTime harvest = java.time.LocalDateTime.parse(harvestDate);
-                java.time.LocalDateTime now = java.time.LocalDateTime.now();
-                long diff = java.time.Duration.between(now, harvest).toMillis();
+            // Fallback / Standard Java parsing
+            // Try ISO format first, then simple format
+            try {
+                // Start of epoch
+                long nowMillis = System.currentTimeMillis();
+                long harvestMillis = 0;
+
+                // If string contains T, likely ISO
+                if (harvestDate.contains("T")) {
+                    java.time.LocalDateTime harvest = java.time.LocalDateTime.parse(harvestDate);
+                    java.time.ZoneId zoneId = java.time.ZoneId.systemDefault();
+                    harvestMillis = harvest.atZone(zoneId).toInstant().toEpochMilli();
+                } else {
+                    // Simple Format
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    java.util.Date date = sdf.parse(harvestDate);
+                    if (date != null)
+                        harvestMillis = date.getTime();
+                }
+
+                long diff = harvestMillis - nowMillis;
                 return diff > 0 ? diff : 0;
-            } else {
-                // Fallback for older devices if needed, but minSdk 24 usually implies
-                // desugaring or we can use SimpleDateFormat
-                // For simplicity in this demo environment with Java 17, we assume java.time
-                // works or we use a basic string parse if needed.
-                // However, let's stick to standard Java time which is robust.
-                // If it crashes on older devices without desugaring, we'd need ThreeTenABP.
-                // Given the environment, let's verify if we need to support < O.
-                // MinSdk 24 supports some java.time but full support is 26.
-                // Let's use SimpleDateFormat for maximum compatibility.
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                java.util.Date harvest = sdf.parse(harvestDate);
-                long diff = harvest.getTime() - System.currentTimeMillis();
-                return diff > 0 ? diff : 0;
+
+            } catch (Exception e2) {
+                // Last resort fallbacks
+                return 0;
             }
         } catch (Exception e) {
             e.printStackTrace();

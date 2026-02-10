@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Database(entities = { Farm.class, Crop.class, Investment.class, RandomEvent.class, Equipment.class,
-        FarmEquipment.class }, version = 7, exportSchema = false)
+        FarmEquipment.class }, version = 8, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract FarmDao farmDao();

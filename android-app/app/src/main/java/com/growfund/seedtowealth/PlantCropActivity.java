@@ -91,6 +91,7 @@ public class PlantCropActivity extends AppCompatActivity {
     private void initViews() {
         cropTypeChipGroup = findViewById(R.id.cropTypeChipGroup);
         areaInput = findViewById(R.id.areaInput);
+        defaultTextColor = areaInput.getCurrentTextColor();
         areaSlider = findViewById(R.id.areaSlider);
         plantableZone = findViewById(R.id.plantableZone);
         remainingZone = findViewById(R.id.remainingZone);
@@ -226,6 +227,8 @@ public class PlantCropActivity extends AppCompatActivity {
         return Math.max(0.1, Math.min(0.9, base));
     }
 
+    private int defaultTextColor;
+
     private void checkLimitWarning(float area) {
         if (selectedCropType == null) {
             warningText.setVisibility(View.GONE);
@@ -243,8 +246,17 @@ public class PlantCropActivity extends AppCompatActivity {
             warningText.setVisibility(View.VISIBLE);
             double penalty = (currentPercentage - limitPercentage) * 50; // Mock penalty calc
             warningText.setText(String.format("Warning: Overuse! Yield penalty risk: -%.0f%%", penalty));
+
+            // Visual Error Indication
+            areaInput.setTextColor(getResources().getColor(R.color.error, null));
+            plantableZone.setBackgroundColor(getResources().getColor(R.color.error, null));
         } else {
             warningText.setVisibility(View.GONE);
+            // Restore Safe Visuals
+            if (defaultTextColor != 0) {
+                areaInput.setTextColor(defaultTextColor);
+            }
+            plantableZone.setBackgroundResource(R.color.success);
         }
     }
 
@@ -375,9 +387,24 @@ public class PlantCropActivity extends AppCompatActivity {
             }
 
             // Update Slider Max to Available Land (not total land)
+            // Update Slider Max to Available Land (not total land)
             float maxPlantable = availableLand.floatValue();
-            if (maxPlantable > 0) {
-                areaSlider.setValueTo(maxPlantable);
+            float minPlantable = 0.5f; // Matches ValueFrom in XML
+
+            if (maxPlantable < minPlantable) {
+                // Not enough land to plant minimum
+                areaSlider.setValueTo(minPlantable);
+                areaSlider.setValue(minPlantable);
+                areaSlider.setEnabled(false);
+                availableLandText.setText(availableLandText.getText() + " (Insufficient for new crop)");
+                availableLandText.setTextColor(getResources().getColor(R.color.error, null));
+            } else {
+                areaSlider.setEnabled(true);
+                // Ensure valueTo >= valueFrom
+                areaSlider.setValueTo(Math.max(maxPlantable, minPlantable));
+
+                // Reset value if current is out of bounds or just default logic
+                // If current value is greater than max, clamp it
                 if (areaSlider.getValue() > maxPlantable) {
                     areaSlider.setValue(maxPlantable);
                 }
