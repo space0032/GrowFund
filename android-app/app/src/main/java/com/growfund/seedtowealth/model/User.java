@@ -4,6 +4,7 @@ public class User {
     private String email;
     private String name;
     private String photoUrl;
+    @com.google.gson.annotations.SerializedName("firebaseUid")
     private String uid;
 
     // Add other fields as returned by backend if needed (e.g. balance, level)

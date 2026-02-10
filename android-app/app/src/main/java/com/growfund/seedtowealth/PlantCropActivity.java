@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,8 +35,10 @@ public class PlantCropActivity extends AppCompatActivity {
     private TextView estimatedCostText;
     private Button plantButton;
     private ProgressBar loadingProgress;
+    private TextView warningText;
 
     private Long farmId;
+    private int cropCount = 0; // For level calculation
 
     private long currentSavings = 0;
     private TextView currentSavingsText;
@@ -43,6 +46,11 @@ public class PlantCropActivity extends AppCompatActivity {
     private com.growfund.seedtowealth.repository.FarmRepository farmRepository;
 
     private String selectedCropType = null;
+
+    private View plantableZone;
+    private View remainingZone;
+    private final Map<String, Double> cropPlantability = new HashMap<>();
+    private String currentWeatherCondition = "SUNNY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +75,25 @@ public class PlantCropActivity extends AppCompatActivity {
         }
 
         initViews();
+        initPlantabilityMap();
         fetchFarmSavings();
+    }
+
+    private void initPlantabilityMap() {
+        // Mock data for plantable percentages
+        cropPlantability.put("WHEAT", 0.7); // 70% plantable
+        cropPlantability.put("RICE", 0.5); // 50% plantable
+        cropPlantability.put("CORN", 0.8); // 80% plantable
+        cropPlantability.put("COTTON", 0.4); // 40% plantable
+        cropPlantability.put("SUGARCANE", 0.6); // 60% plantable
     }
 
     private void initViews() {
         cropTypeChipGroup = findViewById(R.id.cropTypeChipGroup);
         areaInput = findViewById(R.id.areaInput);
         areaSlider = findViewById(R.id.areaSlider);
+        plantableZone = findViewById(R.id.plantableZone);
+        remainingZone = findViewById(R.id.remainingZone);
 
         expectedYieldText = findViewById(R.id.expectedYieldText);
         estimatedCostText = findViewById(R.id.estimatedCostText);
@@ -81,6 +101,7 @@ public class PlantCropActivity extends AppCompatActivity {
         loadingProgress = findViewById(R.id.loadingProgress);
         currentSavingsText = findViewById(R.id.currentSavingsText);
         availableLandText = findViewById(R.id.availableLandText);
+        warningText = findViewById(R.id.warningText);
 
         plantButton.setOnClickListener(v -> plantCrop());
 
@@ -105,6 +126,7 @@ public class PlantCropActivity extends AppCompatActivity {
                             areaSlider.setValue(area);
                         }
                         updateCostEstimate();
+                        checkLimitWarning(area);
                     }
                 } catch (NumberFormatException e) {
                     // Ignore invalid text inputs during typing
@@ -117,6 +139,7 @@ public class PlantCropActivity extends AppCompatActivity {
                 // Round to 1 decimal place
                 float roundedValue = (float) (Math.round(value * 2) / 2.0);
                 areaInput.setText(String.valueOf(roundedValue));
+                checkLimitWarning(roundedValue);
                 // updateCostEstimate handled by TextWatcher
             }
         });
@@ -127,6 +150,7 @@ public class PlantCropActivity extends AppCompatActivity {
                 // Tag contains the raw crop code e.g., "WHEAT"
                 selectedCropType = (String) chip.getTag();
                 updateCostEstimate();
+                updateSliderBackground();
             } else {
                 selectedCropType = null;
                 estimatedCostText.setText("Select a Crop");
@@ -134,6 +158,108 @@ public class PlantCropActivity extends AppCompatActivity {
         });
 
         loadWeatherAndTrends();
+    }
+
+    private void updateSliderBackground() {
+        if (selectedCropType == null) {
+            // Default full green if nothing selected or unknown
+            setZoneWeights(1.0f);
+            return;
+        }
+
+        double limitPercentage = calculateDynamicLimit(selectedCropType);
+        setZoneWeights((float) limitPercentage);
+
+        // Re-check warning with current value
+        try {
+            float currentVal = areaSlider.getValue();
+            checkLimitWarning(currentVal);
+        } catch (Exception e) {
+        }
+    }
+
+    private double calculateDynamicLimit(String crop) {
+        // Base limits
+        double base = 0.7; // Default
+        switch (crop) {
+            case "RICE":
+                base = 0.7;
+                break; // Increased from 0.6
+            case "COTTON":
+                base = 0.6;
+                break; // Increased from 0.5
+            case "SUGARCANE":
+                base = 0.5;
+                break; // Increased from 0.4
+            case "CORN":
+                base = 0.7;
+                break;
+            case "WHEAT":
+                base = 0.7;
+                break;
+        }
+
+        // Season Logic
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int month = cal.get(java.util.Calendar.MONTH); // 0=Jan
+        boolean isWinter = (month >= 10 || month <= 1); // Nov, Dec, Jan, Feb
+        boolean isSummer = (month >= 2 && month <= 5); // Mar, Apr, May, Jun
+
+        if (isWinter && "WHEAT".equals(crop))
+            base = 0.9;
+        if (isSummer && "CORN".equals(crop))
+            base = 0.9;
+
+        // Level Logic (Level 1-5: +0, 6-10: +0.1, 11+: +0.2)
+        int level = (cropCount / 5) + 1;
+        if (level >= 11)
+            base += 0.2;
+        else if (level >= 6)
+            base += 0.1;
+
+        // Weather Penalty
+        if ("DROUGHT".equals(currentWeatherCondition) || "FLOOD".equals(currentWeatherCondition)) {
+            base -= 0.2;
+        }
+
+        // Clamp 0.1 to 0.9
+        return Math.max(0.1, Math.min(0.9, base));
+    }
+
+    private void checkLimitWarning(float area) {
+        if (selectedCropType == null) {
+            warningText.setVisibility(View.GONE);
+            return;
+        }
+
+        float max = areaSlider.getValueTo(); // Total available land
+        if (max <= 0)
+            return;
+
+        double currentPercentage = area / max;
+        double limitPercentage = calculateDynamicLimit(selectedCropType);
+
+        if (currentPercentage > limitPercentage) {
+            warningText.setVisibility(View.VISIBLE);
+            double penalty = (currentPercentage - limitPercentage) * 50; // Mock penalty calc
+            warningText.setText(String.format("Warning: Overuse! Yield penalty risk: -%.0f%%", penalty));
+        } else {
+            warningText.setVisibility(View.GONE);
+        }
+    }
+
+    private void setZoneWeights(float plantablePortion) {
+        // Clamp between 0 and 1
+        plantablePortion = Math.max(0f, Math.min(1f, plantablePortion));
+        float remainingPortion = 1.0f - plantablePortion;
+
+        LinearLayout.LayoutParams plantableParams = (LinearLayout.LayoutParams) plantableZone.getLayoutParams();
+        plantableParams.weight = plantablePortion;
+        plantableZone.setLayoutParams(plantableParams);
+
+        LinearLayout.LayoutParams remainingParams = (LinearLayout.LayoutParams) remainingZone.getLayoutParams();
+        remainingParams.weight = remainingPortion;
+        remainingZone.setLayoutParams(remainingParams);
     }
 
     private void updateCostEstimate() {
@@ -225,6 +351,9 @@ public class PlantCropActivity extends AppCompatActivity {
         // Get available land from backend
         Double availableLand = data.getAvailableLand();
         Double totalLand = data.getLandSize();
+        if (data.getCropCount() != null) {
+            this.cropCount = data.getCropCount();
+        }
 
         if (availableLand != null && totalLand != null && totalLand > 0) {
             // Calculate percentage of available land
@@ -273,6 +402,8 @@ public class PlantCropActivity extends AppCompatActivity {
                     java.util.Map<String, Object> body = response.body();
                     String condition = (String) body.get("condition");
                     String displayName = (String) body.get("displayName");
+
+                    currentWeatherCondition = condition; // Store for calculation
 
                     String message = "Weather: " + displayName;
                     int color = getResources().getColor(R.color.accent_dark, null);

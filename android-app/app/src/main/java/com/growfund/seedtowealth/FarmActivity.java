@@ -407,9 +407,16 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void showExpandDialog() {
+        if (currentFarm == null || currentFarm.getExpansionCost() == null) {
+            Toast.makeText(this, "Unable to calculate expansion cost", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String costFormatted = com.growfund.seedtowealth.utils.MoneyUtils
+                .formatCurrency(currentFarm.getExpansionCost());
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Expand Farm")
-                .setMessage("Expand your farm by 1 acre for ₹50,000?")
+                .setMessage("Expand your farm by 1 acre for " + costFormatted + "?")
                 .setPositiveButton("Expand", (dialog, which) -> expandFarm())
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -460,7 +467,9 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
         emergencyFundText
                 .setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(currentFarm.getEmergencyFund()));
 
-        if (currentFarm.getSavings() >= 50000) {
+        // Check if user has enough savings for expansion
+        Long expansionCost = currentFarm.getExpansionCost();
+        if (expansionCost != null && currentFarm.getSavings() >= expansionCost) {
             landSizeText.setOnClickListener(v -> showExpandDialog());
         } else {
             landSizeText.setOnClickListener(null);

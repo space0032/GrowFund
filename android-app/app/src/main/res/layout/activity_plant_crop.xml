@@ -159,14 +159,57 @@
                             android:background="@null" />
                     </LinearLayout>
 
-                    <com.google.android.material.slider.Slider
-                        android:id="@+id/areaSlider"
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <!-- Custom Background Track -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:orientation="horizontal"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginHorizontal="0dp">
+
+                            <View
+                                android:id="@+id/plantableZone"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@color/success"
+                                android:alpha="0.5"/>
+
+                            <View
+                                android:id="@+id/remainingZone"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0"
+                                android:background="@color/error"
+                                android:alpha="0.5"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.slider.Slider
+                            android:id="@+id/areaSlider"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:valueFrom="0.5"
+                            android:valueTo="10.0"
+                            android:stepSize="0.5"
+                            android:value="1.0"
+                            app:trackColorInactive="@android:color/transparent"
+                            app:trackColorActive="@android:color/transparent"/>
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/warningText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:valueFrom="0.5"
-                        android:valueTo="10.0"
-                        android:stepSize="0.5"
-                        android:value="1.0" />
+                        android:text="Warning: High risk of yield penalty!"
+                        android:textColor="@color/error"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:layout_marginTop="4dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

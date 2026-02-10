@@ -14,6 +14,7 @@ public class Farm {
     private Long savings;
     private Long emergencyFund;
     private Integer cropCount;
+    private Long expansionCost; // Cost for next expansion
 
     // Constructors
     public Farm() {
@@ -21,7 +22,7 @@ public class Farm {
 
     @Ignore
     public Farm(Long id, String farmName, Double landSize, Double availableLand, Long savings, Long emergencyFund,
-            Integer cropCount) {
+            Integer cropCount, Long expansionCost) {
         this.id = id;
         this.farmName = farmName;
         this.landSize = landSize;
@@ -29,6 +30,7 @@ public class Farm {
         this.savings = savings;
         this.emergencyFund = emergencyFund;
         this.cropCount = cropCount;
+        this.expansionCost = expansionCost;
     }
 
     // Getters and Setters
@@ -86,5 +88,13 @@ public class Farm {
 
     public void setCropCount(Integer cropCount) {
         this.cropCount = cropCount;
+    }
+
+    public Long getExpansionCost() {
+        return expansionCost;
+    }
+
+    public void setExpansionCost(Long expansionCost) {
+        this.expansionCost = expansionCost;
     }
 }
