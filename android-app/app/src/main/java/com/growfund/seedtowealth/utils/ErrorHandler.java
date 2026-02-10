@@ -50,6 +50,40 @@ public class ErrorHandler {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Enhanced error handling with custom message and status code differentiation
+     */
+    public static void handleApiError(Context context, int statusCode, String customMessage) {
+        String message;
+
+        switch (statusCode) {
+            case 400:
+                message = customMessage != null ? customMessage : "Invalid request. Please check your input.";
+                break;
+            case 401:
+                message = "Session expired. Please login again.";
+                break;
+            case 403:
+                message = customMessage != null ? customMessage : "You don't have permission to perform this action.";
+                break;
+            case 404:
+                message = "Resource not found.";
+                break;
+            case 409:
+                message = customMessage != null ? customMessage : "Conflict with existing data.";
+                break;
+            case 500:
+            case 502:
+            case 503:
+                message = "Server error. Please try again later.";
+                break;
+            default:
+                message = customMessage != null ? customMessage : "Request failed (" + statusCode + ")";
+        }
+
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);

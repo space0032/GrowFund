@@ -104,8 +104,21 @@ public class CropDetailActivity extends AppCompatActivity {
                     public void onError(String message) {
                         runOnUiThread(() -> {
                             loadingProgress.setVisibility(View.GONE);
-                            Toast.makeText(CropDetailActivity.this, "Error: " + message, Toast.LENGTH_SHORT)
-                                    .show();
+
+                            // Display placeholder values if no previous data exists
+                            if (currentCrop == null) {
+                                cropTypeTitle.setText("Crop Details");
+                                statusText.setText("Status: Unavailable");
+                                areaText.setText("N/A");
+                                seasonText.setText("N/A");
+                                investmentText.setText("N/A");
+                                expectedYieldText.setText("N/A");
+                            }
+                            // Otherwise retain previous valid data
+
+                            Toast.makeText(CropDetailActivity.this,
+                                    "Unable to load crop data. " + message,
+                                    Toast.LENGTH_SHORT).show();
                         });
                     }
                 });

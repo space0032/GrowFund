@@ -79,8 +79,20 @@ public class EventHistoryActivity extends AppCompatActivity {
             public void onError(String error) {
                 loadingProgress.setVisibility(View.GONE);
                 emptyStateText.setVisibility(View.VISIBLE);
-                emptyStateText.setText("Failed to load event history");
-                Toast.makeText(EventHistoryActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+
+                // Differentiate between network errors and other errors
+                if (error.contains("Network") || error.contains("network") ||
+                        error.contains("connection") || error.contains("timeout")) {
+                    // Transient network error - offer retry
+                    emptyStateText.setText("Network error. Tap to retry.");
+                    emptyStateText.setClickable(true);
+                    emptyStateText.setOnClickListener(v -> loadEventHistory());
+                } else {
+                    // Permanent error
+                    emptyStateText.setText("Failed to load event history");
+                    emptyStateText.setClickable(false);
+                    Toast.makeText(EventHistoryActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

@@ -166,9 +166,9 @@ public class PlantCropActivity extends AppCompatActivity {
 
                     estimatedCostText.setText(com.growfund.seedtowealth.utils.MoneyUtils.formatCurrency(cost));
 
-                    // Visual feedback
+                    // Visual feedback using proper color resources
                     int colorRes = (cost > currentSavings) ? R.color.error : R.color.text_primary;
-                    estimatedCostText.setTextColor(getResources().getColor(colorRes, null));
+                    estimatedCostText.setTextColor(getResources().getColor(colorRes, getTheme()));
 
                     plantButton.setEnabled(cost <= currentSavings);
                     if (cost > currentSavings) {
@@ -206,7 +206,12 @@ public class PlantCropActivity extends AppCompatActivity {
                     @Override
                     public void onError(String message) {
                         runOnUiThread(() -> {
-                            currentSavingsText.setText("Wallet: Error");
+                            // Show N/A instead of Error for better UX
+                            currentSavingsText.setText("Wallet: N/A");
+                            availableLandText.setText("Available: N/A");
+                            Toast.makeText(PlantCropActivity.this,
+                                    "Unable to load farm data. Please check your connection.",
+                                    Toast.LENGTH_SHORT).show();
                         });
                     }
                 });

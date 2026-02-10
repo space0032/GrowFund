@@ -52,6 +52,29 @@
 -keep class androidx.work.impl.background.systemjob.SystemJobService
 -keep class androidx.work.impl.foreground.SystemForegroundService
 
+# OkHttp3 (used by Retrofit)
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+
+# Retrofit2 - Enhanced rules for R8
+-keepattributes Exceptions
+-keep,allowobfuscation,allowshrinking interface retrofit2.Call
+-keep,allowobfuscation,allowshrinking class retrofit2.Response
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+
+# MPAndroidChart
+-keep class com.github.mikephil.charting.** { *; }
+-dontwarn com.github.mikephil.charting.data.realm.**
+
+# Firebase
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+
 # General Android
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
@@ -65,3 +88,4 @@
     public static *** v(...);
     public static *** i(...);
 }
+

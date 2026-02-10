@@ -46,4 +46,14 @@
     <style name="TextAppearance.SeedToWealth.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:textColor">@color/text_secondary</item>
     </style>
+
+    <!-- AppBar Overlay Theme -->
+    <style name="Theme.GrowFund.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/text_on_primary</item>
+    </style>
+
+    <!-- Popup Overlay Theme -->
+    <style name="Theme.GrowFund.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/text_primary</item>
+    </style>
 </resources>

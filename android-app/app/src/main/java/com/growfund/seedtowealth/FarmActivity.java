@@ -356,30 +356,42 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onLocalData(List<Crop> data) {
                         runOnUiThread(() -> {
-                            cropList = data;
+                            // Clear existing data first
+                            cropList.clear();
                             cropAdapter.setCrops(cropList);
-                            if (cropList.isEmpty()) {
-                                cropsRecyclerView.setVisibility(View.GONE);
-                                emptyStateView.setVisibility(View.VISIBLE);
-                            } else {
+
+                            // Update with new data
+                            if (data != null && !data.isEmpty()) {
+                                cropList = data;
+                                cropAdapter.setCrops(cropList);
                                 cropsRecyclerView.setVisibility(View.VISIBLE);
                                 emptyStateView.setVisibility(View.GONE);
+                            } else {
+                                cropsRecyclerView.setVisibility(View.GONE);
+                                emptyStateView.setVisibility(View.VISIBLE);
                             }
+                            cropAdapter.notifyDataSetChanged();
                         });
                     }
 
                     @Override
                     public void onSuccess(List<Crop> data) {
                         runOnUiThread(() -> {
-                            cropList = data;
+                            // Clear existing data first
+                            cropList.clear();
                             cropAdapter.setCrops(cropList);
-                            if (cropList.isEmpty()) {
-                                cropsRecyclerView.setVisibility(View.GONE);
-                                emptyStateView.setVisibility(View.VISIBLE);
-                            } else {
+
+                            // Update with new data
+                            if (data != null && !data.isEmpty()) {
+                                cropList = data;
+                                cropAdapter.setCrops(cropList);
                                 cropsRecyclerView.setVisibility(View.VISIBLE);
                                 emptyStateView.setVisibility(View.GONE);
+                            } else {
+                                cropsRecyclerView.setVisibility(View.GONE);
+                                emptyStateView.setVisibility(View.VISIBLE);
                             }
+                            cropAdapter.notifyDataSetChanged();
                         });
                     }
 
@@ -414,7 +426,20 @@ public class FarmActivity extends AppCompatActivity implements NavigationView.On
                     updateFarmUI();
                     Toast.makeText(FarmActivity.this, "Farm Expanded!", Toast.LENGTH_SHORT).show();
                 } else {
-                    com.growfund.seedtowealth.utils.ErrorHandler.handleApiError(FarmActivity.this, response);
+                    // Enhanced error handling with specific messages
+                    int statusCode = response.code();
+                    String customMessage = null;
+
+                    if (statusCode == 400) {
+                        customMessage = "Insufficient funds to expand farm!";
+                    } else if (statusCode == 409) {
+                        customMessage = "Farm already at maximum size!";
+                    } else {
+                        customMessage = "Farm expansion failed!";
+                    }
+
+                    com.growfund.seedtowealth.utils.ErrorHandler.handleApiError(
+                            FarmActivity.this, statusCode, customMessage);
                 }
             }
 
