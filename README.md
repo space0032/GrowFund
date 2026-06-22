@@ -1,344 +1,605 @@
-# GrowFund - "Seed to Wealth"
+# 🌾 GrowFund - "Seed to Wealth"
 
-## 🌾 Financial Empowerment for Farmers
+> **Empowering Indian farmers with financial literacy through gamified learning**
+>
+> A comprehensive gamified financial literacy platform designed specifically for rural farmers to understand investments, wealth management, and government schemes through engaging gameplay and real-world agricultural scenarios.
 
-GrowFund is a gamified financial literacy application designed specifically for Indian farmers to educate them about investments and wealth management. The app uses farm-specific scenarios and engaging gameplay to teach financial planning and investment strategies in a simple, easy-to-understand, and interactive way.
+[![Java](https://img.shields.io/badge/Java-17+-orange?style=flat-square&logo=java)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-6DB33F?style=flat-square&logo=springboot)](https://spring.io/projects/spring-boot)
+[![Android](https://img.shields.io/badge/Android-API%2024+-3DDC84?style=flat-square&logo=android)](https://www.android.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-Integrated-FFCA28?style=flat-square&logo=firebase)](https://firebase.google.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-## 📖 Table of Contents
+---
 
-- [Vision & Goals](#vision--goals)
-- [Features](#features)
-- [Target Users](#target-users)
-- [Technology Stack](#technology-stack)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Problem & Solution](#problem--solution)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
 - [Game Mechanics](#game-mechanics)
-- [Investment Education](#investment-education)
-- [Development Roadmap](#development-roadmap)
+- [Educational Content](#educational-content)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
 - [Contributing](#contributing)
-- [License](#license)
 
-## 🎯 Vision & Goals
+---
 
-### Purpose
-Financial empowerment of farmers by teaching investment concepts through an engaging gamified experience.
+## 🎯 Overview
 
-### Primary Goal
-Teach farmers to understand and start applying basic investment principles (saving, investing, and wealth management) through interactive simulations and games.
+**GrowFund** is a social-impact fintech application addressing financial literacy gaps in rural India. By combining gamification with agricultural scenarios, it teaches farmers about:
 
-### Secondary Goal
-Build confidence in using financial tools like savings accounts, insurance, mutual funds, and credit mechanisms.
+- 💰 Savings & Emergency funds
+- 📈 Investment vehicles (Mutual Funds, FDs, Government schemes)
+- 🏦 Banking products & Digital payments
+- 🌾 Government agricultural schemes (PM Kisan, Kisan Vikas Patra)
+- 🛡️ Insurance basics (Crop, Life, Health)
+- 📊 Risk management & Diversification
 
-## 👥 Target Users
+**Target Users**: Small-to-marginal farmers in rural India with limited digital exposure and varying literacy levels.
 
-- **Small and marginal farmers in India**, focused on rural areas
-- Farmers with **limited digital exposure** and varying literacy levels
-- **Smartphone users** (low to mid-range Android devices)
-- Primary regions: Rural India across multiple states
-- Language support: Hindi, Tamil, Telugu, Marathi, Bengali, Gujarati, and English
+**Impact**: Make financial empowerment accessible to 10M+ farmers through their smartphones.
 
-## ✨ Features
+---
+
+## 🔥 Problem & Solution
+
+### The Problem
+- ❌ ~87% of Indian farmers lack basic financial literacy
+- ❌ Low awareness of government schemes and banking products
+- ❌ Limited access to financial advisors in rural areas
+- ❌ Language barriers & digital illiteracy
+- ❌ Complex financial concepts presented in formal language
+
+### Our Solution
+- ✅ **Gamified Learning**: Farm management gameplay makes learning fun
+- ✅ **Localized Content**: 7 Indian languages with audio support
+- ✅ **Real-World Scenarios**: Agriculture-specific financial situations
+- ✅ **Offline Capability**: Works in low-connectivity regions
+- ✅ **Voice-Driven**: Audio guidance for low-literacy users
+
+---
+
+## ✨ Key Features
 
 ### 🎮 Interactive Gameplay
-- **Role-Playing**: Manage a virtual farm and make financial decisions
-- **Real-Life Scenarios**: Deal with challenges like natural disasters, market volatility, and pest infestations
-- **Decision Making**: Choose between investing in better seeds, saving for emergencies, or expanding the farm
-- **Progress Tracking**: Earn coins, gain experience, and level up
 
-### 💰 Investment Simulations
-Learn about practical investment options:
-- **Government Schemes**: PM Kisan Maan Dhan Yojana, Kisan Vikas Patra
-- **Banking Products**: Fixed Deposits, Savings Accounts
-- **Investment Vehicles**: Agricultural Mutual Funds
-- **Digital Payments**: UPI integration understanding
-- **Insurance**: Crop and life insurance basics
-- **NABARD Initiatives**: Subsidies and support programs
+| Feature | Description |
+|---------|-------------|
+| **Farm Management** | Manage a virtual farm, make financial decisions, face real-world challenges |
+| **Role-Playing** | Experience financial scenarios as a farmer (planting, harvesting, investing) |
+| **Dynamic Events** | Random weather events, market volatility, pest infestations, government subsidies |
+| **Progression System** | Level up, earn coins, unlock equipment, track wealth growth |
 
-### 📊 Financial Tools
-- **Investment Analytics**: ROI calculators and portfolio value tracking
-- **Recommendation Engine**: Personalized investment advice based on risk profile
-- **Interest Calculators**: Compound and simple interest calculations
-- **Savings Tracker**: Monitor emergency funds and savings goals
-- **Budget Planning**: Allocate resources effectively
+### 💰 Investment Education Hub
 
-### 🏆 Gamification & Social
-- **Leaderboards**: Compete with other farmers based on net worth
-- **Achievements**: Unlock badges for milestones
-- **Quizzes**: Test financial knowledge with interactive quizzes
-- **Equipment Shop**: Buy tools (Tractors, Sprinklers) to improve efficiency
-- **Random Events**: Dynamic weather and market events (Droughts, Market Surges)
+**Government Schemes**
+- PM Kisan Maan Dhan Yojana (Pension scheme)
+- Kisan Vikas Patra (Savings certificates)
+- NABARD initiatives & subsidies
+- Pradhan Mantri Fasal Bima Yojana (Crop insurance)
 
-### 🌍 Localization
-- **Multi-language Support**: Content in 7 Indian languages
-- **Audio Support**: Voice guidance for low-literacy users
-- **Simple Visuals**: Icon-based navigation with minimal text
-- **Cultural Relevance**: Region-specific content and examples
+**Banking Products**
+- Fixed Deposits (FDs) with ROI calculators
+- Savings Accounts & Recurring Deposits
+- Digital Payment systems (UPI, Mobile Banking)
+- Loan products & Credit understanding
 
-### 📴 Offline Capability
-- Play and learn without constant internet connection
-- Local data storage with Room Database
-- Sync when online
+**Investment Vehicles**
+- Agricultural Mutual Funds
+- Gold savings
+- Land improvements as investments
+- Diversification strategies
 
-## 🛠 Technology Stack
+### 🏆 Gamification & Social Features
 
-### Frontend (Android App)
-- **Language**: Java
-- **Platform**: Android (API 24+)
-- **UI Framework**: Material Design
-- **Build Tool**: Gradle
-- **Database**: Room Database (SQLite)
-- **Networking**: Retrofit 2, OkHttp
-- **Authentication**: Firebase Auth
-- **Database**: Room Database (Offline), Firestore (Feedback)
-- **Analytics**: Firebase Analytics, Crashlytics, MPAndroidChart
-- **Updates**: Google Play In-App Updates
-- **Image Loading**: Glide
+- **Leaderboards**: Compete with other farmers based on virtual net worth
+- **Achievements**: Unlock badges for milestones (First Investment, 1M coins, etc.)
+- **Interactive Quizzes**: Test financial knowledge with rewards
+- **Equipment Shop**: Buy virtual tools (Tractors, Sprinklers) to improve farm efficiency
+- **Progressive Unlocking**: Advanced features unlock as you progress
 
-### Backend (API Server)
-- **Framework**: Spring Boot 3.2
-- **Language**: Java 17
-- **Database**: PostgreSQL
-- **ORM**: Hibernate/JPA
-- **Security**: Spring Security
-- **Cloud**: Firebase Admin SDK
-- **Financial Calculations**: Apache Commons Math
-- **Build Tool**: Maven
+### 🌍 Localization & Accessibility
 
-### Infrastructure
-- **Database**: PostgreSQL (Backend), Firestore (Feedback)
-- **Cloud Services**: Firebase (Auth, Firestore, Crashlytics, Analytics)
-- **API Protocol**: RESTful APIs with JSON
-- **Version Control**: Git/GitHub
+| Feature | Details |
+|---------|---------|
+| **Multi-Language** | English, Hindi, Tamil, Telugu, Marathi, Bengali, Gujarati |
+| **Audio Support** | Voice guidance & text-to-speech for low-literacy users |
+| **Offline Mode** | Complete gameplay without internet, sync when online |
+| **Simple UI** | Icon-based navigation with minimal text complexity |
+| **Voice Queries** | Ask questions in your language using speech-to-text |
 
-## 🚀 Getting Started
+### 📊 Financial Tools & Analytics
+
+- **ROI Calculator**: Compute returns on various investments
+- **Portfolio Tracker**: Monitor virtual investments
+- **Savings Goal Tracker**: Set and track financial targets
+- **Budget Planner**: Allocate farm resources effectively
+- **Recommendation Engine**: AI-powered investment advice based on risk profile
+
+---
+
+## 🛠️ Tech Stack
+
+### Mobile Application (Android)
+| Component | Technology |
+|-----------|-----------|
+| **Language** | Java |
+| **Platform** | Android 24+ (Material Design) |
+| **Build Tool** | Gradle |
+| **UI Framework** | Material Design Components |
+| **Local DB** | Room Database (SQLite) |
+| **Networking** | Retrofit 2 + OkHttp |
+| **Auth** | Firebase Authentication |
+| **Analytics** | Firebase Analytics & Crashlytics |
+| **Notifications** | Firebase Cloud Messaging (FCM) |
+| **Charts** | MPAndroidChart for analytics |
+| **Image Loading** | Glide |
+
+### Backend Server
+| Component | Technology |
+|-----------|-----------|
+| **Framework** | Spring Boot 3.2 |
+| **Language** | Java 17+ |
+| **Build Tool** | Maven |
+| **Database** | PostgreSQL 14+ |
+| **ORM** | Hibernate/JPA |
+| **Security** | Spring Security, JWT tokens |
+| **APIs** | RESTful JSON APIs |
+| **Cloud** | Firebase Admin SDK |
+| **Libraries** | Apache Commons Math (financial calculations) |
+
+### Infrastructure & Services
+| Service | Purpose |
+|---------|---------|
+| **Firebase** | Auth, Firestore (feedback), Analytics, Crashlytics |
+| **PostgreSQL** | Persistent user data, game state, analytics |
+| **SMTP** | Transactional emails (OTP, notifications) |
+| **Google Play** | Distribution, In-app updates, Review system |
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- Java Development Kit (JDK) 17+
-- Android Studio Hedgehog (2023.1.1) or later
-- PostgreSQL 14+
-- Maven 3.6+
-- Git
 
-### Quick Start
+```
+✓ Java Development Kit (JDK) 17+
+✓ Android Studio Hedgehog (2023.1.1) or later
+✓ PostgreSQL 14+
+✓ Maven 3.6+
+✓ Git
+✓ Firebase Project (for development/production)
+```
 
-#### Backend Setup
+### Backend Setup
+
+**1. Clone & Navigate**
 ```bash
-# Clone the repository
 git clone https://github.com/space0032/GrowFund.git
 cd GrowFund/backend
+```
 
-# Configure database in application.yml
+**2. Configure Database**
+```bash
 # Create PostgreSQL database
 createdb growfund
 
-# Build and run
+# Create .env file with credentials
+cat > .env << EOF
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=growfund
+DB_USER=postgres
+DB_PASSWORD=your_password
+JWT_SECRET=your_secret_key_here
+FIREBASE_API_KEY=your_firebase_key
+EOF
+```
+
+**3. Build & Run**
+```bash
+# Build the application
 mvn clean install
+
+# Run the Spring Boot server
 mvn spring-boot:run
 
-# API will be available at http://localhost:8080/api
+# API available at http://localhost:8080/api
 ```
 
-#### Android App Setup
+### Android App Setup
+
+**1. Open in Android Studio**
 ```bash
-# Open android-app folder in Android Studio
 cd GrowFund/android-app
+# Open this folder in Android Studio
+```
 
+**2. Configure Firebase**
+- Download `google-services.json` from Firebase Console
+- Place it in `android-app/app/`
+
+**3. Build & Run**
+```bash
 # Sync Gradle dependencies
-# Configure Firebase (download google-services.json)
-# Run on emulator or device
+./gradlew sync
+
+# Run on emulator
+./gradlew installDebug
+
+# Run on device
+./gradlew installDebug
 ```
 
-For detailed setup instructions, see [SETUP.md](docs/SETUP.md).
-
-## 📁 Project Structure
-
-```
-GrowFund/
-├── backend/                    # Spring Boot Backend
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/growfund/
-│   │   │   │   ├── controller/     # REST Controllers
-│   │   │   │   ├── service/        # Business Logic
-│   │   │   │   ├── model/          # Entity Models
-│   │   │   │   ├── repository/     # Data Access Layer
-│   │   │   │   ├── config/         # Configuration
-│   │   │   │   └── dto/            # Data Transfer Objects
-│   │   │   └── resources/
-│   │   │       └── application.yml # Configuration
-│   │   └── test/                   # Backend Tests
-│   └── pom.xml                     # Maven Dependencies
-│
-├── android-app/                # Android Application
-│   ├── app/
-│   │   ├── src/
-│   │   │   ├── main/
-│   │   │   │   ├── java/          # Java Source Code
-│   │   │   │   ├── res/           # Resources
-│   │   │   │   │   ├── layout/    # UI Layouts
-│   │   │   │   │   ├── values/    # Strings, Colors, Themes
-│   │   │   │   │   ├── values-hi/ # Hindi Localization
-│   │   │   │   │   └── drawable/  # Images and Icons
-│   │   │   │   └── AndroidManifest.xml
-│   │   │   └── test/              # App Tests
-│   │   └── build.gradle           # App Dependencies
-│   └── build.gradle               # Project Build Config
-│
-├── docs/                       # Documentation
-│   ├── ARCHITECTURE.md         # System Architecture
-│   ├── SETUP.md                # Setup Guide
-│   └── DATABASE_SCHEMA.md      # Database Design
-│
-└── README.md                   # This file
-```
+---
 
 ## 🎮 Game Mechanics
 
 ### Core Gameplay Loop
 
-1. **Planning Phase**
-   - Choose crops to plant
-   - Allocate budget for seeds, fertilizers, equipment
-   - Set aside emergency funds
+```
+┌─────────────────────────────────────────┐
+│         1. PLANNING PHASE               │
+│  - Choose crops to plant               │
+│  - Allocate budget (seeds, tools)     │
+│  - Set aside emergency funds          │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│       2. GROWING PHASE (7-14 days)     │
+│  - Monitor crop growth                 │
+│  - Handle random events                │
+│  - Make investment decisions           │
+│  - Complete mini-games/quizzes        │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│       3. HARVEST PHASE                  │
+│  - Collect harvest & profits           │
+│  - Calculate investment returns        │
+│  - Earn experience & coins             │
+│  - Unlock new features                 │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│   4. PROGRESS & REWARDS                 │
+│  - Level up (unlock advanced features) │
+│  - Achieve milestones (badges)        │
+│  - Compete on leaderboards            │
+│  - Gain wealth (virtual net worth)    │
+└─────────────────────────────────────────┘
+```
 
-2. **Growing Phase**
-   - Monitor crop growth
-   - Handle random events (weather, pests, market changes)
-   - Make investment decisions with surplus funds
+### Random Events System
 
-3. **Harvest Phase**
-   - Collect harvest and profits
-   - Calculate returns on investments
-   - Unlock new features and equipment
-
-4. **Progress & Rewards**
-   - Earn experience points and coins
-   - Level up to unlock advanced features
-   - Achieve milestones and badges
-   - Compete on leaderboards
-
-### Random Events
-- **Weather**: Droughts, floods, favorable conditions
-- **Market**: Price fluctuations, demand changes
-- **Challenges**: Pest infestations, equipment breakdowns
-- **Opportunities**: Government subsidies, bonus harvests
+| Event Type | Examples | Impact |
+|-----------|----------|--------|
+| **Weather** | Droughts, Floods, Favorable conditions | Crop yield changes |
+| **Market** | Price surges, Demand drops | Revenue increases/decreases |
+| **Challenges** | Pest infestations, Equipment breakdown | Cost unexpected expenses |
+| **Opportunities** | Government subsidies, Bonus harvests | Extra income |
 
 ### Resource Management
-- **Coins**: Virtual currency for transactions
-- **Land**: Expandable farm size
-- **Equipment**: Tools that improve efficiency
-- **Savings**: Emergency fund and investment capital
 
-## 📚 Investment Education
+- **Coins**: Virtual currency for all in-game transactions
+- **Experience (XP)**: Earned through gameplay, unlocks features
+- **Farm Land**: Expandable by investing coins
+- **Equipment**: Tools that improve farm efficiency
+- **Savings**: Emergency fund + investment capital
 
-### Covered Topics
+---
 
-#### 1. **Savings**
-- Importance of emergency funds
-- Regular savings habits
-- Bank savings accounts
-- Interest calculation basics
+## 📚 Educational Content
 
-#### 2. **Government Schemes**
-- **PM Kisan Maan Dhan Yojana**: Pension scheme for farmers
-- **Kisan Vikas Patra**: Post office savings certificate
-- **NABARD Programs**: Agricultural development schemes
-- **Crop Insurance**: Pradhan Mantri Fasal Bima Yojana
+### Module 1: Savings Fundamentals
+- Importance of emergency funds (3-6 month buffer)
+- Regular savings habits and discipline
+- Bank savings accounts & interest calculation
+- Compound interest power demonstration
 
-#### 3. **Banking Products**
-- **Fixed Deposits**: Guaranteed returns
-- **Recurring Deposits**: Regular savings
+### Module 2: Government Schemes
+- **PM Kisan Scheme**: ₹6000 yearly, eligibility, application
+- **Kisan Vikas Patra**: Post office savings with guaranteed returns
+- **NABARD Programs**: Agricultural development & credit
+- **Crop Insurance**: Risk protection for farmers
+
+### Module 3: Banking Products
+- **Fixed Deposits (FDs)**: Security, returns, lock-in periods
+- **Recurring Deposits (RDs)**: Automatic savings mechanism
 - **Savings Accounts**: Liquidity and safety
-- **UPI/Digital Payments**: Modern banking
+- **Digital Payments**: UPI, Mobile Banking, Online transfers
 
-#### 4. **Investment Vehicles**
-- **Mutual Funds**: Agricultural and equity funds
-- **Gold**: Traditional investment
-- **Land Improvements**: Long-term value addition
+### Module 4: Investment Strategies
+- **Mutual Funds**: Agricultural + equity funds
+- **Diversification**: Not putting all eggs in one basket
+- **Risk vs. Return**: Understanding investment profiles
+- **Long-term vs. Short-term**: Time-based strategies
 
-#### 5. **Risk Management**
-- **Insurance**: Crop and life insurance
-- **Diversification**: Multiple income sources
+### Module 5: Risk Management
+- **Insurance Types**: Crop, Life, Health insurance
 - **Emergency Planning**: Financial safety nets
-
-#### 6. **Credit & Loans**
-- **Kisan Credit Card**: Agricultural credit
-- **Loan Management**: Responsible borrowing
-- **Interest Understanding**: Cost of credit
+- **Debt Management**: Understanding loans & interest
+- **Loan Repayment**: Responsible borrowing practices
 
 ### Learning Methodology
-- **Learning by Doing**: Practical simulations
-- **Visual Learning**: Charts and graphs
-- **Immediate Feedback**: See results of decisions
-- **Progressive Difficulty**: Start simple, grow complex
-- **Culturally Relevant**: Real-world farmer scenarios
 
-## 🗓 Development Roadmap
+✅ **Learning by Doing**: Practical simulations with real consequences  
+✅ **Visual Learning**: Charts, graphs, progress indicators  
+✅ **Immediate Feedback**: See results of financial decisions  
+✅ **Progressive Difficulty**: Start simple, advance gradually  
+✅ **Culturally Relevant**: Real-world farmer scenarios  
 
-### Phase 1-22: Development & Polish (COMPLETED) ✅
-- [x] **Core Systems**: Auth, Harvest, Farm Growth
-- [x] **Game Mechanics**: Weather, Random Events, Equipment, Leaderboards
-- [x] **Financial Features**: Investment System, Analytics, Quizzes
-- [x] **UI/UX**: Localization (7 langs), Profiles, Settings, Dark Mode support
-- [x] **Offline Support**: Room Database synchronization
-- [x] **Production Readiness**: Crashlytics, Analytics, In-App Updates, Feedback Form
+---
 
-### Phase 23: Launch & Testing (Current) 🚀
+## 📁 Project Structure
+
+```
+GrowFund/
+├── backend/                           # Spring Boot Backend Server
+│   ├── src/main/java/com/growfund/
+│   │   ├── controller/                # REST API endpoints
+│   │   │   ├── AuthController.java
+│   │   │   ├── GameController.java
+│   │   │   ├── InvestmentController.java
+│   │   │   └── SchemeController.java
+│   │   ├── service/                   # Business logic
+│   │   │   ├── GameService.java
+│   │   │   ├── InvestmentService.java
+│   │   │   └── UserService.java
+│   │   ├── model/                     # Entity models (JPA)
+│   │   │   ├── User.java
+│   │   │   ├── GameState.java
+│   │   │   ├── Investment.java
+│   │   │   └── Scheme.java
+│   │   ├── repository/                # Data access layer
+│   │   ├── config/                    # Configuration classes
+│   │   └── dto/                       # Data Transfer Objects
+│   ├── src/main/resources/
+│   │   ├── application.yml            # Configuration
+│   │   └── schema.sql                 # Database schema
+│   ├── pom.xml                        # Maven dependencies
+│   └── Dockerfile
+│
+├── android-app/                       # Android Mobile Application
+│   ├── app/
+│   │   ├── src/main/
+│   │   │   ├── java/com/growfund/
+│   │   │   │   ├── activity/          # UI Activities
+│   │   │   │   │   ├── MainActivity.java
+│   │   │   │   │   ├── GameActivity.java
+│   │   │   │   │   └── LoginActivity.java
+│   │   │   │   ├── fragment/          # Fragments
+│   │   │   │   │   ├── GameFragment.java
+│   │   │   │   │   ├── InvestmentFragment.java
+│   │   │   │   │   └── LeaderboardFragment.java
+│   │   │   │   ├── database/          # Room Database
+│   │   │   │   ├── service/           # Business logic
+│   │   │   │   ├── api/               # Retrofit API client
+│   │   │   │   ├── model/             # Data models
+│   │   │   │   └── util/              # Utility classes
+│   │   │   ├── res/
+│   │   │   │   ├── layout/            # XML layouts
+│   │   │   │   ├── drawable/          # Images & icons
+│   │   │   │   ├── values/            # Colors, strings, themes
+│   │   │   │   ├── values-hi/         # Hindi strings
+│   │   │   │   └── values-ta/         # Tamil strings (etc.)
+│   │   │   └── AndroidManifest.xml
+│   │   └── build.gradle
+│   ├── build.gradle                   # Project build config
+│   └── settings.gradle
+│
+├── docs/                              # Documentation
+│   ├── ARCHITECTURE.md                # System design
+│   ├── API_REFERENCE.md               # Backend API docs
+│   ├── SETUP.md                       # Detailed setup guide
+│   ├── GAME_DESIGN.md                 # Game mechanics doc
+│   └── DATABASE_SCHEMA.md             # DB design
+│
+└── README.md                          # This file
+```
+
+---
+
+## 🔑 API Reference
+
+### Authentication
+
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "phone": "+919876543210",
+  "password": "secure_password",
+  "name": "Farmer Name"
+}
+```
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "phone": "+919876543210",
+  "password": "secure_password"
+}
+
+Response:
+{
+  "token": "jwt_token_here",
+  "user": { ... }
+}
+```
+
+### Game API
+
+```http
+GET /api/game/state
+Authorization: Bearer {token}
+
+Response:
+{
+  "farmSize": 5,
+  "coins": 50000,
+  "level": 3,
+  "crops": [
+    { "name": "Rice", "status": "growing", "days": 7 }
+  ],
+  "investments": [
+    { "type": "FD", "amount": 10000, "roi": 5.5 }
+  ]
+}
+```
+
+### Investment API
+
+```http
+POST /api/investments/create
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "investmentType": "MUTUAL_FUND",
+  "amount": 5000,
+  "scheme": "Agricultural Fund"
+}
+```
+
+```http
+GET /api/schemes
+Response:
+[
+  {
+    "id": 1,
+    "name": "PM Kisan Maan Dhan Yojana",
+    "description": "Pension scheme for farmers",
+    "minAge": 18,
+    "maxAge": 40
+  }
+]
+```
+
+---
+
+## 🎯 Development Roadmap
+
+### ✅ Completed (Phase 1-22)
+- [x] Core game systems (farm, harvest, progression)
+- [x] Investment simulation engine
+- [x] Government schemes database
+- [x] Multi-language support (7 languages)
+- [x] Offline mode with Room Database
+- [x] Firebase integration (Auth, Analytics, Crashlytics)
+- [x] Interactive quizzes
+- [x] Leaderboards & achievements
+- [x] Admin dashboard
+- [x] In-app updates support
+
+### 🚀 Current (Phase 23: Launch)
 - [ ] User Acceptance Testing (UAT)
-- [ ] Performance Testing
-- [ ] Google Play Store Release
+- [ ] Performance optimization
+- [ ] Google Play Store release
+- [ ] Marketing campaign
 
-## 👨‍💻 Team Roles
+### 🔮 Future (Phase 24+)
+- [ ] Web version for accessibility
+- [ ] Advanced ML-based recommendations
+- [ ] Integration with actual banking APIs
+- [ ] Real investment portfolio tracking
+- [ ] Government scheme auto-application
+- [ ] Community features (social farming)
+- [ ] Rewards redemption (real incentives)
 
-### Required Roles
-1. **Project Manager**: Task coordination, timeline management
-2. **Backend Developer**: Spring Boot API development
-3. **Android Developer**: Mobile app development
-4. **Game Developer** (Optional): LibGDX game mechanics
-5. **UI/UX Designer**: App visuals and user experience
-6. **Content Writer**: Educational content creation
-7. **Financial Advisor**: Investment scheme expertise
-8. **QA Engineer**: Testing and quality assurance
+---
 
 ## 🤝 Contributing
 
 We welcome contributions from developers, designers, and domain experts!
 
 ### How to Contribute
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/YourFeature`
+3. **Commit** changes: `git commit -m 'Add YourFeature'`
+4. **Push** to branch: `git push origin feature/YourFeature`
+5. **Open** a Pull Request
 
 ### Development Guidelines
-- Follow Java coding standards
-- Write unit tests for new features
-- Update documentation
-- Use meaningful commit messages
-- Ensure backward compatibility
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Indian farmers who inspired this project
-- Government of India for agricultural schemes
-- Open source community for tools and libraries
-- Agricultural organizations and NGOs
-
-## 📞 Contact & Support
-
-- **Issues**: [GitHub Issues](https://github.com/space0032/GrowFund/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/space0032/GrowFund/discussions)
-- **Documentation**: [/docs](docs/)
-
-## 🌟 Vision
-
-> "Empowering every farmer with the knowledge and tools to build financial security and prosperity through technology and education."
+- ✅ Follow Java naming conventions (camelCase for variables, PascalCase for classes)
+- ✅ Write meaningful commit messages
+- ✅ Add comments for complex logic
+- ✅ Test thoroughly before submitting
+- ✅ Update documentation if needed
+- ✅ Maintain backward compatibility
 
 ---
 
+## 📊 Impact Metrics
+
+**Target Impact:**
+- 🌾 Reach 100K+ farmers in Year 1
+- 💰 Help farmers increase savings by 20%
+- 📈 Increase investment awareness from 20% to 70%
+- 🎓 Complete financial literacy program completion rate: 80%+
+
+---
+
+## 🔒 Security & Privacy
+
+- ✅ End-to-end encrypted communications
+- ✅ Secure authentication with JWT tokens
+- ✅ OWASP-compliant API design
+- ✅ Data encryption at rest
+- ✅ Regular security audits
+- ✅ GDPR-compliant data handling
+- ✅ User data never shared without consent
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Indian farmers who inspire this mission
+- Government of India for agricultural schemes
+- Open-source community for tools and libraries
+- NGOs and agricultural organizations supporting rural development
+- Firebase for robust cloud infrastructure
+- Spring Boot team for the excellent framework
+
+---
+
+## 📞 Support & Contact
+
+- **Issues**: [GitHub Issues](https://github.com/space0032/GrowFund/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/space0032/GrowFund/discussions)
+- **Email**: reach out via GitHub profile
+- **Documentation**: See `/docs` folder
+
+---
+
+## 🌟 Vision
+
+> **"Empowering every farmer with the knowledge and tools to build financial security and prosperity through technology and education."**
+
+---
+
+<div align="center">
+
 **Made with ❤️ for Indian Farmers**
+
+⭐ **Star this repo if you believe in financial empowerment for farmers!**
+
+</div>
